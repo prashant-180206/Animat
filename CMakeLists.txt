@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.16)
 project(Animat VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_AUTORCC ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Quick)
 find_package(Qt6 REQUIRED COMPONENTS Quick)
@@ -30,6 +31,11 @@ qt_add_qml_module(appAnimat
         QML_FILES
         SOURCES Singleton.h
         SOURCES Constants.h
+        QML_FILES Components/TitleBar.qml
+        QML_FILES Components/Taskbar.qml
+        QML_FILES Components/Menubar.qml
+        QML_FILES Components/ControlPanel.qml
+        QML_FILES Components/SceneManager.qml
 )
 
 

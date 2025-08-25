@@ -1,8 +1,6 @@
 #include "Scene.h"
 #include "Constants.h"
 
-
-
 Scene::Scene()
 {
     size=0;
@@ -42,9 +40,6 @@ void Scene::remove_mobject(Mobject *m)
 
 }
 
-
-
-
 QPointF Scene::p2c(QPointF p)
 {
     double x = p.x() + this->width()/2;
@@ -71,8 +66,6 @@ QSGNode* Scene::updatePaintNode(QSGNode* oldNode, UpdatePaintNodeData*) {
     // Draw background
     QSGSimpleRectNode* bgNode = new QSGSimpleRectNode(boundingRect(), getbg());
     rootNode->appendChildNode(bgNode);
-
-
 
     return rootNode;
 }

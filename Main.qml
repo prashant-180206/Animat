@@ -1,17 +1,49 @@
 import QtQuick
 import Animat 1.0
-
+import "Components"
 
 Window {
     width: 1920
     height: 1080
     visible: true
-    title: qsTr("Hello World")
+    title: qsTr("Animat")
     color: Constants.darkBlack
-        Scene{
-            anchors.centerIn: parent
+    TitleBar {
+        id: title
+    }
+    Taskbar {
+        id: taskbar
+    }
+    Menubar {
+        id: menu
+    }
+    ControlPanel {
+        id: control
+    }
+    Rectangle {
 
+        anchors.top: taskbar.bottom
+        anchors.bottom: parent.bottom
+        anchors.left: menu.right
+        anchors.right: control.left
+        color: Constants.darkBlack
+
+        SceneManager {
+            id: scenemanager
         }
 
+        Rectangle {
+            anchors.top: scenemanager.bottom
+            anchors.bottom: parent.bottom
+            anchors.left: parent.left
+            anchors.right: parent.right
+            color: Constants.darkBlack
 
+            Scene {
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.left: parent.left
+                anchors.leftMargin: 40
+            }
+        }
+    }
 }
