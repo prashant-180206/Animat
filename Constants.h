@@ -4,7 +4,7 @@
 #include <QColor>
 
 // Sizes
-constexpr int DEF_CANVAS_WIDTH = 900;
+constexpr int DEF_CANVAS_WIDTH = 950;
 constexpr int DEF_CANVAS_HEIGHT = 500;
 
 // Colors

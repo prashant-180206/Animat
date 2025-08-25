@@ -1,5 +1,7 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
+#include <QDebug>
+// #include "muParser.h"
 
 #include "Math/scene.h"
 #include "Singleton.h"

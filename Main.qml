@@ -40,6 +40,8 @@ Window {
             color: Constants.darkBlack
 
             Scene {
+                id: canvas
+                objectName: "canvas"
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.left: parent.left
                 anchors.leftMargin: 40

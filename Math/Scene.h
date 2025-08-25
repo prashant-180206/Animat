@@ -10,6 +10,8 @@
 #include <QSGNode>
 #include <QColor>
 
+#include "Constants.h"
+
 class Scene : public QQuickItem
 {
     Q_OBJECT
@@ -23,6 +25,7 @@ public:
 
     void setbg(QColor c){bgcol=c;}
     QColor getbg(){return bgcol;};
+    QColor getBorderColor(){return TEXT_LIGHT;};
 
     QPointF p2c(QPointF p);
     QPointF c2p(QPointF c);
