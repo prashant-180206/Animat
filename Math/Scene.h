@@ -1,7 +1,7 @@
 #ifndef SCENE_H
 #define SCENE_H
 
-#include "Mobjects/Mobject.h"
+
 #include <QList>
 #include <QPointF>
 #include <QPainter>
@@ -9,8 +9,8 @@
 #include <QSGSimpleRectNode>
 #include <QSGNode>
 #include <QColor>
-
 #include "Constants.h"
+#include "Mobjects/Mobject.h"
 
 class Scene : public QQuickItem
 {
@@ -20,8 +20,8 @@ public:
     Scene() ;
     ~Scene();
 
-    void add_mobject(Mobject* m,QPointF coordinate);
-    void remove_mobject(Mobject* m);
+    Q_INVOKABLE Mobject* add_mobject(QString mobj);
+    // void remove_mobject(Mobject* m);
 
     void setbg(QColor c){bgcol=c;}
     QColor getbg(){return bgcol;};
@@ -30,7 +30,7 @@ public:
     QPointF p2c(QPointF p);
     QPointF c2p(QPointF c);
 private:
-    QList<Mobject*> m_objects;
+    // QList<Mobject*> m_objects;
     int size;
     QColor bgcol;
 

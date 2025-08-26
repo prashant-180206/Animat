@@ -1,37 +1,36 @@
 #include "Mobject.h"
 
-Mobject::Mobject(QQuickItem* parent) : QQuickItem(parent), m_center()
+Mobject::Mobject(Scene *canvas, QQuickItem *parent)
+    : QQuickItem(parent)
 {
-    if (parent) {
-        QPointF c = this->mapToItem(parent, QPointF(0,0));
-        setCenter(c);
-    }
 }
 
-QPointF Mobject::center() const
+QPointF Mobject::getCenter() const
 {
-    return m_center;
+    return QPointF(x() + width() / 2, y() + height() / 2);
 }
 
-QString Mobject::id() const
+QPointF Mobject::top() const
 {
-    return m_id;
+    // Middle of the top edge (x center, y top)
+    return QPointF(x() + width() / 2, y());
 }
 
-void Mobject::setCenter(const QPointF& v)
+QPointF Mobject::bottom() const
 {
-    if (m_center != v) {
-        m_center = v;
-        // Update visual position if needed
-        setPosition(m_center);
-        emit centerChanged();
-    }
+    // Middle of the bottom edge (x center, y bottom)
+    return QPointF(x() + width() / 2, y() + height());
 }
 
-void Mobject::setId(QString i)
+QPointF Mobject::left() const
 {
-    if (m_id != i) {
-        m_id = i;
-        emit idChanged();
-    }
+    // Middle of the left edge (x left, y center)
+    return QPointF(x(), y() + height() / 2);
 }
+
+QPointF Mobject::right() const
+{
+    // Middle of the right edge (x right, y center)
+    return QPointF(x() + width(), y() + height() / 2);
+}
+

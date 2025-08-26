@@ -1,0 +1,35 @@
+#ifndef RECTANGLE_H
+#define RECTANGLE_H
+
+#include "Polygon.h"
+#include <QQuickItem>
+
+class Rectangle : public Polygon
+{
+    Q_OBJECT
+    QML_ELEMENT
+    Q_PROPERTY(qreal rectWidth READ rectWidth WRITE setRectWidth NOTIFY rectWidthChanged)
+    Q_PROPERTY(qreal rectHeight READ rectHeight WRITE setRectHeight NOTIFY rectHeightChanged)
+
+public:
+    explicit Rectangle(Scene *canvas = nullptr, QQuickItem *parent = nullptr);
+
+    qreal rectWidth() const;
+    void setRectWidth(qreal width);
+
+    qreal rectHeight() const;
+    void setRectHeight(qreal height);
+
+signals:
+    void rectWidthChanged();
+    void rectHeightChanged();
+
+protected:
+    void updatePoints();
+
+private:
+    qreal m_rectWidth = 100.0;
+    qreal m_rectHeight = 100.0;
+};
+
+#endif // RECTANGLE_H

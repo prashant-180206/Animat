@@ -3,33 +3,20 @@
 
 #include <QQuickItem>
 #include <QPointF>
-#include <QString>
 
+class Scene;
 
 class Mobject : public QQuickItem
 {
     Q_OBJECT
-    QML_ELEMENT
-    Q_PROPERTY(QPointF center READ center WRITE setCenter NOTIFY centerChanged FINAL)
-    Q_PROPERTY(QString id READ id WRITE setId NOTIFY idChanged FINAL)
-
-
 public:
-    Mobject(QQuickItem* parent = nullptr);
+    explicit Mobject(Scene* canvas=nullptr,QQuickItem *parent = nullptr);
 
-    QPointF center() const;
-    QString id() const;
-    void setCenter(const QPointF& v);
-    void setId(QString i);
-
-signals:
-    void centerChanged();
-    void idChanged();
-
-private:
-    QPointF m_center;
-    QString m_id;
-
+    QPointF getCenter() const;
+    QPointF top() const;
+    QPointF bottom() const;
+    QPointF left() const;
+    QPointF right() const;
 };
 
 #endif // MOBJECT_H

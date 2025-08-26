@@ -1,6 +1,9 @@
 #include "Scene.h"
 
 #include <QtGui/qopenglfunctions.h>
+#include "Math/Mobjects/Circle.h"
+#include "Math/Mobjects/Curve.h"
+#include "Math/Mobjects/Rectangle.h"
 
 
 
@@ -20,28 +23,88 @@ Scene::Scene()
 
 Scene::~Scene()
 {
-    qDeleteAll(m_objects);
-    m_objects.clear();
+
 }
 
-void Scene::add_mobject(Mobject *m, QPointF coordinate)
+Mobject* Scene::add_mobject(QString mobj)
 {
-    QPointF c = this->position()+ coordinate;
-    m->setCenter(c);
-    m_objects.append(m);
+    auto *m = new Curve(this,this);
+    m->setParentItem(this);
 
-    m->setId(QString::number(size));
-    size++;
+    m->setZ(50);
+    this->setZ(0);
+
+    // auto *m1 = new Line(this,this);
+    // m1->setP1(c2p(QPointF(0,0)));
+    // m1->setP2(c2p(QPointF(100,100)));
+    // m1->update();
+    // m1->setZ(40);
+    // // m1->setHeight(100);
+    // // m1->setWidth(100);
+    // m1->setParentItem(this);
+
+
+
+    m->setParameterRange(-100, 100);
+    m->setSegmentCount(5);
+
+    // Override curve function with scaling to widget size
+    m->setCurveFunction([=, this](double t) {
+        // Map parametric coordinates to item space (scaled and inverted Y if needed)
+        double x = t;
+        double y = t*t*0.01; // y = t^2 inverted Y
+        return c2p(QPointF(x, y));
+    });
+
+    m->update();
+
+
+    // auto *poly = new Polygon(this, this);
+    // poly->setParentItem(this);
+    // poly->setZ(50);
+    // this->setZ(0);
+
+    // QVector<QPointF> points = {
+    //     c2p(QPointF(0, 0)),
+    //     c2p(QPointF(100, 0)),
+    //     c2p(QPointF(100, 100)),
+    //     c2p(QPointF(0, 100)),
+
+    // };
+    // poly->setPoints(points);
+    // poly->setFillColor(QColor(255, 100, 100, 150));  // semi-transparent red fill
+    // poly->buildPolygon();
+    // poly->update();
+
+    auto *circle = new Circle(this, this);
+    circle->setParentItem(this);
+    circle->setZ(50);
+    this->setZ(0);
+
+    circle->setRadius(80);           // Set radius
+    circle->setSegmentCount(60);     // Smoothness of approximation
+    circle->setFillColor(QColor(100, 150, 255, 150));  // semi-transparent blue fill
+
+    circle->update();
+
+    auto *rect = new Rectangle(this, this);
+    rect->setParentItem(this);
+    rect->setZ(50);
+    this->setZ(0);
+
+    rect->setRectWidth(200);
+    rect->setRectHeight(120);
+    rect->setFillColor(QColor(150, 255, 150, 150));  // semi-transparent green fill
+
+    rect->update();
+
+
+    return m;
 }
 
-void Scene::remove_mobject(Mobject *m)
-{
-    if (m_objects.removeOne(m)) {
-        m->setParentItem(nullptr);
-        delete m;
-    }
 
-}
+
+
 
 QPointF Scene::p2c(QPointF p)
 {
@@ -53,8 +116,8 @@ QPointF Scene::p2c(QPointF p)
 }
 
 QPointF Scene::c2p(QPointF c) {
-    double x = c.x() - this->width() / 2;
-    double y = -(c.y()) - this->height() / 2;
+    double x = c.x()+this->width()/2;
+    double y = -c.y() +this->height()/2;
     return QPointF(x, y);
 }
 

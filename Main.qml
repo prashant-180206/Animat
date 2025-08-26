@@ -1,5 +1,6 @@
 import QtQuick
 import Animat 1.0
+import QtQuick.Controls 2.15
 import "Components"
 
 Window {
@@ -39,8 +40,11 @@ Window {
             anchors.right: parent.right
             color: Constants.darkBlack
 
+
+
             Scene {
                 id: canvas
+
                 objectName: "canvas"
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.left: parent.left
