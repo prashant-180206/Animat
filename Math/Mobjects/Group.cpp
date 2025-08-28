@@ -1,7 +1,7 @@
 #include "group.h"
 
 Group::Group(Scene* canvas,QQuickItem *parent)
-    : Mobject(canvas,parent), m_spacing(0)
+    : ClickableMobject(canvas,parent), m_spacing(0)
 {
 }
 
@@ -41,7 +41,9 @@ void Group::addMember(Mobject *item)
     if (!item)
         return;
 
-    item->setParentItem(this);  // Make this Group the visual parent
+    item->setParentItem(this);
+    item->setZ(this->z()-1);
+    // Make this Group the visual parent
     arrange();                  // Rearrange after adding
 }
 

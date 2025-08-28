@@ -1,18 +1,18 @@
-#include "Rectangle.h"
+#include "MRectangle.h"
 
-Rectangle::Rectangle(Scene *canvas, QQuickItem *parent)
+MRectangle::MRectangle(Scene *canvas, QQuickItem *parent)
     : Polygon(canvas, parent)
 {
     setFlag(ItemHasContents, true);
     updatePoints();
 }
 
-qreal Rectangle::rectWidth() const
+qreal MRectangle::rectWidth() const
 {
     return m_rectWidth;
 }
 
-void Rectangle::setRectWidth(qreal width)
+void MRectangle::setRectWidth(qreal width)
 {
     if (!qFuzzyCompare(m_rectWidth, width)) {
         m_rectWidth = width;
@@ -22,12 +22,12 @@ void Rectangle::setRectWidth(qreal width)
     }
 }
 
-qreal Rectangle::rectHeight() const
+qreal MRectangle::rectHeight() const
 {
     return m_rectHeight;
 }
 
-void Rectangle::setRectHeight(qreal height)
+void MRectangle::setRectHeight(qreal height)
 {
     if (!qFuzzyCompare(m_rectHeight, height)) {
         m_rectHeight = height;
@@ -37,7 +37,7 @@ void Rectangle::setRectHeight(qreal height)
     }
 }
 
-void Rectangle::updatePoints()
+void MRectangle::updatePoints()
 {
     QVector<QPointF> rectPoints = {
         QPointF(0, 0),

@@ -1,14 +1,15 @@
-#ifndef LINE_H
-#define LINE_H
-
-#include <Math/Helper/ClickableMobject.h>  // Include the Mobject base class header
+#ifndef SIMPLE_LINE_H
+#define SIMPLE_LINE_H
+  // Include the Mobject base class header
+#include "Math/Mobjects/Mobject.h"
 #include <QPointF>
 #include <QSGGeometryNode>
 #include <QSGGeometry>
 #include <QSGFlatColorMaterial>
+#include <qqmlintegration.h>
 
 
-class Line : public ClickableMobject  // Inherit from Mobject instead of QQuickItem
+class SimpleLine : public Mobject  // Inherit from Mobject instead of QQuickItem
 {
     Q_OBJECT
     QML_ELEMENT
@@ -16,7 +17,7 @@ class Line : public ClickableMobject  // Inherit from Mobject instead of QQuickI
     Q_PROPERTY(QPointF p2 READ p2 WRITE setP2 NOTIFY p2Changed)
 
 public:
-    explicit Line(Scene* canvas,QQuickItem *parent = nullptr);
+    explicit SimpleLine(Scene* canvas,QQuickItem *parent = nullptr);
 
     QPointF p1() const;
     void setP1(const QPointF &pt);
@@ -31,9 +32,6 @@ signals:
 
 protected:
     QSGNode *updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *data) override;
-
-    bool contains(const QPointF &point) const override;
-    QRectF boundingRect() const override;
 private:
     QPointF m_p1, m_p2;
 };

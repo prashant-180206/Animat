@@ -12,7 +12,7 @@ class Circle : public Polygon
     Q_PROPERTY(int segmentCount READ segmentCount WRITE setSegmentCount NOTIFY segmentCountChanged)
 
 public:
-    explicit Circle(Scene *canvas = nullptr, QQuickItem *parent = nullptr);
+    explicit Circle(Scene *canvas, QQuickItem *parent = nullptr);
 
     qreal radius() const;
     void setRadius(qreal radius);

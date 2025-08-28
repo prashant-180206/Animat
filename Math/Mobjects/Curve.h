@@ -1,11 +1,11 @@
+// Curve.h
 #ifndef CURVE_H
 #define CURVE_H
-
 
 #include "Group.h"
 #include "Math/scene.h"
 #include <functional>
-
+#include <QRectF>
 
 class Curve : public Group
 {
@@ -13,7 +13,7 @@ class Curve : public Group
     QML_ELEMENT
 
 public:
-    explicit Curve(Scene *canvas = nullptr, QQuickItem *parent = nullptr);
+    explicit Curve(Scene *canvas, QQuickItem *parent = nullptr);
 
     using CurveFunc = std::function<QPointF(double)>;
 
@@ -29,14 +29,21 @@ signals:
     void curveFunctionChanged();
     void parameterRangeChanged();
     void segmentCountChanged();
+    void curveClicked();
+
+protected:
+    bool contains(const QPointF &point) const override;
+    QRectF boundingRect() const override;
+    void mousePressEvent(QMouseEvent *event) override;
 
 private:
     CurveFunc m_curveFunction;
     double m_tStart = 0.0;
     double m_tEnd = 1.0;
     int m_segmentCount = 100;
-    Scene*canvas;
-};
+    Scene *canvas = nullptr;
 
+    QVector<QPointF> m_points;
+};
 
 #endif // CURVE_H

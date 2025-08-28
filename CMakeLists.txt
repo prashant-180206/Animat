@@ -59,8 +59,12 @@ qt_add_qml_module(appAnimat
         SOURCES
         SOURCES Math/Mobjects/Curve.h Math/Mobjects/Curve.cpp
         SOURCES Math/Mobjects/Polygon.h Math/Mobjects/Polygon.cpp
-        SOURCES Math/Mobjects/Rectangle.h Math/Mobjects/Rectangle.cpp
+        SOURCES Math/Mobjects/MRectangle.h Math/Mobjects/MRectangle.cpp
         SOURCES Math/Mobjects/Circle.h Math/Mobjects/Circle.cpp
+        SOURCES Math/Helper/Text.h Math/Helper/Text.cpp
+        SOURCES Math/Helper/ClickableMobject.h
+        SOURCES Math/Mobjects/SimpleLine.h Math/Mobjects/SimpleLine.cpp
+        SOURCES
 # SOURCES lib/include/muParser.h lib/include/muParserBase.h lib/include/muParserBytecode.h lib/include/muParserCallback.h lib/include/muParserDef.h lib/include/muParserDLL.h lib/include/muParserError.h lib/include/muParserFixes.h lib/include/muParserInt.h lib/include/muParserTemplateMagic.h lib/include/muParserTest.h lib/include/muParserToken.h lib/include/muParserTokenReader.h lib/src/muParser.cpp lib/src/muParserBase.cpp lib/src/muParserBytecode.cpp lib/src/muParserCallback.cpp lib/src/muParserDLL.cpp lib/src/muParserError.cpp lib/src/muParserInt.cpp lib/src/muParserTest.cpp lib/src/muParserTokenReader.cpp
 # RESOURCES lib/CMakeLists.txt
 

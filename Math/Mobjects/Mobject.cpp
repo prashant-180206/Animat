@@ -1,9 +1,23 @@
 #include "Mobject.h"
+#include "Math/scene.h"
+#include <QDebug>
+#include <QQmlComponent>
+#include <QQmlEngine>
+#include <QQuickItem>
 
 Mobject::Mobject(Scene *canvas, QQuickItem *parent)
     : QQuickItem(parent)
 {
+    m_canvas = canvas;
+    // qDebug()<<"Mobject Created";
+
+
+    setAcceptTouchEvents(true);
+    setAcceptedMouseButtons(Qt::AllButtons);
+    setFlag(QQuickItem::ItemAcceptsInputMethod, true);
+
 }
+
 
 QPointF Mobject::getCenter() const
 {
@@ -33,4 +47,6 @@ QPointF Mobject::right() const
     // Middle of the right edge (x right, y center)
     return QPointF(x() + width(), y() + height() / 2);
 }
+
+
 

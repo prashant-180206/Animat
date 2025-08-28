@@ -9,6 +9,9 @@ Polygon::Polygon(Scene *canvas, QQuickItem *parent)
 {
     setFlag(ItemHasContents, true);
     this->canvas=canvas;
+    // setFlag(ItemAcceptsInputMethod, true);
+    // setAcceptHoverEvents(true);
+
 }
 
 void Polygon::setPoints(const QVector<QPointF> &points)
@@ -101,4 +104,28 @@ QSGNode *Polygon::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 
     m_fillNode->markDirty(QSGNode::DirtyGeometry | QSGNode::DirtyMaterial);
     return m_fillNode;
+}
+
+bool Polygon::contains(const QPointF &point) const
+{
+    // Accept events everywhere in bounding box (or improve with point-in-polygon)
+    return boundingRect().contains(point);
+}
+
+QRectF Polygon::boundingRect() const
+{
+    if (m_points.isEmpty())
+        return QRectF();
+    qreal minX = m_points.first().x();
+    qreal maxX = minX;
+    qreal minY = m_points.first().y();
+    qreal maxY = minY;
+
+    for (const QPointF& p : m_points) {
+        minX = qMin(minX, p.x());
+        maxX = qMax(maxX, p.x());
+        minY = qMin(minY, p.y());
+        maxY = qMax(maxY, p.y());
+    }
+    return QRectF(minX, minY, maxX - minX, maxY - minY);
 }

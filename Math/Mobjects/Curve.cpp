@@ -1,28 +1,27 @@
+// Curve.cpp
 #include "Curve.h"
-#include "Math/Mobjects/line.h"
-
+#include "Math/Mobjects/SimpleLine.h"
+#include <QVector2D>
+#include <QMouseEvent>
+#include <QDebug>
 
 Curve::Curve(Scene *canvas, QQuickItem *parent)
-    : Group(canvas, parent)
+    : Group(canvas, parent), canvas(canvas)
 {
     // Default parabola: y = x^2 parametric
     m_curveFunction = [](double t) {
         return QPointF(t, t * t);
     };
-
     m_tStart = -1.0;
     m_tEnd = 1.0;
     m_segmentCount = 100;
-
     setFlag(ItemHasContents, true);
-
+    setAcceptedMouseButtons(Qt::AllButtons);
     buildCurveSegments();
-    this->canvas = canvas;
 }
 
 void Curve::setCurveFunction(const CurveFunc &func)
 {
-    // You may want a better comparison but this works for demos
     m_curveFunction = func;
     emit curveFunctionChanged();
     buildCurveSegments();
@@ -56,28 +55,87 @@ void Curve::buildCurveSegments()
 {
     // Remove old line segments
     for (auto childObj : childItems()) {
-        if (Line *line = qobject_cast<Line *>(childObj)) {
+        if (SimpleLine *line = qobject_cast<SimpleLine *>(childObj)) {
             line->setParentItem(nullptr);
             line->deleteLater();
         }
     }
 
-    // QList<Mobject *> lines;
-
-    QVector<QPointF> points;
+    m_points.clear();
     for (int i = 0; i <= m_segmentCount; ++i) {
         double t = m_tStart + (m_tEnd - m_tStart) * i / m_segmentCount;
-        QPointF pt =m_curveFunction(t);
-      /*  if (canvas)*//* QPointF*/ pt =mapToItem(canvas,pt);
-        points.append(pt);
+        QPointF pt = m_curveFunction(t);
+        // Map to this item's coordinates if needed; here assuming m_curveFunction returns local pos
+        m_points.append(pt);
     }
 
-    for (int i = 0; i < points.size() - 1; ++i) {
-        auto *segment = new Line(canvas, this);
-        segment->setP1(points[i]);
-        segment->setP2(points[i + 1]);
+    for (int i = 0; i < m_points.size() - 1; ++i) {
+        auto *segment = new SimpleLine(canvas, this);
+        segment->setP1(m_points[i]);
+        segment->setP2(m_points[i + 1]);
         addMember(segment);
     }
 
     arrange();
+    update();
+}
+
+QRectF Curve::boundingRect() const
+{
+    if (m_points.isEmpty())
+        return QRectF();
+
+    qreal penWidth = 8.0; // tolerance for clicking
+    qreal minX = m_points[0].x();
+    qreal maxX = minX;
+    qreal minY = m_points[0].y();
+    qreal maxY = minY;
+
+    for (const QPointF &pt : m_points) {
+        minX = qMin(minX, pt.x());
+        maxX = qMax(maxX, pt.x());
+        minY = qMin(minY, pt.y());
+        maxY = qMax(maxY, pt.y());
+    }
+
+    return QRectF(minX - penWidth, minY - penWidth, maxX - minX + 2 * penWidth, maxY - minY + 2 * penWidth);
+}
+
+bool Curve::contains(const QPointF &point) const
+{
+    constexpr qreal tolerance = 8.0;
+    QVector2D pt(point);
+
+    for (int i = 0; i < m_points.size() - 1; ++i) {
+        QVector2D p1(m_points[i]);
+        QVector2D p2(m_points[i + 1]);
+        QVector2D v = p2 - p1;
+        QVector2D w = pt - p1;
+
+        float c1 = QVector2D::dotProduct(w, v);
+        if (c1 <= 0) {
+            if ((pt - p1).length() <= tolerance) return true;
+            continue;
+        }
+        float c2 = QVector2D::dotProduct(v, v);
+        if (c2 <= c1) {
+            if ((pt - p2).length() <= tolerance) return true;
+            continue;
+        }
+        float b = c1 / c2;
+        QVector2D pb = p1 + b * v;
+        if ((pt - pb).length() <= tolerance) return true;
+    }
+    return false;
+}
+
+void Curve::mousePressEvent(QMouseEvent *event)
+{
+    if (contains(event->pos())) {
+        qDebug() << "Curve clicked at" << event->pos();
+        emit curveClicked();
+        event->accept();
+    } else {
+        event->ignore();
+    }
 }

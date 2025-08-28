@@ -11,11 +11,21 @@
 #include <QColor>
 #include "Constants.h"
 #include "Mobjects/Mobject.h"
+#include <QHash>
 
 class Scene : public QQuickItem
 {
     Q_OBJECT
     QML_ELEMENT
+    Q_PROPERTY(int activeMobject READ getActiveMobject WRITE setActiveMobject NOTIFY activeMobjectChanged)
+private:
+
+    int total_mobj;
+    int active_m_id=-1;
+    QColor bgcol;
+    QHash<int,Mobject*> m_objects;
+
+
 public:
     Scene() ;
     ~Scene();
@@ -29,17 +39,21 @@ public:
 
     QPointF p2c(QPointF p);
     QPointF c2p(QPointF c);
-private:
-    // QList<Mobject*> m_objects;
-    int size;
-    QColor bgcol;
 
+    int getActiveMobject() const { return active_m_id; }
+    void setActiveMobject(int val) {
+        if (active_m_id != val) {
+            active_m_id = val;
+            emit activeMobjectChanged(active_m_id);
+        }
+    }
 
 protected:
     QSGNode* updatePaintNode(QSGNode* oldNode, UpdatePaintNodeData*) override;
 
 
 signals:
+    void activeMobjectChanged(int newId);
 };
 
 #endif // SCENE_H

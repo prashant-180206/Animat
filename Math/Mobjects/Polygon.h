@@ -12,7 +12,7 @@ class Polygon : public Group
     Q_OBJECT
     Q_PROPERTY(QColor fillColor READ fillColor WRITE setFillColor NOTIFY fillColorChanged)
 public:
-    explicit Polygon(Scene *canvas = nullptr, QQuickItem *parent = nullptr);
+    explicit Polygon(Scene *canvas, QQuickItem *parent = nullptr);
 
     void setPoints(const QVector<QPointF> &points);
     QVector<QPointF> points() const;
@@ -27,6 +27,10 @@ signals:
 
 protected:
     QSGNode *updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *data) override;
+    bool contains(const QPointF &) const override;
+    QRectF boundingRect() const override;
+
+
 
 private:
     QVector<QPointF> m_points;

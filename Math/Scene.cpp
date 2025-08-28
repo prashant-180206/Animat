@@ -1,15 +1,21 @@
 #include "Scene.h"
 
 #include <QtGui/qopenglfunctions.h>
+// #include "Math/Helper/Text.h"
+// #include "Math/Mobjects/Circle.h"
+// #include "Math/Mobjects/Curve.h"
+// #include "Math/Mobjects/Rectangle.h"
 #include "Math/Mobjects/Circle.h"
 #include "Math/Mobjects/Curve.h"
-#include "Math/Mobjects/Rectangle.h"
+
+#include <Math/Mobjects/line.h>
+// #include "Math/Mobjects/ClickableMobject.h"
 
 
 
 Scene::Scene()
 {
-    size=0;
+    total_mobj =0;
     this->setWidth(DEF_CANVAS_WIDTH);
     this->setHeight(DEF_CANVAS_HEIGHT);
 
@@ -23,28 +29,28 @@ Scene::Scene()
 
 Scene::~Scene()
 {
+    qDeleteAll(m_objects);
+    m_objects.clear();
 
 }
 
 Mobject* Scene::add_mobject(QString mobj)
 {
-    auto *m = new Curve(this,this);
-    m->setParentItem(this);
+    // auto *m = new Curve(this,this);
+    // m->setParentItem(this);
 
-    m->setZ(50);
-    this->setZ(0);
-
-    // auto *m1 = new Line(this,this);
-    // m1->setP1(c2p(QPointF(0,0)));
-    // m1->setP2(c2p(QPointF(100,100)));
-    // m1->update();
-    // m1->setZ(40);
-    // // m1->setHeight(100);
-    // // m1->setWidth(100);
-    // m1->setParentItem(this);
+    auto *l = new Line(this,this);
+    l->setP1(c2p(QPointF(0,0)));
+    l->setP2(c2p(QPointF(200,200)));
 
 
 
+
+    // return rect;
+
+
+
+    auto* m= new Curve(this,this);
     m->setParameterRange(-100, 100);
     m->setSegmentCount(5);
 
@@ -59,22 +65,24 @@ Mobject* Scene::add_mobject(QString mobj)
     m->update();
 
 
-    // auto *poly = new Polygon(this, this);
-    // poly->setParentItem(this);
-    // poly->setZ(50);
-    // this->setZ(0);
+    auto *poly = new Polygon(this, this);
+    poly->setParentItem(this);
+    poly->setZ(50);
+    this->setZ(0);
 
-    // QVector<QPointF> points = {
-    //     c2p(QPointF(0, 0)),
-    //     c2p(QPointF(100, 0)),
-    //     c2p(QPointF(100, 100)),
-    //     c2p(QPointF(0, 100)),
+    QVector<QPointF> points = {
+        c2p(QPointF(0, 0)),
+        c2p(QPointF(100, 0)),
+        c2p(QPointF(100, 100)),
+        c2p(QPointF(0, 100)),
 
-    // };
-    // poly->setPoints(points);
-    // poly->setFillColor(QColor(255, 100, 100, 150));  // semi-transparent red fill
-    // poly->buildPolygon();
-    // poly->update();
+    };
+    poly->setPoints(points);
+    poly->setWidth(200);
+    poly->setHeight(200);
+    poly->setFillColor(QColor(255, 100, 100, 150));  // semi-transparent red fill
+    poly->buildPolygon();
+    poly->update();
 
     auto *circle = new Circle(this, this);
     circle->setParentItem(this);
@@ -87,23 +95,54 @@ Mobject* Scene::add_mobject(QString mobj)
 
     circle->update();
 
-    auto *rect = new Rectangle(this, this);
-    rect->setParentItem(this);
-    rect->setZ(50);
+    connect(circle, &ClickableMobject::clicked, this, [=, this]{
+        qDebug() << "Scene received Circle click, id:" << total_mobj;
+    });
+
+    auto *grp = new Group(this, this);
+    grp->setParentItem(this);
+    grp->setZ(50);
+    grp->setX(200);
+    grp->setY(200);
     this->setZ(0);
-
-    rect->setRectWidth(200);
-    rect->setRectHeight(120);
-    rect->setFillColor(QColor(150, 255, 150, 150));  // semi-transparent green fill
-
-    rect->update();
+    grp->setWidth(100);
+    grp->setHeight(100);
 
 
-    return m;
+    // Smoothness of approximation
+    // grp->setFillColor(QColor(100, 150, 255, 150));  // semi-transparent blue fill
+
+    grp->update();
+
+    connect(grp, &ClickableMobject::clicked, this, [=, this]{
+        qDebug() << "Scene received Circle click, id:" << total_mobj;
+    });
+
+    return grp;
+
+    // auto *rect = new Rectangle(this, this);
+    // rect->setParentItem(this);
+    // rect->setZ(50);
+    // this->setZ(0);
+
+    // rect->setRectWidth(200);
+    // rect->setRectHeight(120);
+    // rect->setFillColor(QColor(150, 255, 150, 150));  // semi-transparent green fill
+
+    // rect->update();
+
+    // // Create a new TextMobject instance as child of current item
+    // Text *label = new Text(this,this);
+    // label->setText("Hello QtQuick! \n qwertyuiop");
+    // label->setColor(Qt::white);
+    // label->setFontSize(12);
+    // label->setPosition(c2p(QPointF(0,0)));
+
+    // // Request update if needed
+    // label->update();
+
+
 }
-
-
-
 
 
 QPointF Scene::p2c(QPointF p)

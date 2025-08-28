@@ -2,22 +2,23 @@
 #define GROUP_H
 
 #include <QQuickItem>
+#include "Math/Helper/ClickableMobject.h"
 #include "Mobject.h"
 
-class Group : public Mobject
+class Group : public ClickableMobject
 {
     Q_OBJECT
     Q_PROPERTY(int spacing READ spacing WRITE setSpacing NOTIFY spacingChanged)
 
 public:
-    explicit Group(Scene* canvas=nullptr,QQuickItem *parent = nullptr);
+    explicit Group(Scene* canvas,QQuickItem *parent = nullptr);
 
     int spacing() const;
     void setSpacing(int spacing);
 
-    Q_INVOKABLE void arrange();
-    Q_INVOKABLE void addMember(Mobject *item);
-    Q_INVOKABLE void removeMember(Mobject *item);
+    void arrange();
+    void addMember(Mobject *item);
+    void removeMember(Mobject *item);
 
 signals:
     void spacingChanged();
