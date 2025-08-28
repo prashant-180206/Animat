@@ -13,25 +13,23 @@ class Mobject : public QQuickItem
 
     Q_PROPERTY(int id READ getId WRITE setId NOTIFY idChanged FINAL)
 
+
 private:
     int m_id = 0;
     Scene* m_canvas = nullptr;
+    QPointF center = QPointF(0,0);
 
 public:
     explicit Mobject(Scene* canvas, QQuickItem *parent = nullptr);
 
 
     int getId() const { return m_id; }
-    void setId(int newid) {
-        if (m_id != newid) {
-            m_id = newid;
-            emit idChanged();
-        }
-    }
+    void setId(int newid);
+    Scene* getcanvas();
 
     // Q_INVOKABLE void initialize();
 
-
+    virtual void setCenter(float x,float y);
     QPointF getCenter() const;
     QPointF top() const;
     QPointF bottom() const;

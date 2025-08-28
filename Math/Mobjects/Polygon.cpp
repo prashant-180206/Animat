@@ -1,11 +1,11 @@
 #include "Math/Mobjects/Polygon.h"
-#include "Line.h"
+#include "Math/Mobjects/SimpleLine.h"
 #include <QSGFlatColorMaterial>
 #include <QSGGeometry>
 #include <QSGGeometryNode>
 
 Polygon::Polygon(Scene *canvas, QQuickItem *parent)
-    : Group(canvas, parent), m_fillColor(Qt::transparent), m_fillNode(nullptr)
+    : Group(canvas, parent), m_fillColor(Qt::red), m_fillNode(nullptr)
 {
     setFlag(ItemHasContents, true);
     this->canvas=canvas;
@@ -16,8 +16,12 @@ Polygon::Polygon(Scene *canvas, QQuickItem *parent)
 
 void Polygon::setPoints(const QVector<QPointF> &points)
 {
+
+    // qDebug()<<"Setpoints clled";
     m_points = points;
     buildPolygon();
+    // setHeight(200);
+    // qDebug()<<height()<<width()<<"Outside func";
 }
 
 QVector<QPointF> Polygon::points() const
@@ -43,7 +47,7 @@ void Polygon::buildPolygon()
 {
     // Remove old lines
     for (auto child : childItems()) {
-        if (Line *line = qobject_cast<Line *>(child)) {
+        if (SimpleLine *line = qobject_cast<SimpleLine *>(child)) {
             line->setParentItem(nullptr);
             line->deleteLater();
         }
@@ -52,18 +56,58 @@ void Polygon::buildPolygon()
     if (m_points.size() < 3)
         return;
 
-    // Create lines between consecutive points and closing loop
+    // Calculate bounding rect min/max
+    qreal minX = m_points[0].x();
+    qreal maxX = minX;
+    qreal minY = m_points[0].y();
+    qreal maxY = minY;
+
     int n = m_points.size();
     for (int i = 0; i < n; ++i) {
-        auto *line = new Line(canvas, this);
-        line->setP1(m_points[i]);
-        line->setP2(m_points[(i + 1) % n]);
+        const QPointF& p = m_points[i];
+        if (p.x() < minX) minX = p.x();
+        if (p.x() > maxX) maxX = p.x();
+        if (p.y() < minY) minY = p.y();
+        if (p.y() > maxY) maxY = p.y();
+    }
+
+    QPointF offset(minX, minY);
+
+    // Create translated points without modifying m_points
+    QVector<QPointF> localPoints;
+    localPoints.reserve(n);
+    for (const auto &pt : m_points) {
+        localPoints.append(pt - offset);
+    }
+
+    // Add polygon edges as SimpleLine children
+    for (int i = 0; i < n; ++i) {
+        auto *line = new SimpleLine(canvas, this);
+        line->setP1(localPoints[i]);
+        line->setP2(localPoints[(i + 1) % n]);
         addMember(line);
     }
 
+    // Set geometry based on bounding rect size
     arrange();
+    // Set geometry based on bounding rect size
+    setX(offset.x());
+    setY(offset.y());
+
+    qreal w = maxX - minX;
+    qreal h = maxY - minY;
+
+    // qDebug() << w << h << "Calculated";
+
+    setWidth(w);
+    setHeight(h);
+
+    // qDebug() << implicitWidth() << implicitHeight();
+
+
     update();
 }
+
 
 QSGNode *Polygon::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 {

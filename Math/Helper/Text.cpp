@@ -6,7 +6,7 @@
 
 
 Text::Text(Scene *canvas, QQuickItem *parent)
-    : Mobject(canvas, parent),
+    : ClickableMobject(canvas, parent),
     m_text("Hello World"),
     m_color(Qt::white),
     m_fontSize(24)

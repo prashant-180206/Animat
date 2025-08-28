@@ -2,16 +2,22 @@
 
 
 Line::Line(Scene* canvas,QQuickItem* parent) :ClickableMobject(canvas,parent){
-    if (parent) {
 
-    }
+
+
+    setP1(canvas->c2p(QPointF(-1,1)));
+    setP2(canvas->c2p(QPointF(1,1)));
+
     setFlag(ItemHasContents, true);
     connect(this, &QQuickItem::windowChanged, this, [this](QQuickWindow* w){
-        if(w) update();
+        if(w){
+            update();
+        }
     });
 }
 
 QPointF Line::p1() const { return m_p1; }
+
 void Line::setP1(const QPointF &pt) {
     if (m_p1 == pt)
         return;
@@ -20,6 +26,7 @@ void Line::setP1(const QPointF &pt) {
     update();
 }
 QPointF Line::p2() const { return m_p2; }
+
 void Line::setP2(const QPointF &pt) {
     if (m_p2 == pt)
         return;
@@ -83,6 +90,26 @@ QRectF Line::boundingRect() const
     rect = rect.normalized();
     rect.adjust(-penWidth, -penWidth, penWidth, penWidth); // Add padding for thickness
     return rect;
+}
+
+void Line::setCenter(float x, float y)
+{
+    QPointF currentCenter = (m_p1 + m_p2) * 0.5;
+    QPointF newCenter(x, y);
+    QPointF offset = newCenter - currentCenter;
+
+    setP1(getcanvas()->c2p((m_p1 + offset)/getcanvas()->scalefactor()));
+    setP2(getcanvas()->c2p((m_p2 + offset)/getcanvas()->scalefactor()));
+}
+
+qreal Line::width() const
+{
+    return boundingRect().width();
+}
+
+qreal Line::height() const
+{
+    return boundingRect().height();
 }
 
 

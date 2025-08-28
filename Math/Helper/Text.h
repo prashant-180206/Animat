@@ -2,11 +2,12 @@
 #define TEXT_H
 
 
+#include "Math/Helper/ClickableMobject.h"
 #include <QColor>
 #include <QString>
-#include <Math/Mobjects/Mobject.h>
+// #include <Math/Mobjects/Mobject.h>
 
-class Text : public Mobject
+class Text : public ClickableMobject
 {
     Q_OBJECT
     Q_PROPERTY(QString text READ text WRITE setText NOTIFY textChanged)

@@ -28,7 +28,7 @@ protected:
     void updatePoints();
 
 private:
-    qreal m_radius = 50.0;
+    qreal m_radius = 1;
     int m_segmentCount = 40;
 };
 

@@ -31,9 +31,11 @@ signals:
 
 protected:
     QSGNode *updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *data) override;
-
     bool contains(const QPointF &point) const override;
     QRectF boundingRect() const override;
+    void setCenter(float x,float y) override;
+    qreal width() const;
+    qreal height() const;
 private:
     QPointF m_p1, m_p2;
 };

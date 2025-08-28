@@ -63,10 +63,13 @@ QSGNode *SimpleLine::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
     QVector2D perp(-dir.y(), dir.x());
     perp *= thickness / 2.0f;
 
-    vertices[0].set(p1_vec.x() + perp.x(), p1_vec.y() + perp.y());
-    vertices[1].set(p1_vec.x() - perp.x(), p1_vec.y() - perp.y());
-    vertices[2].set(p2_vec.x() + perp.x(), p2_vec.y() + perp.y());
-    vertices[3].set(p2_vec.x() - perp.x(), p2_vec.y() - perp.y());
+    // Extend ends by thickness/2 along the line direction
+    QVector2D extension = dir * (thickness / 2.0f);
+
+    vertices[0].set((p1_vec - extension).x() + perp.x(), (p1_vec - extension).y() + perp.y());
+    vertices[1].set((p1_vec - extension).x() - perp.x(), (p1_vec - extension).y() - perp.y());
+    vertices[2].set((p2_vec + extension).x() + perp.x(), (p2_vec + extension).y() + perp.y());
+    vertices[3].set((p2_vec + extension).x() - perp.x(), (p2_vec + extension).y() - perp.y());
 
     node->markDirty(QSGNode::DirtyGeometry);
 

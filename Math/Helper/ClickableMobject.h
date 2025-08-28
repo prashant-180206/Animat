@@ -14,17 +14,20 @@ public:
         setFlag(Mobject::ItemHasContents, true);   // tells Qt we will draw
         setAcceptedMouseButtons(Qt::AllButtons);      // enable mouse input
         qDebug() << "ClickableRect created";
+        m_canvas = canvas;
+
     }
 
 signals:
     void clicked();
 
+private:
+    Scene* m_canvas;
 protected:
 
-
-    // Handle mouse click
     void mousePressEvent(QMouseEvent *event) override {
-        qDebug() << "ClickableRect clicked at:" << event->pos();
+        m_canvas->setActiveMobject(getId());
+        qDebug()<<"Mobject "<<getId()<<" clicked";
         emit clicked();
         event->accept();
     }

@@ -22,6 +22,8 @@ public:
 
     Q_INVOKABLE void buildPolygon();
 
+    // QVector<QPointF> points();
+
 signals:
     void fillColorChanged();
 
@@ -32,6 +34,7 @@ protected:
 
 
 
+    void updateGeometry();
 private:
     QVector<QPointF> m_points;
     QColor m_fillColor;

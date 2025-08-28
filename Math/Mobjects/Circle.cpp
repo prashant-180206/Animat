@@ -43,9 +43,26 @@ void Circle::updatePoints()
     QVector<QPointF> points;
     for (int i = 0; i < m_segmentCount; ++i) {
         double angle = (2 * M_PI * i) / m_segmentCount;
-        double x = m_radius * qCos(angle);
-        double y = m_radius * qSin(angle);
+        double x = m_radius * getcanvas()->scalefactor() * qCos(angle);
+        double y = m_radius * getcanvas()->scalefactor() * qSin(angle);
         points.append(QPointF(x, y));
     }
     setPoints(points);
+
+    // Adjust position and size of the Circle item based on boundingRect
+    QRectF rect = boundingRect();
+    setX(rect.left());
+    setY(rect.top());
+    setWidth(rect.width());
+    setHeight(rect.height());
+
+    // Translate points to local coords (subtract topLeft)
+    QVector<QPointF> localPoints;
+    localPoints.reserve(points.size());
+    for (const QPointF& p : points)
+        localPoints.append(p - rect.topLeft());
+    setPoints(localPoints);
+
+    update();
 }
+

@@ -9,14 +9,30 @@ Mobject::Mobject(Scene *canvas, QQuickItem *parent)
     : QQuickItem(parent)
 {
     m_canvas = canvas;
-    // qDebug()<<"Mobject Created";
-
-
-    setAcceptTouchEvents(true);
-    setAcceptedMouseButtons(Qt::AllButtons);
-    setFlag(QQuickItem::ItemAcceptsInputMethod, true);
-
 }
+
+void Mobject::setId(int newid) {
+    if (m_id != newid) {
+        m_id = newid;
+        emit idChanged();
+    }
+}
+
+Scene *Mobject::getcanvas(){return m_canvas;}
+
+void Mobject::setCenter(float x, float y)
+{
+    QPointF pt = QPointF(x,y);
+    pt = m_canvas->c2p(pt);
+    pt = mapToItem(m_canvas,pt);
+    setX(pt.x()-width()/2);
+    setY(pt.y()-height()/2);
+
+    pt = m_canvas->p2c(pt);
+    center=pt;
+}
+
+
 
 
 QPointF Mobject::getCenter() const

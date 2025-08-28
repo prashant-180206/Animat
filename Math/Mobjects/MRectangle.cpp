@@ -4,6 +4,7 @@ MRectangle::MRectangle(Scene *canvas, QQuickItem *parent)
     : Polygon(canvas, parent)
 {
     setFlag(ItemHasContents, true);
+    // qDebug()<<height()<<width();
     updatePoints();
 }
 

@@ -65,6 +65,7 @@ qt_add_qml_module(appAnimat
         SOURCES Math/Helper/ClickableMobject.h
         SOURCES Math/Mobjects/SimpleLine.h Math/Mobjects/SimpleLine.cpp
         SOURCES
+        SOURCES Utils/mobjectmap.h Utils/mobjectmap.cpp
 # SOURCES lib/include/muParser.h lib/include/muParserBase.h lib/include/muParserBytecode.h lib/include/muParserCallback.h lib/include/muParserDef.h lib/include/muParserDLL.h lib/include/muParserError.h lib/include/muParserFixes.h lib/include/muParserInt.h lib/include/muParserTemplateMagic.h lib/include/muParserTest.h lib/include/muParserToken.h lib/include/muParserTokenReader.h lib/src/muParser.cpp lib/src/muParserBase.cpp lib/src/muParserBytecode.cpp lib/src/muParserCallback.cpp lib/src/muParserDLL.cpp lib/src/muParserError.cpp lib/src/muParserInt.cpp lib/src/muParserTest.cpp lib/src/muParserTokenReader.cpp
 # RESOURCES lib/CMakeLists.txt
 
