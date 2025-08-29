@@ -34,7 +34,7 @@ public:
 
     void setbg(QColor c){bgcol=c;}
     QColor getbg(){return bgcol;};
-    QColor getBorderColor();;
+    QColor getBorderColor();
     int scalefactor();
 
     QPointF p2c(QPointF p);

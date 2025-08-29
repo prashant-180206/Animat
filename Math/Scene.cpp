@@ -1,7 +1,7 @@
 #include "Scene.h"
 
 #include <QtGui/qopenglfunctions.h>
-#include "Constants.h"
+#include "Utils/Constants.h"
 
 #include <Math/Mobjects/line.h>
 #include "Utils/mobjectmap.h"

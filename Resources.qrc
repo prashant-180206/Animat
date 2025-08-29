@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/">
+        <file>assets/icons/circle.svg</file>
+        <file>assets/icons/ellipse.svg</file>
+        <file>assets/icons/matrix.svg</file>
+        <file>assets/icons/plane.svg</file>
+        <file>assets/icons/polygon.svg</file>
+        <file>assets/icons/rect.svg</file>
+        <file>assets/icons/text.svg</file>
+    </qresource>
+</RCC>

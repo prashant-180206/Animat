@@ -17,6 +17,7 @@ Window {
     }
     Menubar {
         id: menu
+
     }
     ControlPanel {
         id: control

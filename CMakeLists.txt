@@ -35,20 +35,20 @@ qt_add_qml_module(appAnimat
     URI Animat
     VERSION 1.0
     QML_FILES
-        Main.qml
+    QML/Main.qml
         SOURCES
         QML_FILES
         QML_FILES
         SOURCES
         QML_FILES
         QML_FILES
-        SOURCES Singleton.h
-        SOURCES Constants.h
-        QML_FILES Components/TitleBar.qml
-        QML_FILES Components/Taskbar.qml
-        QML_FILES Components/Menubar.qml
-        QML_FILES Components/ControlPanel.qml
-        QML_FILES Components/SceneManager.qml
+        SOURCES Utils/Singleton.h
+        SOURCES Utils/Constants.h
+        QML_FILES QML/Components/TitleBar.qml
+        QML_FILES QML/Components/Taskbar.qml
+        QML_FILES QML/Components/Menubar.qml
+        QML_FILES QML/Components/ControlPanel.qml
+        QML_FILES QML/Components/SceneManager.qml
         RESOURCES lib/muparser.pc.in
         RESOURCES lib/muparserConfig.cmake.in
         SOURCES
@@ -66,6 +66,9 @@ qt_add_qml_module(appAnimat
         SOURCES Math/Mobjects/SimpleLine.h Math/Mobjects/SimpleLine.cpp
         SOURCES
         SOURCES Utils/mobjectmap.h Utils/mobjectmap.cpp
+        SOURCES Utils/mobjectregistry.h Utils/mobjectregistry.cpp
+        RESOURCES Resources.qrc
+        SOURCES Math/Helper/ClickableMobject.cpp
 # SOURCES lib/include/muParser.h lib/include/muParserBase.h lib/include/muParserBytecode.h lib/include/muParserCallback.h lib/include/muParserDef.h lib/include/muParserDLL.h lib/include/muParserError.h lib/include/muParserFixes.h lib/include/muParserInt.h lib/include/muParserTemplateMagic.h lib/include/muParserTest.h lib/include/muParserToken.h lib/include/muParserTokenReader.h lib/src/muParser.cpp lib/src/muParserBase.cpp lib/src/muParserBytecode.cpp lib/src/muParserCallback.cpp lib/src/muParserDLL.cpp lib/src/muParserError.cpp lib/src/muParserInt.cpp lib/src/muParserTest.cpp lib/src/muParserTokenReader.cpp
 # RESOURCES lib/CMakeLists.txt
 

@@ -13,11 +13,7 @@ void MobjectMap::init(Scene* canvas)
 {
     if (!map.isEmpty()) return;
     map["Circle"] = [canvas]() { return new Mobject(canvas,canvas); };
-    map["Line"] = [canvas](){
-
-
-        return new Line(canvas,canvas);
-    };
+    map["Line"] = [canvas](){return new Line(canvas,canvas);};
     map["Text"] = [canvas](){return new Text(canvas,canvas);};
     map["Curve"] = [canvas](){return new Curve(canvas,canvas);};
     map["Rectangle"] = [canvas](){return new MRectangle(canvas,canvas);};
