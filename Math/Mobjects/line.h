@@ -6,38 +6,45 @@
 #include <QSGGeometryNode>
 #include <QSGGeometry>
 #include <QSGFlatColorMaterial>
+#include <QColor>
 
 
 class Line : public ClickableMobject  // Inherit from Mobject instead of QQuickItem
 {
     Q_OBJECT
     QML_ELEMENT
-    Q_PROPERTY(QPointF p1 READ p1 WRITE setP1 NOTIFY p1Changed)
-    Q_PROPERTY(QPointF p2 READ p2 WRITE setP2 NOTIFY p2Changed)
+    Q_PROPERTY(qreal Thickness READ Thickness WRITE setThickness NOTIFY ThicknessChanged FINAL)
 
 public:
     explicit Line(Scene* canvas,QQuickItem *parent = nullptr);
 
+    virtual void setCenter(qreal x,qreal y) override;
     QPointF p1() const;
     void setP1(const QPointF &pt);
-
-
     QPointF p2() const;
     void setP2(const QPointF &pt);
 
-signals:
-    void p1Changed();
-    void p2Changed();
+
+    qreal Thickness(){
+        return m_thickness;
+    }
+    void setThickness(qreal thickness){
+        m_thickness= thickness;
+        emit ThicknessChanged();
+    }
 
 protected:
     QSGNode *updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *data) override;
     bool contains(const QPointF &point) const override;
     QRectF boundingRect() const override;
-    void setCenter(float x,float y) override;
+
     qreal width() const;
     qreal height() const;
 private:
     QPointF m_p1, m_p2;
+    qreal m_thickness=4;
+signals:
+    void ThicknessChanged();
 };
 
 #endif // LINE_H

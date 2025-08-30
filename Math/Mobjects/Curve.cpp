@@ -10,11 +10,10 @@ Curve::Curve(Scene *canvas, QQuickItem *parent)
 {
     // Default parabola: y = x^2 parametric
     m_curveFunction = [](double t) {
-        return QPointF(t, t * t);
+        return QPointF(t, 0.2*t * t);
     };
-    m_tStart = -1.0;
-    m_tEnd = 1.0;
-    m_segmentCount = 100;
+    setParameterRange(-2,1);
+    m_segmentCount = segperdis*6;
     setFlag(ItemHasContents, true);
     setAcceptedMouseButtons(Qt::AllButtons);
     buildCurveSegments();
@@ -40,6 +39,10 @@ void Curve::setParameterRange(double tStart, double tEnd)
         emit parameterRangeChanged();
         buildCurveSegments();
     }
+
+    double d =abs(tEnd-tStart);
+    setSegmentCount(floor(segperdis*d));
+
 }
 
 void Curve::setSegmentCount(int count)
@@ -65,7 +68,7 @@ void Curve::buildCurveSegments()
     for (int i = 0; i <= m_segmentCount; ++i) {
         double t = m_tStart + (m_tEnd - m_tStart) * i / m_segmentCount;
         QPointF pt = m_curveFunction(t);
-        // Map to this item's coordinates if needed; here assuming m_curveFunction returns local pos
+        pt = getcanvas()->p2c(pt);
         m_points.append(pt);
     }
 
@@ -73,6 +76,7 @@ void Curve::buildCurveSegments()
         auto *segment = new SimpleLine(canvas, this);
         segment->setP1(m_points[i]);
         segment->setP2(m_points[i + 1]);
+        // segment->set(5);
         addMember(segment);
     }
 
@@ -138,4 +142,5 @@ void Curve::mousePressEvent(QMouseEvent *event)
     } else {
         event->ignore();
     }
+    getcanvas()->setActiveMobjectId(m_id);
 }

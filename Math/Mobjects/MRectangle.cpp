@@ -4,8 +4,9 @@ MRectangle::MRectangle(Scene *canvas, QQuickItem *parent)
     : Polygon(canvas, parent)
 {
     setFlag(ItemHasContents, true);
-    // qDebug()<<height()<<width();
-    updatePoints();
+    updatePoints(m_rectHeight,m_rectWidth,getCenter());
+    setSize(m_rectHeight,m_rectWidth);
+    setCenter(0,2);
 }
 
 qreal MRectangle::rectWidth() const
@@ -18,7 +19,7 @@ void MRectangle::setRectWidth(qreal width)
     if (!qFuzzyCompare(m_rectWidth, width)) {
         m_rectWidth = width;
         emit rectWidthChanged();
-        updatePoints();
+        updatePoints(m_rectHeight,m_rectWidth,getCenter());
         update();
     }
 }
@@ -33,19 +34,21 @@ void MRectangle::setRectHeight(qreal height)
     if (!qFuzzyCompare(m_rectHeight, height)) {
         m_rectHeight = height;
         emit rectHeightChanged();
-        updatePoints();
+        updatePoints(m_rectHeight,m_rectWidth,getCenter());
         update();
     }
 }
 
-void MRectangle::updatePoints()
+void MRectangle::updatePoints(qreal height, qreal width, QPointF center)
 {
     QVector<QPointF> rectPoints = {
-        QPointF(0, 0),
-        QPointF(m_rectWidth, 0),
-        QPointF(m_rectWidth, m_rectHeight),
-        QPointF(0, m_rectHeight)
+        QPointF(center + QPointF(height*2,width/2)),
+        QPointF(center + QPointF(height*2,-width/2)),
+        QPointF(center + QPointF(-height*2,-width/2)),
+        QPointF(center + QPointF(-height*2,width/2)),
     };
+
+    qDebug()<<rectPoints;
 
     setPoints(rectPoints);
 }

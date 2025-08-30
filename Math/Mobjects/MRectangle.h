@@ -25,11 +25,11 @@ signals:
     void rectHeightChanged();
 
 protected:
-    void updatePoints();
+    void updatePoints(qreal height,qreal width , QPointF center);
 
 private:
-    qreal m_rectWidth = 100.0;
-    qreal m_rectHeight = 100.0;
+    qreal m_rectWidth = 2;
+    qreal m_rectHeight = 1;
 };
 
 #endif // MRECTANGLE_H

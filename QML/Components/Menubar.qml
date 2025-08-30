@@ -19,10 +19,10 @@ Rectangle {
         // color:Qt.transparent
         Repeater {
             model: MobjectRegistry {}
-            delegate: Column {
+            delegate: Rectangle {
                 width: 50
-                height: 50
-                // color: Qt.transparent
+                height: 70
+                color: Qt.transparent
 
                 Button {
                     id: i1

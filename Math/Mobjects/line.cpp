@@ -4,9 +4,14 @@
 Line::Line(Scene* canvas,QQuickItem* parent) :ClickableMobject(canvas,parent){
 
 
+    auto p1 =canvas->p2c(QPointF(-1,-1));
+    auto p2 = canvas->p2c(QPointF(1,1));
 
-    setP1(canvas->c2p(QPointF(-1,1)));
-    setP2(canvas->c2p(QPointF(1,1)));
+    qDebug()<<p1<<p2;
+    setP1(p1);
+    setP2(p2);
+
+    setColor(Qt::yellow);
 
     setFlag(ItemHasContents, true);
     connect(this, &QQuickItem::windowChanged, this, [this](QQuickWindow* w){
@@ -14,25 +19,44 @@ Line::Line(Scene* canvas,QQuickItem* parent) :ClickableMobject(canvas,parent){
             update();
         }
     });
+    properties["Name"]="Line";
+    properties.remove("Width");
+    properties.remove("Height");
+    properties.remove("x");
+    properties.remove("y");
+    properties["P1"]=p1;
+    properties["P2"]=p2;
+    properties["Color"]="p";
+
 }
 
 QPointF Line::p1() const { return m_p1; }
 
 void Line::setP1(const QPointF &pt) {
-    if (m_p1 == pt)
-        return;
+    // auto p = getcanvas()->p2c(pt);
     m_p1 = pt;
-    emit p1Changed();
+
     update();
 }
 QPointF Line::p2() const { return m_p2; }
 
 void Line::setP2(const QPointF &pt) {
-    if (m_p2 == pt)
-        return;
+    // auto p = getcanvas()->p2c(pt);
     m_p2 = pt;
-    emit p2Changed();
     update();
+}
+
+void Line::setCenter(qreal x, qreal y)
+{
+    auto offset =  getcanvas()->p2c(QPointF(x,y));
+    auto c =(m_p1 + m_p2)/2;
+    qDebug()<<offset<<"center"<<c <<"offset";
+    offset = offset -c;
+    qDebug()<<m_p1<<m_p2 <<"mps";
+        qDebug()<<offset <<"offset";
+
+    setP2(m_p2 +offset);
+    setP1(m_p1 +offset);
 }
 
 QSGNode *Line::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
@@ -49,7 +73,7 @@ QSGNode *Line::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
         node->setFlag(QSGNode::OwnsGeometry);
 
         QSGFlatColorMaterial *material = new QSGFlatColorMaterial;
-        material->setColor(Qt::white);
+        material->setColor(color());
         node->setMaterial(material);
         node->setFlag(QSGNode::OwnsMaterial);
     }
@@ -62,6 +86,9 @@ QSGNode *Line::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
     QVector2D p2_vec(m_p2);
     QVector2D dir = p2_vec - p1_vec;
 
+    qDebug()<<p1_vec<<p2_vec<<dir;
+    qDebug()<<m_p1<<m_p2<<dir;
+
     if (dir.lengthSquared() < 1e-6) {
         // Avoid drawing zero-length line
         return node;
@@ -69,7 +96,7 @@ QSGNode *Line::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 
     dir.normalize();
 
-    float thickness = 4.0f;
+    float thickness = Thickness();
     QVector2D perp(-dir.y(), dir.x());
     perp *= thickness / 2.0f;
 
@@ -77,11 +104,11 @@ QSGNode *Line::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
     vertices[1].set(p1_vec.x() - perp.x(), p1_vec.y() - perp.y());
     vertices[2].set(p2_vec.x() + perp.x(), p2_vec.y() + perp.y());
     vertices[3].set(p2_vec.x() - perp.x(), p2_vec.y() - perp.y());
-
     node->markDirty(QSGNode::DirtyGeometry);
-
     return node;
 }
+
+
 
 QRectF Line::boundingRect() const
 {
@@ -90,16 +117,6 @@ QRectF Line::boundingRect() const
     rect = rect.normalized();
     rect.adjust(-penWidth, -penWidth, penWidth, penWidth); // Add padding for thickness
     return rect;
-}
-
-void Line::setCenter(float x, float y)
-{
-    QPointF currentCenter = (m_p1 + m_p2) * 0.5;
-    QPointF newCenter(x, y);
-    QPointF offset = newCenter - currentCenter;
-
-    setP1(getcanvas()->c2p((m_p1 + offset)/getcanvas()->scalefactor()));
-    setP2(getcanvas()->c2p((m_p2 + offset)/getcanvas()->scalefactor()));
 }
 
 qreal Line::width() const

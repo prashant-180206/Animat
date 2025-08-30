@@ -39,50 +39,41 @@ void Scene::add_mobject(QString mobj)
 
     m->setParentItem(this);
     m->setId(total_mobj);
-    qDebug()<<""<<m->getCenter();
-    // m->setHeight(200);
-    m->setCenter(0,0); //sending c to set p
-    qDebug()<<""<<m->getCenter();
-    qDebug()<<""<<m->height()<<m->width();
+    m->setCenter(3,0);
     m->setZ(2);
-    // m->setY(200-m->height());
-    // m->setX(200-m->width());
     qDebug()<<m;
-
-    // auto *l= new Line(this,this);
-    // l->setP1(QPointF(0,0));
-    // l->setP2(QPointF(100,100));
-
+    m_objects.insert(total_mobj,m);
     total_mobj++;
 
 }
+
+ClickableMobject *Scene::SelectedMobject(){return active_m_id>=0?m_objects[active_m_id]:nullptr;}
+
 
 QColor Scene::getBorderColor(){return TEXT_LIGHT;}
 
 int Scene::scalefactor(){return gridsize;}
 
 
-QPointF Scene::p2c(QPointF p)
-{
-    double x = p.x()*gridsize - width()/2;
-    double y = -(p.y()*gridsize + height()/2);
-    return QPointF(x,y);
-
-}
-
-QPointF Scene::c2p(QPointF c) {
-    double x =(c.x()*gridsize+width()/2);
-    double y =(-c.y()*gridsize+height()/2);
+QPointF Scene::p2c(QPointF p) {
+    double x = p.x() * gridsize + width() / 2;
+    double y = -p.y() * gridsize + height() / 2;
     return QPointF(x, y);
 }
 
-int Scene::getActiveMobject() const { return active_m_id; }
+QPointF Scene::c2p(QPointF c) {
+    double x = (c.x() - width() / 2) / gridsize;
+    double y = -(c.y() - height() / 2) / gridsize;
+    return QPointF(x, y);
+}
 
-void Scene::setActiveMobject(int val) {
+
+
+void Scene::setActiveMobjectId(int val) {
     if (active_m_id != val) {
         active_m_id = val;
-        emit activeMobjectChanged(active_m_id);
     }
+    emit SelectedMobjectChanged();
 }
 
 QSGNode* Scene::updatePaintNode(QSGNode* oldNode, UpdatePaintNodeData*) {

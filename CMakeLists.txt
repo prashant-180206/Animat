@@ -7,12 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_AUTORCC ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Quick)
-find_package(Qt6 REQUIRED COMPONENTS Quick)
-find_package(Qt6 REQUIRED COMPONENTS Quick)
-find_package(Qt6 REQUIRED COMPONENTS Quick)
-find_package(Qt6 REQUIRED COMPONENTS Quick)
-find_package(Qt6 REQUIRED COMPONENTS Quick)
-find_package(Qt6 REQUIRED COMPONENTS Quick)
+
 
 qt_standard_project_setup(REQUIRES 6.8)
 
@@ -27,8 +22,6 @@ add_subdirectory(lib)
 qt_add_executable(appAnimat
     main.cpp
     Math/Scene.h Math/Scene.cpp
-
-
 )
 
 qt_add_qml_module(appAnimat
@@ -69,9 +62,6 @@ qt_add_qml_module(appAnimat
         SOURCES Utils/mobjectregistry.h Utils/mobjectregistry.cpp
         RESOURCES Resources.qrc
         SOURCES Math/Helper/ClickableMobject.cpp
-# SOURCES lib/include/muParser.h lib/include/muParserBase.h lib/include/muParserBytecode.h lib/include/muParserCallback.h lib/include/muParserDef.h lib/include/muParserDLL.h lib/include/muParserError.h lib/include/muParserFixes.h lib/include/muParserInt.h lib/include/muParserTemplateMagic.h lib/include/muParserTest.h lib/include/muParserToken.h lib/include/muParserTokenReader.h lib/src/muParser.cpp lib/src/muParserBase.cpp lib/src/muParserBytecode.cpp lib/src/muParserCallback.cpp lib/src/muParserDLL.cpp lib/src/muParserError.cpp lib/src/muParserInt.cpp lib/src/muParserTest.cpp lib/src/muParserTokenReader.cpp
-# RESOURCES lib/CMakeLists.txt
-
 )
 
 
@@ -80,11 +70,7 @@ target_link_libraries(appAnimat
 )
 target_link_libraries(appAnimat PRIVATE Qt6::Quick)
 target_link_libraries(appAnimat PRIVATE Qt6::Quick)
-target_link_libraries(appAnimat PRIVATE muparser)
-target_link_libraries(appAnimat PRIVATE Qt6::Quick)
-target_link_libraries(appAnimat PRIVATE Qt6::Quick)
-target_link_libraries(appAnimat PRIVATE Qt6::Quick)
-target_link_libraries(appAnimat PRIVATE Qt6::Quick)
+
 
 include(GNUInstallDirs)
 install(TARGETS appAnimat

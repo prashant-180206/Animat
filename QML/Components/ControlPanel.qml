@@ -14,25 +14,32 @@ Rectangle {
         width: 200
         height: 100
         color: "yellow"
+
+        function mobjectProperties() {
+            if (canvas.SelectedMobject === null) {
+                return "NO MObject Selected"
+            }
+            var props = canvas.SelectedMobject.getProperties()
+            var str = ""
+            for (var key in props) {
+                str += key + ": " + props[key] + "\n"
+            }
+            return str
+        }
+
         Text {
             id: test
-            text: "Hello world"
+            text: rec1.mobjectProperties()
             anchors.fill: parent
+            wrapMode: Text.Wrap
         }
-    }
 
-    Rectangle {
-        color: "white"
-        width: 200
-        height: 100
-        anchors.top: rec1.bottom
         Button {
-            id: btn
-            text: "Add MObject"
-            anchors.fill: parent
+            anchors.top: test.bottom
+            text: "Check Active Mobject"
             onClicked: {
-                var item = canvas.add_mobject("Line");
-                console.log("Mobject added")
+                console.log(canvas.SelectedMobject)
+                console.log("Props:", canvas.SelectedMobject ? canvas.SelectedMobject.getProperties() : "none")
             }
         }
     }

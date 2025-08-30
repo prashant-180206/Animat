@@ -5,42 +5,22 @@
 #include <QSGGeometryNode>
 
 Polygon::Polygon(Scene *canvas, QQuickItem *parent)
-    : Group(canvas, parent), m_fillColor(Qt::red), m_fillNode(nullptr)
+    : Group(canvas, parent),m_fillNode(nullptr)
 {
     setFlag(ItemHasContents, true);
-    this->canvas=canvas;
-    // setFlag(ItemAcceptsInputMethod, true);
-    // setAcceptHoverEvents(true);
-
 }
 
 void Polygon::setPoints(const QVector<QPointF> &points)
 {
-
-    // qDebug()<<"Setpoints clled";
-    m_points = points;
+    for (auto p:points){
+        m_points.append(getcanvas()->p2c(p));
+    }
     buildPolygon();
-    // setHeight(200);
-    // qDebug()<<height()<<width()<<"Outside func";
 }
 
 QVector<QPointF> Polygon::points() const
 {
     return m_points;
-}
-
-QColor Polygon::fillColor() const
-{
-    return m_fillColor;
-}
-
-void Polygon::setFillColor(const QColor &color)
-{
-    if (m_fillColor != color) {
-        m_fillColor = color;
-        emit fillColorChanged();
-        update();
-    }
 }
 
 void Polygon::buildPolygon()
@@ -56,7 +36,6 @@ void Polygon::buildPolygon()
     if (m_points.size() < 3)
         return;
 
-    // Calculate bounding rect min/max
     qreal minX = m_points[0].x();
     qreal maxX = minX;
     qreal minY = m_points[0].y();
@@ -71,40 +50,23 @@ void Polygon::buildPolygon()
         if (p.y() > maxY) maxY = p.y();
     }
 
-    QPointF offset(minX, minY);
-
-    // Create translated points without modifying m_points
-    QVector<QPointF> localPoints;
-    localPoints.reserve(n);
-    for (const auto &pt : m_points) {
-        localPoints.append(pt - offset);
-    }
+    qDebug()<<m_points;
 
     // Add polygon edges as SimpleLine children
     for (int i = 0; i < n; ++i) {
-        auto *line = new SimpleLine(canvas, this);
-        line->setP1(localPoints[i]);
-        line->setP2(localPoints[(i + 1) % n]);
+        auto *line = new SimpleLine(getcanvas(), this);
+        line->setP1(m_points[i]);
+        line->setP2(m_points[(i + 1) % n]);
+        line->setColor(borderColor());
         addMember(line);
     }
 
-    // Set geometry based on bounding rect size
     arrange();
-    // Set geometry based on bounding rect size
-    setX(offset.x());
-    setY(offset.y());
 
     qreal w = maxX - minX;
     qreal h = maxY - minY;
 
-    // qDebug() << w << h << "Calculated";
-
-    setWidth(w);
-    setHeight(h);
-
-    // qDebug() << implicitWidth() << implicitHeight();
-
-
+    setSize(h,w);
     update();
 }
 
@@ -119,8 +81,8 @@ QSGNode *Polygon::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 
     if (!m_fillNode) {
         m_fillNode = new QSGGeometryNode();
-        QSGGeometry *geometry = new QSGGeometry(QSGGeometry::defaultAttributes_Point2D(),
-                                                (m_points.size() - 2) * 3); // number of triangles
+        QSGGeometry *geometry = new QSGGeometry(QSGGeometry::defaultAttributes_Point2D(),(m_points.size() - 2) * 3);
+
         geometry->setDrawingMode(QSGGeometry::DrawTriangles);
         m_fillNode->setGeometry(geometry);
         m_fillNode->setFlag(QSGNode::OwnsGeometry);
@@ -144,7 +106,7 @@ QSGNode *Polygon::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
     }
 
     auto material = static_cast<QSGFlatColorMaterial *>(m_fillNode->material());
-    material->setColor(m_fillColor);
+    material->setColor(color());
 
     m_fillNode->markDirty(QSGNode::DirtyGeometry | QSGNode::DirtyMaterial);
     return m_fillNode;
@@ -152,7 +114,7 @@ QSGNode *Polygon::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 
 bool Polygon::contains(const QPointF &point) const
 {
-    // Accept events everywhere in bounding box (or improve with point-in-polygon)
+
     return boundingRect().contains(point);
 }
 

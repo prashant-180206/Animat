@@ -36,11 +36,13 @@ protected:
     QRectF boundingRect() const override;
     void mousePressEvent(QMouseEvent *event) override;
 
+    // QSGNode *updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *) override;
 private:
     CurveFunc m_curveFunction;
     double m_tStart = 0.0;
     double m_tEnd = 1.0;
-    int m_segmentCount = 100;
+    int m_segmentCount;
+    int segperdis=20;
     Scene *canvas = nullptr;
 
     QVector<QPointF> m_points;
