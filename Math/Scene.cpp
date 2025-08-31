@@ -10,8 +10,10 @@
 Scene::Scene()
 {
     total_mobj =0;
-    this->setWidth(DEF_CANVAS_WIDTH);
-    this->setHeight(DEF_CANVAS_HEIGHT);
+    setWidth(DEF_CANVAS_WIDTH);
+    setHeight(DEF_CANVAS_HEIGHT);
+
+    qDebug()<<height()<<width();
 
     setFlag(ItemHasContents, true);
     setbg(DEF_CANVAS_BG);
@@ -39,10 +41,12 @@ void Scene::add_mobject(QString mobj)
 
     m->setParentItem(this);
     m->setId(total_mobj);
-    m->setCenter(3,0);
+    m->setCenter(5,4);
     m->setZ(2);
-    qDebug()<<m;
+    qDebug()<<m<<m->getCenter();
     m_objects.insert(total_mobj,m);
+
+
     total_mobj++;
 
 }
@@ -56,15 +60,19 @@ int Scene::scalefactor(){return gridsize;}
 
 
 QPointF Scene::p2c(QPointF p) {
-    double x = p.x() * gridsize + width() / 2;
-    double y = -p.y() * gridsize + height() / 2;
-    return QPointF(x, y);
+    double x = p.x() * gridsize ;
+    double y = p.y() * gridsize ;
+    auto res =QPointF(x, y);
+    res = mapToItem(this,res);
+    return res;
 }
 
 QPointF Scene::c2p(QPointF c) {
-    double x = (c.x() - width() / 2) / gridsize;
-    double y = -(c.y() - height() / 2) / gridsize;
-    return QPointF(x, y);
+    c = mapToItem(this,c);
+    double x = (c.x() ) / gridsize;
+    double y = (c.y() ) / gridsize;
+    auto res=QPointF(x, y);
+    return res;
 }
 
 

@@ -8,6 +8,10 @@ Circle::Circle(Scene *canvas, QQuickItem *parent)
     updatePoints();
     setSize(radius()*2,radius()*2);
     setCenter(0,0);
+    properties.remove("Points");
+    properties.remove("Width");
+    properties.remove("Height");
+    properties["Radius"]=radius();
 }
 
 qreal Circle::radius() const
@@ -56,7 +60,7 @@ void Circle::updatePoints()
     // Translate points to local coords (subtract topLeft)
     QVector<QPointF> localPoints;
     localPoints.reserve(points.size());
-    for (const QPointF& p : points)
+    for (const QPointF& p : std::as_const(points))
         localPoints.append(p - position());
     setPoints(localPoints);
 

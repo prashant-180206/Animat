@@ -27,6 +27,7 @@ Line::Line(Scene* canvas,QQuickItem* parent) :ClickableMobject(canvas,parent){
     properties["P1"]=p1;
     properties["P2"]=p2;
     properties["Color"]="p";
+    properties["Thickness"]=Thickness();
 
 }
 
@@ -53,7 +54,7 @@ void Line::setCenter(qreal x, qreal y)
     qDebug()<<offset<<"center"<<c <<"offset";
     offset = offset -c;
     qDebug()<<m_p1<<m_p2 <<"mps";
-        qDebug()<<offset <<"offset";
+    qDebug()<<offset <<"offset";
 
     setP2(m_p2 +offset);
     setP1(m_p1 +offset);

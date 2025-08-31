@@ -4,9 +4,10 @@ MRectangle::MRectangle(Scene *canvas, QQuickItem *parent)
     : Polygon(canvas, parent)
 {
     setFlag(ItemHasContents, true);
-    updatePoints(m_rectHeight,m_rectWidth,getCenter());
+    updatePoints(m_rectHeight/2,m_rectWidth/2,getCenter());
     setSize(m_rectHeight,m_rectWidth);
-    setCenter(0,2);
+    properties.remove("Points");
+    properties["Name"]="Rectangle";
 }
 
 qreal MRectangle::rectWidth() const
@@ -48,7 +49,7 @@ void MRectangle::updatePoints(qreal height, qreal width, QPointF center)
         QPointF(center + QPointF(-height*2,width/2)),
     };
 
-    qDebug()<<rectPoints;
+    // qDebug()<<rectPoints;
 
     setPoints(rectPoints);
 }

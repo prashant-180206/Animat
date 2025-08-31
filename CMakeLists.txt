@@ -7,6 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_AUTORCC ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Quick)
+find_package(Qt6 REQUIRED COMPONENTS Core Quick)
 
 
 qt_standard_project_setup(REQUIRES 6.8)
@@ -62,6 +63,15 @@ qt_add_qml_module(appAnimat
         SOURCES Utils/mobjectregistry.h Utils/mobjectregistry.cpp
         RESOURCES Resources.qrc
         SOURCES Math/Helper/ClickableMobject.cpp
+        SOURCES
+)
+
+target_link_libraries(appAnimat
+    PRIVATE Qt6::Core Qt6::Quick muparser
+)
+
+target_include_directories(appAnimat
+    PRIVATE ${CMAKE_SOURCE_DIR}/lib/include
 )
 
 
@@ -70,6 +80,7 @@ target_link_libraries(appAnimat
 )
 target_link_libraries(appAnimat PRIVATE Qt6::Quick)
 target_link_libraries(appAnimat PRIVATE Qt6::Quick)
+target_link_libraries(appAnimat PRIVATE Qt6::Core Qt6::Quick)
 
 
 include(GNUInstallDirs)

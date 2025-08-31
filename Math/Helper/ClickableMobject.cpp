@@ -8,8 +8,10 @@ ClickableMobject::ClickableMobject(Scene *canvas, QQuickItem *parent)
     setAcceptedMouseButtons(Qt::AllButtons);
     m_canvas=canvas;
     setSize(0,0);
+    properties["Name"]="Mobject";
     properties["x"]=0;
     properties["y"]=0;
+    properties["Color"]=color();
 }
 
 int ClickableMobject::getId() const { return m_id; }
@@ -24,21 +26,20 @@ Scene *ClickableMobject::getcanvas()
     return m_canvas;
 }
 
-void ClickableMobject::setCenter(qreal xval, qreal yval)
+void ClickableMobject::setCenter(qreal xval=0, qreal yval=0)
 {
-    QPointF pt = QPointF(xval,yval);
-    pt = getcanvas()->p2c(pt);
-    pt = mapToItem(m_canvas,pt);
-
-    setX(width()/2-pt.x());
-    setZ(50);
-    setY(height()/2-pt.y());
-
     properties["x"]=xval;
     properties["y"]=yval;
+    QPointF pt = QPointF(xval,yval);
+    pt = getcanvas()->p2c(pt);
+
+    setX(pt.x());
+    setZ(50);
+    setY(pt.y());
 
     center=pt;
 }
+
 
 
 

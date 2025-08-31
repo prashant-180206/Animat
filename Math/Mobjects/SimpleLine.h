@@ -50,7 +50,7 @@ signals:
 
 protected:
     QSGNode *updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *data) override;
-    QColor m_color=Qt::white;
+    QColor m_color=Qt::yellow;
 private:
     QPointF m_p1, m_p2;
     qreal m_thickness=6;

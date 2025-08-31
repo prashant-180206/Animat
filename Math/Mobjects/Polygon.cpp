@@ -8,10 +8,30 @@ Polygon::Polygon(Scene *canvas, QQuickItem *parent)
     : Group(canvas, parent),m_fillNode(nullptr)
 {
     setFlag(ItemHasContents, true);
+    setPoints({
+        QPointF(0,0),
+        QPointF(2,0),
+        QPointF(0,3),
+    });
+
+    if(m_points.size() <10){
+        QVariantList variantList;
+        for (const QPointF &point : std::as_const(m_points)) {
+            variantList.append(QVariant::fromValue(point));
+        }
+        properties["Points"] = variantList;
+    }
+
+    properties["Border Color"]=borderColor();
+    properties["Thickness"]=Thickness();
+    properties["Name"]="Polygon";
+
+
 }
 
 void Polygon::setPoints(const QVector<QPointF> &points)
 {
+    m_points.clear();
     for (auto p:points){
         m_points.append(getcanvas()->p2c(p));
     }
@@ -50,7 +70,7 @@ void Polygon::buildPolygon()
         if (p.y() > maxY) maxY = p.y();
     }
 
-    qDebug()<<m_points;
+    // qDebug()<<m_points;
 
     // Add polygon edges as SimpleLine children
     for (int i = 0; i < n; ++i) {
@@ -66,7 +86,7 @@ void Polygon::buildPolygon()
     qreal w = maxX - minX;
     qreal h = maxY - minY;
 
-    setSize(h,w);
+    setSize(h/getcanvas()->scalefactor(),w/getcanvas()->scalefactor());
     update();
 }
 

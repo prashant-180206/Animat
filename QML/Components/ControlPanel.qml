@@ -12,7 +12,7 @@ Rectangle {
     Rectangle {
         id: rec1
         width: 200
-        height: 100
+        height: 200
         color: "yellow"
 
         function mobjectProperties() {
@@ -40,6 +40,8 @@ Rectangle {
             onClicked: {
                 console.log(canvas.SelectedMobject)
                 console.log("Props:", canvas.SelectedMobject ? canvas.SelectedMobject.getProperties() : "none")
+                canvas.SelectedMobject.x =-50
+                canvas.SelectedMobject.y =-0
             }
         }
     }

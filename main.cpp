@@ -8,6 +8,7 @@
 #include "Math/Mobjects/Mobject.h"
 #include "Utils/mobjectregistry.h"
 #include <QQmlContext>
+// #include "muParser.h"
 
 
 

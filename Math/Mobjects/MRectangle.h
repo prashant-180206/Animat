@@ -28,8 +28,8 @@ protected:
     void updatePoints(qreal height,qreal width , QPointF center);
 
 private:
-    qreal m_rectWidth = 2;
-    qreal m_rectHeight = 1;
+    qreal m_rectWidth = 4;
+    qreal m_rectHeight = 2;
 };
 
 #endif // MRECTANGLE_H
