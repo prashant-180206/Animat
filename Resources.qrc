@@ -7,5 +7,6 @@
         <file>assets/icons/polygon.svg</file>
         <file>assets/icons/rect.svg</file>
         <file>assets/icons/text.svg</file>
+        <file>assets/icon.png</file>
     </qresource>
 </RCC>

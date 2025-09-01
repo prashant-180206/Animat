@@ -2,59 +2,64 @@ import QtQuick 2.15
 import Animat 1.0
 import QtQuick.Controls.Basic
 import QtQuick.Layouts
+import QtQuick.Effects
+import "Elements"
 
 Rectangle {
     id:root
-    color: Qt.transparent
+    color: Constants.darkGrayA
     anchors.top: taskbar.bottom
     anchors.bottom: parent.bottom
     anchors.left: parent.left
     width: 200
 
+    Text {
+        id: txt
+        text: qsTr("Menu")
+        font.pointSize: 14
+        // font.bold: true
+        color: "#5ce1e6"
+        y:30
+        anchors.margins: 20
+        anchors.horizontalCenter: parent.horizontalCenter
+    }
+
     GridLayout {
         id: gridLayout
         columns: 3
-        anchors.centerIn: parent
+        anchors.top:txt.bottom
+        anchors.horizontalCenter: parent.horizontalCenter
         columnSpacing: 15
-        // color:Qt.transparent
+        rowSpacing: 15
+        anchors.margins: 15
         Repeater {
             model: MobjectRegistry {}
-            delegate: Rectangle {
-                width: 50
-                height: 70
-                color: Qt.transparent
+            delegate: MButton{
+                basecolor: root.color
 
-                Button {
-                    id: i1
-                    width: 50
-                    height: 50
-                    icon.source:iconpath
-                    icon.color:"white"
-                    icon.width: 50
-                    icon.height:50
-                    // color: Qt.transparent
-
-
-                    background: Rectangle {
-                        id:bgrec
-                        color: "purple"
-                        radius: 10
-                        anchors.fill: parent
-                    }
-                    onClicked: {
-                        console.log("Btn ", name , "Clicked")
-                        canvas.add_mobject(name)
-                    }
-                }
-                Text {
-                    text: name
-                    color: "white"
-                    anchors.top: i1.bottom
-                    height: 20
-                }
-
+                textval: name
+                path: iconpath
+                callfunc: ()=>{
+                              console.log("QWERTYUIOP", name)
+                              canvas.add_mobject(name)
+                              // console.log(ModelRegistry)
+                          }
             }
         }
+    }
+
+    border.width: 2
+    border.color: Qt.lighter(root.color,1.1)
+
+    RectangularShadow {
+        anchors.fill: root
+        // offset.x: -10
+        // offset.y: -5
+        radius: root.radius
+        // blur: 30
+        spread: 5
+        color: Qt.lighter(root.color)
+        z:-10
     }
 
 }

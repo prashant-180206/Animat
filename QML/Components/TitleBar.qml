@@ -6,6 +6,17 @@ Rectangle{
     anchors.top: parent.top
     width: parent.width
     height: 50
+
+    Image {
+        id: icon
+        source: "qrc:assets/icon"
+        width: 30
+        height: 30
+        anchors{
+            verticalCenter: parent.verticalCenter
+            margins: 10
+        }
+    }
     Text {
         id: titletext
         text: qsTr("Animat - Animation Framework")

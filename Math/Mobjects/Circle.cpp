@@ -12,6 +12,7 @@ Circle::Circle(Scene *canvas, QQuickItem *parent)
     properties.remove("Width");
     properties.remove("Height");
     properties["Radius"]=radius();
+    properties["Name"]="Circle";
 }
 
 qreal Circle::radius() const

@@ -8,6 +8,8 @@ set(CMAKE_AUTORCC ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Quick)
 find_package(Qt6 REQUIRED COMPONENTS Core Quick)
+find_package(Qt6 REQUIRED COMPONENTS Core Quick)
+find_package(Qt6 REQUIRED COMPONENTS Quick)
 
 
 qt_standard_project_setup(REQUIRES 6.8)
@@ -64,6 +66,12 @@ qt_add_qml_module(appAnimat
         RESOURCES Resources.qrc
         SOURCES Math/Helper/ClickableMobject.cpp
         SOURCES
+        QML_FILES QML/Components/Elements/MButton.qml
+        QML_FILES QML/Components/Elements/InputMap.qml
+        QML_FILES QML/Components/Elements/TextButton.qml
+        SOURCES
+        SOURCES
+        SOURCES Math/Helper/mproperties.h Math/Helper/mproperties.cpp
 )
 
 target_link_libraries(appAnimat
@@ -81,6 +89,8 @@ target_link_libraries(appAnimat
 target_link_libraries(appAnimat PRIVATE Qt6::Quick)
 target_link_libraries(appAnimat PRIVATE Qt6::Quick)
 target_link_libraries(appAnimat PRIVATE Qt6::Core Qt6::Quick)
+target_link_libraries(appAnimat PRIVATE Qt6::Core Qt6::Quick)
+target_link_libraries(appAnimat PRIVATE Qt6::Quick)
 
 
 include(GNUInstallDirs)
