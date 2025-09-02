@@ -3,53 +3,41 @@
 MRectangle::MRectangle(Scene *canvas, QQuickItem *parent)
     : Polygon(canvas, parent)
 {
+
     setFlag(ItemHasContents, true);
-    updatePoints(m_rectHeight/2,m_rectWidth/2,getCenter());
-    setSize(m_rectHeight,m_rectWidth);
-    properties.remove("Points");
-    properties["Name"]="Rectangle";
+    auto position = properties->pos();
+    properties->setSize({2,4});
+
+
+    updatePoints(properties->size().first/2,properties->size().second/2,position);
+    properties->setName("Rectangle");
+
+    // connect(properties, &MProperties::sizeChanged,
+    //         this, [this](const QPair<qreal, qreal> &sz) {
+    //             auto p =properties->pos();
+    //             m_rectHeight = sz.first;
+    //             m_rectWidth  = sz.second;
+    //             updatePoints(m_rectHeight/2,m_rectWidth/2,p);
+    //         });
+
+
+    buildPolygon();
+
 }
 
-qreal MRectangle::rectWidth() const
-{
-    return m_rectWidth;
-}
 
-void MRectangle::setRectWidth(qreal width)
+void MRectangle::updatePoints(qreal height, qreal width, QPointF &center)
 {
-    if (!qFuzzyCompare(m_rectWidth, width)) {
-        m_rectWidth = width;
-        emit rectWidthChanged();
-        updatePoints(m_rectHeight,m_rectWidth,getCenter());
-        update();
-    }
-}
-
-qreal MRectangle::rectHeight() const
-{
-    return m_rectHeight;
-}
-
-void MRectangle::setRectHeight(qreal height)
-{
-    if (!qFuzzyCompare(m_rectHeight, height)) {
-        m_rectHeight = height;
-        emit rectHeightChanged();
-        updatePoints(m_rectHeight,m_rectWidth,getCenter());
-        update();
-    }
-}
-
-void MRectangle::updatePoints(qreal height, qreal width, QPointF center)
-{
-    QVector<QPointF> rectPoints = {
+    // height= height * getcanvas()->scalefactor();
+    // width= width * getcanvas()->scalefactor();
+    QList<QPointF> rectPoints = {
         QPointF(center + QPointF(height*2,width/2)),
         QPointF(center + QPointF(height*2,-width/2)),
         QPointF(center + QPointF(-height*2,-width/2)),
         QPointF(center + QPointF(-height*2,width/2)),
     };
 
-    // qDebug()<<rectPoints;
+    qDebug()<<rectPoints<<"Setting End Points";
 
-    setPoints(rectPoints);
+    properties->setEndPoints(rectPoints);
 }

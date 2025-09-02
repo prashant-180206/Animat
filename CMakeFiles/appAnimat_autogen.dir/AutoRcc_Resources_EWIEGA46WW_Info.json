@@ -1,0 +1,32 @@
+{
+	"BUILD_DIR" : "C:/Users/prash/Projects/Animat/appAnimat_autogen",
+	"CMAKE_BINARY_DIR" : "C:/Users/prash/Projects/Animat",
+	"CMAKE_CURRENT_BINARY_DIR" : "C:/Users/prash/Projects/Animat",
+	"CMAKE_CURRENT_SOURCE_DIR" : "C:/Users/prash/Projects/Animat",
+	"CMAKE_SOURCE_DIR" : "C:/Users/prash/Projects/Animat",
+	"CROSS_CONFIG" : false,
+	"GENERATOR" : "Ninja",
+	"INCLUDE_DIR" : "C:/Users/prash/Projects/Animat/appAnimat_autogen/include",
+	"INPUTS" : 
+	[
+		"C:/Users/prash/Projects/Animat/assets/icon.png",
+		"C:/Users/prash/Projects/Animat/assets/icons/matrix.svg",
+		"C:/Users/prash/Projects/Animat/assets/icons/rect.svg",
+		"C:/Users/prash/Projects/Animat/assets/icons/polygon.svg",
+		"C:/Users/prash/Projects/Animat/assets/icons/ellipse.svg",
+		"C:/Users/prash/Projects/Animat/assets/icons/plane.svg",
+		"C:/Users/prash/Projects/Animat/assets/icons/circle.svg",
+		"C:/Users/prash/Projects/Animat/assets/icons/text.svg"
+	],
+	"LOCK_FILE" : "C:/Users/prash/Projects/Animat/CMakeFiles/appAnimat_autogen.dir/AutoRcc_Resources_EWIEGA46WW_Lock.lock",
+	"MULTI_CONFIG" : false,
+	"OPTIONS" : [ "--no-zstd", "-name", "Resources" ],
+	"OUTPUT_CHECKSUM" : "EWIEGA46WW",
+	"OUTPUT_NAME" : "qrc_Resources.cpp",
+	"RCC_EXECUTABLE" : "C:/Qt/6.9.1/mingw_64/bin/rcc.exe",
+	"RCC_LIST_OPTIONS" : [ "--list" ],
+	"SETTINGS_FILE" : "C:/Users/prash/Projects/Animat/CMakeFiles/appAnimat_autogen.dir/AutoRcc_Resources_EWIEGA46WW_Used.txt",
+	"SOURCE" : "C:/Users/prash/Projects/Animat/Resources.qrc",
+	"USE_BETTER_GRAPH" : true,
+	"VERBOSITY" : 0
+}

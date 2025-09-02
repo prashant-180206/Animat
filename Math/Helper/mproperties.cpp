@@ -14,6 +14,8 @@ QPair<qreal, qreal> MProperties::size() const { return m_size; }
 
 QColor MProperties::color() const { return m_color; }
 
+QColor MProperties::borderColor() const{return m_bordercolor;}
+
 QPair<QPointF, QPointF> MProperties::linePoints() const { return m_linepoints; }
 
 qreal MProperties::thickness() const { return m_thickness; }
@@ -56,6 +58,14 @@ void MProperties::setColor(const QColor &color) {
     }
 }
 
+void MProperties::setBorderColor(const QColor &color){
+    if (m_bordercolor != color) {
+        m_bordercolor = color;
+        emit borderColorChanged();
+    }
+
+}
+
 void MProperties::setLinePoints(const QPair<QPointF, QPointF> &points) {
     if (m_linepoints != points) {
         m_linepoints = points;
@@ -88,6 +98,14 @@ void MProperties::setTRange(const QPair<qreal, qreal> &range) {
     if (m_tRange != range) {
         m_tRange = range;
         emit tRangeChanged();
+    }
+}
+
+void MProperties::setSegments(int segments)
+{
+    if (m_segments != segments) {
+        m_segments = segments;
+        emit segmentsChanged();
     }
 }
 

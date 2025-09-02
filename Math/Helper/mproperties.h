@@ -27,26 +27,30 @@ class MProperties : public QObject
     Q_PROPERTY(QString curveXFunc READ curveXFunc WRITE setCurveXFunc NOTIFY curveXFuncChanged)
     Q_PROPERTY(QString curveYFunc READ curveYFunc WRITE setCurveYFunc NOTIFY curveYFuncChanged)
     Q_PROPERTY(QPair<qreal, qreal> tRange READ tRange WRITE setTRange NOTIFY tRangeChanged)
+    Q_PROPERTY(int segments READ segments WRITE setSegments NOTIFY segmentsChanged FINAL)
 
     // Polygon
     Q_PROPERTY(QList<QPointF> endPoints READ endPoints WRITE setEndPoints NOTIFY endPointsChanged)
+    Q_PROPERTY(QColor borderColor READ borderColor WRITE setBorderColor NOTIFY borderColorChanged FINAL)
 
     // Circle
     Q_PROPERTY(qreal radius READ radius WRITE setRadius NOTIFY radiusChanged)
 
 public:
-    explicit MProperties(QObject *parent = nullptr);
+    MProperties(QObject *parent = nullptr);
 
     // Getters
     QString name() const;
     QPointF pos() const;
     QPair<qreal, qreal> size() const;
     QColor color() const;
+    QColor borderColor() const ;
     QPair<QPointF, QPointF> linePoints() const;
     qreal thickness() const;
     QString curveXFunc() const;
     QString curveYFunc() const;
     QPair<qreal, qreal> tRange() const;
+    int segments(){return m_segments;};
     QList<QPointF> endPoints() const;
     qreal radius() const;
 
@@ -56,15 +60,18 @@ public:
     void setPos(const QPointF &pos);
     void setSize(const QPair<qreal, qreal> &size);
     void setColor(const QColor &color);
-    void setLinePoints(const QPair<QPointF, QPointF> &points);
+    void setBorderColor(const QColor &color);
+    Q_INVOKABLE void setLinePoints(const QPair<QPointF, QPointF> &points);
     void setThickness(qreal thickness);
     void setCurveXFunc(const QString &func);
     void setCurveYFunc(const QString &func);
-    void setTRange(const QPair<qreal, qreal> &range);
+    Q_INVOKABLE void setTRange(const QPair<qreal, qreal> &range);
+    void setSegments(int segments);
     void setEndPoints(const QList<QPointF> &points);
     void setRadius(qreal radius);
 
 signals:
+
     void nameChanged();
     void posChanged();
     void sizeChanged();
@@ -74,21 +81,25 @@ signals:
     void curveXFuncChanged();
     void curveYFuncChanged();
     void tRangeChanged();
+    void segmentsChanged();
     void endPointsChanged();
     void radiusChanged();
+    void borderColorChanged();
 
 private:
     QString m_Name = "Mobject";
     QPointF m_pos{0,0};
     QPair<qreal, qreal> m_size{0,0};
     QColor m_color = Qt::transparent;
+    QColor m_bordercolor = Qt::white;
     QPair<QPointF, QPointF> m_linepoints{{0,0},{0,0}};
     qreal m_thickness = 0;
-    QString m_Curve_X_func = "";
-    QString m_Curve_Y_func = "";
+    QString m_Curve_X_func="";
+    QString m_Curve_Y_func ="";
     QPair<qreal, qreal> m_tRange{0,0};
     QList<QPointF> m_endPoints = {};
     qreal m_radius = 0;
+    int m_segments=30;
 };
 
 #endif // MPROPERTIES_H

@@ -2,119 +2,91 @@
 #include "Math/Mobjects/SimpleLine.h"
 #include <QVector2D>
 #include <QDebug>
+#include <QtGlobal>
+
+
 
 Curve::Curve(Scene *canvas, QQuickItem *parent)
-    : Group(canvas, parent), canvas(canvas)
+    : Group(canvas, parent)
 {
-    // Initialize muParser variables
+    // qDebug() << "[Curve::Ctor] start";
+
+    // 1) Set defaults on properties **before** wiring expressions.
+    properties->setCurveXFunc("t");
+    properties->setCurveYFunc("-0.2*t^2");
+    properties->setName("Function");
+    properties->setTRange({-3, 3});
+    properties->setSegments(30);
+
+    // 2) Initialize muParser and bind 't'
     m_parserX.DefineVar(L"t", &m_tVal);
     m_parserY.DefineVar(L"t", &m_tVal);
 
-    m_parserX.SetExpr(Xfunc().toStdWString());
-    m_parserY.SetExpr(Yfunc().toStdWString());
+    // Set the expressions from properties (now guaranteed to be non-empty)
+    m_parserX.SetExpr(properties->curveXFunc().toStdWString());
+    m_parserY.SetExpr(properties->curveYFunc().toStdWString());
 
-    // Set default formulas
-    setXfunc("t");
-    setYfunc("0.2*t^2");
-    properties.remove("Height");
-    properties.remove("Width");
-    properties.remove("x");
-    properties.remove("y");
-    properties["Name"]= "Function";
-    properties["X Func"] = Xfunc();
-    properties["Y Func"]= Yfunc();
-    properties["T Range"]= TRange();
+    // 3) Initialize curve function BEFORE generating segments
+    updateCurveFunction();
 
-    m_segmentCount = segperdis * (m_tRange.y() - m_tRange.x());
+    // Basic visual/QQuickItem setup
+    m_segmentCount = 100;
     setFlag(ItemHasContents, true);
     setAcceptedMouseButtons(Qt::AllButtons);
 
-    buildCurveSegments();
-}
-
-void Curve::setXfunc(const QString &func)
-{
-    if (m_xfunc != func) {
-        m_xfunc = func;
-        try {
-            m_parserX.SetExpr(func.toStdWString());
-            updateCurveFunction();
-            buildCurveSegments();
-            emit XfuncChanged();
-        } catch (mu::Parser::exception_type &e) {
-            qWarning() << "muParser Xfunc error:" << e.GetMsg().c_str();
-        }
-    }
-}
-
-QString Curve::Yfunc() const { return m_yfunc; }
-
-void Curve::setYfunc(const QString &func)
-{
-    if (m_yfunc != func) {
-        m_yfunc = func;
-        try {
-            m_parserY.SetExpr(func.toStdWString());
-            updateCurveFunction();
-            buildCurveSegments();
-            emit YfuncChanged();
-        } catch (mu::Parser::exception_type &e) {
-            qWarning() << "muParser Yfunc error:" << e.GetMsg().c_str();
-        }
-    }
-}
-
-QPointF Curve::TRange() const { return m_tRange; }
-
-
-void Curve::setTRange(const QPointF &range)
-{
-    if (m_tRange != range) {
-        m_tRange = range;
-        m_segmentCount = segperdis * std::abs(m_tRange.y() - m_tRange.x());
+    // 4) Listen for changes to re-build safely
+    connect(properties, &MProperties::curveXFuncChanged, this, [this]{
+        qDebug() << "[Curve] curveXFuncChanged -> rebuild";
+        m_parserX.SetExpr(properties->curveXFunc().toStdWString());
         updateCurveFunction();
         buildCurveSegments();
-        emit TRangeChanged();
-    }
-}
+    });
+    connect(properties, &MProperties::curveYFuncChanged, this, [this]{
+        qDebug() << "[Curve] curveYFuncChanged -> rebuild";
+        m_parserY.SetExpr(properties->curveYFunc().toStdWString());
+        updateCurveFunction();
+        buildCurveSegments();
+    });
+    connect(properties, &MProperties::tRangeChanged, this, [this]{
+        qDebug() << "[Curve] tRangeChanged -> rebuild";
+        buildCurveSegments();
+    });
 
-int Curve::Segments(){return segperdis;}
+    // 5) Build
+    buildCurveSegments();
 
-void Curve::setSegments(int seg){
-    segperdis = seg;
-    emit SegmentsChanged();
+    qDebug() << "[Curve::Ctor] done";
 }
 
 void Curve::updateCurveFunction()
 {
+    // qDebug() << "[Curve::updateCurveFunction] updating functor";
     m_curveFunction = [this](double t) -> QPointF {
         m_tVal = t;
         double x = 0.0;
         double y = 0.0;
-
         try {
             x = m_parserX.Eval();
         } catch (mu::Parser::exception_type &e) {
-            qWarning() << "muParser Eval X error:" << e.GetMsg().c_str();
+            qWarning() << "[Curve] muParser Eval X error:" << e.GetMsg().c_str();
+            x = std::numeric_limits<double>::quiet_NaN();
         }
-
         try {
             y = m_parserY.Eval();
         } catch (mu::Parser::exception_type &e) {
-            qWarning() << "muParser Eval Y error:" << e.GetMsg().c_str();
+            qWarning() << "[Curve] muParser Eval Y error:" << e.GetMsg().c_str();
+            y = std::numeric_limits<double>::quiet_NaN();
         }
-
         return QPointF(x, y);
     };
 }
 
 void Curve::setCurveFunction(const CurveFunc &func)
 {
+    qDebug() << "[Curve::setCurveFunction] external functor set";
     m_curveFunction = func;
     buildCurveSegments();
 }
-
-QString Curve::Xfunc() const { return m_xfunc; }
 
 Curve::CurveFunc Curve::curveFunction() const
 {
@@ -123,39 +95,86 @@ Curve::CurveFunc Curve::curveFunction() const
 
 void Curve::buildCurveSegments()
 {
-    for (auto childObj : childItems()) {
-        if (SimpleLine *line = qobject_cast<SimpleLine *>(childObj)) {
-            line->setParentItem(nullptr);
-            line->deleteLater();
+
+    // Remove old line items (iterate over a copy to avoid iterator invalidation)
+    {
+        const auto childrenCopy = childItems();
+        int removed = 0;
+        for (auto *childObj : childrenCopy) {
+            if (auto *line = qobject_cast<SimpleLine *>(childObj)) {
+                line->setParentItem(nullptr);
+                line->deleteLater();
+                ++removed;
+            }
+        }
+        qDebug() << "[Curve] removed old SimpleLine segments:" << removed;
+    }
+
+    // Generate new points
+    QVector<QPointF> points;
+    auto tr = properties->tRange();
+    const double t0 = tr.first;
+    const double t1 = tr.second;
+
+    qDebug().nospace() << "[Curve] T-range = [" << t0 << ", " << t1
+                       << "], segments=" << m_segmentCount;
+
+    int invalidPts = 0;
+    points.reserve(m_segmentCount + 1);
+    for (int i = 0; i <= m_segmentCount; ++i) {
+        const double t = t0 + ((t1 - t0) / static_cast<double>(m_segmentCount)) * i;
+
+        QPointF pt = m_curveFunction(t);
+
+        // Detect NaN/Inf before projection
+        if (!std::isfinite(pt.x()) || !std::isfinite(pt.y())) {
+            ++invalidPts;
+            continue;
+        }
+
+        // Project to canvas coords
+        QPointF cpt = getcanvas()->p2c(pt);
+
+        if (std::isfinite(cpt.x()) && std::isfinite(cpt.y())) {
+            points.append(cpt);
+        } else {
+            ++invalidPts;
         }
     }
 
-    m_points.clear();
-
-    for (int i = 0; i <= m_segmentCount; ++i) {
-        double t = m_tRange.x() + (m_tRange.y() - m_tRange.x()) * i / m_segmentCount;
-        QPointF pt = m_curveFunction(t);
-        pt = getcanvas()->p2c(pt);
-        m_points.append(pt);
+    // Avoid storing an empty list that would break downstream code
+    if (points.size() < 2) {
+        properties->setEndPoints(points); // still store for transparency
+        update(); // ensure a repaint clears old
+        return;
     }
 
+    // Store points into properties
+    properties->setEndPoints(points);
+    // logPointList(points);
+
+    // Build segments
+    int created = 0;
+    const auto m_points = properties->endPoints();
     for (int i = 0; i < m_points.size() - 1; ++i) {
-        auto *segment = new SimpleLine(canvas, this);
+        auto *segment = new SimpleLine(getcanvas(), this);
         segment->setP1(m_points[i]);
         segment->setP2(m_points[i + 1]);
         addMember(segment);
+        ++created;
     }
-
     arrange();
     update();
 }
 
 QRectF Curve::boundingRect() const
 {
-    if (m_points.isEmpty())
+    const auto m_points = properties->endPoints();
+    if (m_points.isEmpty()) {
         return QRectF();
+    }
 
-    qreal penWidth = 8.0;
+    constexpr qreal penWidth = 8.0;
     qreal minX = m_points[0].x();
     qreal maxX = minX;
     qreal minY = m_points[0].y();
@@ -168,34 +187,42 @@ QRectF Curve::boundingRect() const
         maxY = qMax(maxY, pt.y());
     }
 
-    return QRectF(minX - penWidth, minY - penWidth, maxX - minX + 2 * penWidth, maxY - minY + 2 * penWidth);
+    const QRectF r(minX - penWidth, minY - penWidth,
+                   (maxX - minX) + 2 * penWidth,
+                   (maxY - minY) + 2 * penWidth);
+
+    return r;
 }
 
 bool Curve::contains(const QPointF &point) const
 {
     constexpr qreal tolerance = 8.0;
-    QVector2D pt(point);
+    const QVector2D pt(point);
+    const auto m_points = properties->endPoints();
+
+    if (m_points.size() < 2)
+        return false;
 
     for (int i = 0; i < m_points.size() - 1; ++i) {
-        QVector2D p1(m_points[i]);
-        QVector2D p2(m_points[i + 1]);
-        QVector2D v = p2 - p1;
-        QVector2D w = pt - p1;
+        const QVector2D p1(m_points[i]);
+        const QVector2D p2(m_points[i + 1]);
+        const QVector2D v = p2 - p1;
+        const QVector2D w = pt - p1;
 
-        float c1 = QVector2D::dotProduct(w, v);
+        const float c1 = QVector2D::dotProduct(w, v);
         if (c1 <= 0) {
             if ((pt - p1).length() <= tolerance) return true;
             continue;
         }
 
-        float c2 = QVector2D::dotProduct(v, v);
+        const float c2 = QVector2D::dotProduct(v, v);
         if (c2 <= c1) {
             if ((pt - p2).length() <= tolerance) return true;
             continue;
         }
 
-        float b = c1 / c2;
-        QVector2D pb = p1 + b * v;
+        const float b = c1 / c2;
+        const QVector2D pb = p1 + b * v;
 
         if ((pt - pb).length() <= tolerance) return true;
     }

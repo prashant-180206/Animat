@@ -8,51 +8,49 @@ Polygon::Polygon(Scene *canvas, QQuickItem *parent)
     : Group(canvas, parent),m_fillNode(nullptr)
 {
     setFlag(ItemHasContents, true);
-    setPoints({
+    properties->setEndPoints({
         QPointF(0,0),
         QPointF(2,0),
         QPointF(0,3),
     });
 
-    if(m_points.size() <10){
-        QVariantList variantList;
+    if(properties->endPoints().size() <10){
+        QList<QPointF> variantList;
+        auto m_points = properties->endPoints();
         for (const QPointF &point : std::as_const(m_points)) {
-            variantList.append(QVariant::fromValue(point));
+            variantList.append(point);
         }
-        properties["Points"] = variantList;
+        properties->setEndPoints(variantList);
+
     }
 
-    properties["Border Color"]=borderColor();
-    properties["Thickness"]=Thickness();
-    properties["Name"]="Polygon";
+    qDebug()<<"End Points in constructor polygon "<<properties->endPoints();
 
-
-}
-
-void Polygon::setPoints(const QVector<QPointF> &points)
-{
-    m_points.clear();
-    for (auto p:points){
-        m_points.append(getcanvas()->p2c(p));
-    }
     buildPolygon();
+
+    properties->setBorderColor(Qt::yellow);
+    properties->setName("Polygon");
+    properties->setThickness(4);
+    properties->setColor(Qt::blue);
+
+
 }
 
-QVector<QPointF> Polygon::points() const
-{
-    return m_points;
-}
 
 void Polygon::buildPolygon()
 {
     // Remove old lines
-    for (auto child : childItems()) {
+    auto children =childItems();
+    for (auto child : std::as_const(children)) {
         if (SimpleLine *line = qobject_cast<SimpleLine *>(child)) {
             line->setParentItem(nullptr);
             line->deleteLater();
         }
     }
 
+    auto m_points = properties->endPoints();
+
+    qDebug()<<"Polygon with points "<<m_points;
     if (m_points.size() < 3)
         return;
 
@@ -68,16 +66,18 @@ void Polygon::buildPolygon()
         if (p.x() > maxX) maxX = p.x();
         if (p.y() < minY) minY = p.y();
         if (p.y() > maxY) maxY = p.y();
+
+        m_points[i]=getcanvas()->p2c(m_points[i]);
     }
 
-    // qDebug()<<m_points;
+    // qDebug()<<m_points<<"Calling with Points";
 
     // Add polygon edges as SimpleLine children
     for (int i = 0; i < n; ++i) {
         auto *line = new SimpleLine(getcanvas(), this);
         line->setP1(m_points[i]);
         line->setP2(m_points[(i + 1) % n]);
-        line->setColor(borderColor());
+        line->setColor(properties->borderColor());
         addMember(line);
     }
 
@@ -86,13 +86,20 @@ void Polygon::buildPolygon()
     qreal w = maxX - minX;
     qreal h = maxY - minY;
 
-    setSize(h/getcanvas()->scalefactor(),w/getcanvas()->scalefactor());
+    setSize(h,w);
     update();
 }
 
 
 QSGNode *Polygon::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 {
+
+    auto m_points = properties->endPoints();
+
+    for (int i =0;i<m_points.size();i++){
+        m_points[i]=getcanvas()->p2c(m_points[i]);
+    }
+
     if (m_points.size() < 3) {
         delete m_fillNode;
         m_fillNode = nullptr;
@@ -126,7 +133,7 @@ QSGNode *Polygon::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
     }
 
     auto material = static_cast<QSGFlatColorMaterial *>(m_fillNode->material());
-    material->setColor(color());
+    material->setColor(properties->color());
 
     m_fillNode->markDirty(QSGNode::DirtyGeometry | QSGNode::DirtyMaterial);
     return m_fillNode;
@@ -140,6 +147,8 @@ bool Polygon::contains(const QPointF &point) const
 
 QRectF Polygon::boundingRect() const
 {
+    auto m_points = properties->endPoints();
+
     if (m_points.isEmpty())
         return QRectF();
     qreal minX = m_points.first().x();
@@ -147,11 +156,15 @@ QRectF Polygon::boundingRect() const
     qreal minY = m_points.first().y();
     qreal maxY = minY;
 
-    for (const QPointF& p : m_points) {
-        minX = qMin(minX, p.x());
-        maxX = qMax(maxX, p.x());
-        minY = qMin(minY, p.y());
-        maxY = qMax(maxY, p.y());
+    for (const QPointF& p : std::as_const(m_points)) {
+        auto pt = getcanvas()->p2c(p);
+        minX = qMin(minX, pt.x());
+        maxX = qMax(maxX, pt.x());
+        minY = qMin(minY, pt.y());
+        maxY = qMax(maxY, pt.y());
     }
+
+
+
     return QRectF(minX, minY, maxX - minX, maxY - minY);
 }

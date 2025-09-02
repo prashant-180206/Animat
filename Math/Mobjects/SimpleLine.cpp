@@ -46,6 +46,8 @@ QSGNode *SimpleLine::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
     geometry->allocate(4);
     QSGGeometry::Point2D *vertices = geometry->vertexDataAsPoint2D();
 
+    // qDebug()<<"painting with "<<m_p1<<m_p2;
+
     QVector2D p1_vec(m_p1);
     QVector2D p2_vec(m_p2);
     QVector2D dir = p2_vec - p1_vec;

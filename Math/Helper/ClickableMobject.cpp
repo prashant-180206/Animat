@@ -8,10 +8,11 @@ ClickableMobject::ClickableMobject(Scene *canvas, QQuickItem *parent)
     setAcceptedMouseButtons(Qt::AllButtons);
     m_canvas=canvas;
     setSize(0,0);
-    properties["Name"]="Mobject";
-    properties["x"]=0;
-    properties["y"]=0;
-    properties["Color"]=color();
+    properties->setColor(m_color);
+    properties->setPos(QPoint(0,0));
+    properties->setSize({0,0});
+    properties->setName("Mobject");
+    properties->setParent(this);
 }
 
 int ClickableMobject::getId() const { return m_id; }
@@ -21,17 +22,18 @@ void ClickableMobject::setId(int newid)
     m_id=newid;
 }
 
-Scene *ClickableMobject::getcanvas()
+Scene *ClickableMobject::getcanvas() const
 {
     return m_canvas;
 }
 
-void ClickableMobject::setCenter(qreal xval=0, qreal yval=0)
+void ClickableMobject::setCenter(qreal xval, qreal yval)
 {
-    properties["x"]=xval;
-    properties["y"]=yval;
+    properties->setPos(QPointF(xval,yval));
     QPointF pt = QPointF(xval,yval);
+
     pt = getcanvas()->p2c(pt);
+
 
     setX(pt.x());
     setZ(50);
@@ -42,18 +44,18 @@ void ClickableMobject::setCenter(qreal xval=0, qreal yval=0)
 
 
 
-
 void ClickableMobject::setSize(qreal height, qreal width)
 {
+    properties->setSize({height,width});
     auto h = height *getcanvas()->scalefactor();
     auto w = width *getcanvas()->scalefactor();
     setHeight(h);
     setWidth(w);
-    properties["Height"]=h;
-    properties["Width"]=w;
+
 }
 
-QVariantMap ClickableMobject::getProperties(){return properties;}
+MProperties* ClickableMobject::getProperties(){return properties;}
+
 
 QPointF ClickableMobject::getCenter() const
 {
@@ -82,5 +84,46 @@ QPointF ClickableMobject::right() const
 {
     // Middle of the right edge (x right, y center)
     return QPointF(x() + width(), y() + height() / 2);
+}
+
+ClickableMobject::~ClickableMobject()
+{
+    delete properties;
+    properties = nullptr;
+}
+
+void ClickableMobject::mousePressEvent(QMouseEvent *event) {
+    if (event->button() == Qt::LeftButton) {
+        m_dragging = true;
+        QPointF pressScenePos = event->scenePosition();
+        QPointF pressCanvasPos = m_canvas->mapFromScene(pressScenePos);
+        m_dragItemOffset = pressCanvasPos - QPointF(x(), y());
+        m_canvas->setActiveMobjectId(getId());
+        event->accept();
+    } else {
+        event->ignore();
+    }
+}
+
+void ClickableMobject::mouseMoveEvent(QMouseEvent *event) {
+    if (m_dragging) {
+        QPointF scenePos = event->scenePosition();
+        QPointF canvasPos = m_canvas->mapFromScene(scenePos);
+        QPointF newCanvasPos = canvasPos - m_dragItemOffset;
+        QPointF logicalPos = m_canvas->c2p(newCanvasPos);
+        setCenter(logicalPos.x(), logicalPos.y());
+        event->accept();
+    } else {
+        event->ignore();
+    }
+}
+
+void ClickableMobject::mouseReleaseEvent(QMouseEvent *event) {
+    if (m_dragging && event->button() == Qt::LeftButton) {
+        m_dragging = false;
+        event->accept();
+    } else {
+        event->ignore();
+    }
 }
 

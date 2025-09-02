@@ -72,6 +72,8 @@ qt_add_qml_module(appAnimat
         SOURCES
         SOURCES
         SOURCES Math/Helper/mproperties.h Math/Helper/mproperties.cpp
+        SOURCES
+        QML_FILES QML/Components/Elements/MpropertiesEditor.qml
 )
 
 target_link_libraries(appAnimat

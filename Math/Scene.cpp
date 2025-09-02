@@ -42,7 +42,7 @@ void Scene::add_mobject(QString mobj)
     m->setParentItem(this);
     m->setId(total_mobj);
     m->setCenter(5,4);
-    m->setZ(2);
+    m->setZ(20);
     qDebug()<<m<<m->getCenter();
     m_objects.insert(total_mobj,m);
 

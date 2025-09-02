@@ -12,7 +12,6 @@
 
 
 
-
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
@@ -20,6 +19,8 @@ int main(int argc, char *argv[])
     qmlRegisterType<Scene>("Animat",1,0,"Scene");
     qmlRegisterType<MRectangle>("Animat",1,0,"MRectangle");
     qmlRegisterType<MobjectRegistry>("Animat", 1, 0, "MobjectRegistry");
+    qmlRegisterType<MProperties>("Animat", 1, 0, "MProperties");
+
 
 
     qmlRegisterSingletonType<ConstantsSingleton>("Animat", 1, 0, "Constants", [](QQmlEngine*, QJSEngine*) -> QObject* {

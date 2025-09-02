@@ -1,9 +1,9 @@
 #include "group.h"
 
 Group::Group(Scene* canvas, QQuickItem *parent)
-    : ClickableMobject(canvas, parent), m_spacing(0)
+    : ClickableMobject(canvas, parent)
 {
-    properties["Name"]="Group";
+    properties->setName("Group");
 }
 
 Group::~Group()
@@ -14,18 +14,7 @@ Group::~Group()
     }
 }
 
-int Group::spacing() const
-{
-    return m_spacing;
-}
 
-void Group::setSpacing(int spacing)
-{
-    if (m_spacing == spacing)
-        return;
-    m_spacing = spacing;
-    emit spacingChanged();
-}
 
 void Group::arrange()
 {
@@ -37,13 +26,13 @@ void Group::arrange()
             continue;
 
         child->setY(yPos);
-        yPos += child->height() + m_spacing;
+        yPos += child->height() ;
 
         qreal childWidth = child->width();
         if (childWidth > maxWidth)
             maxWidth = childWidth;
     }
-    qreal h = yPos > 0 ? yPos - m_spacing : 0;
+    qreal h = yPos > 0 ? yPos  : 0;
     setSize(h, maxWidth);
 }
 
@@ -66,9 +55,3 @@ void Group::removeMember(Mobject *item)
     }
 }
 
-// void Group::setCenter(qreal xval, qreal yval)
-// {
-//     qDebug()<<"GROUP CENTER CALLED";
-//     ClickableMobject::setCenter(xval,yval);
-
-// }

@@ -1,4 +1,5 @@
 #pragma once
+#include "Math/Helper/mproperties.h"
 #include "Math/scene.h"
 #include <QQuickItem>
 #include <QSGSimpleRectNode>
@@ -10,25 +11,19 @@
 class ClickableMobject : public Mobject {
 
     Q_OBJECT
-    Q_PROPERTY(QColor color READ color WRITE setColor NOTIFY colorChanged FINAL)
 
 public:
     explicit ClickableMobject(Scene * canvas,QQuickItem *parent = nullptr);
 
     int getId() const;
     void setId(int newid);
-    Scene* getcanvas();
+    Scene* getcanvas() const;
 
     virtual void setCenter(qreal xval, qreal yval);
     void setSize( qreal height,qreal width);
 
-    Q_INVOKABLE QVariantMap getProperties();;
+    Q_INVOKABLE MProperties* getProperties();;
 
-    QColor color(){return m_color;};
-    void setColor(QColor c){
-        m_color= c;
-        emit colorChanged();
-    }
 
     QPointF getCenter() const;
     QPointF top() const;
@@ -36,10 +31,7 @@ public:
     QPointF left() const;
     QPointF right() const;
 
-    virtual ~ClickableMobject() = default;
-
-signals:
- void   colorChanged();
+    virtual ~ClickableMobject();
 
 private:
 
@@ -53,50 +45,13 @@ private:
     QPointF m_itemStartPos;
     QPointF m_localpos;
 
+
 protected:
     int m_id = 0;
+    MProperties* properties = new MProperties(this);
 
-    QVariantMap properties;
-
-
-    void mousePressEvent(QMouseEvent *event) override {
-        if (event->button() == Qt::LeftButton) {
-            m_dragging = true;
-            QPointF pressScenePos = event->scenePosition();
-            QPointF pressCanvasPos = m_canvas->mapFromScene(pressScenePos);
-            m_dragItemOffset = pressCanvasPos - QPointF(x(), y());
-            m_canvas->setActiveMobjectId(getId());
-            event->accept();
-        } else {
-            event->ignore();
-        }
-    }
-
-
-
-    void mouseMoveEvent(QMouseEvent *event) override {
-        if (m_dragging) {
-            QPointF scenePos = event->scenePosition();
-            QPointF canvasPos = m_canvas->mapFromScene(scenePos);
-            QPointF newCanvasPos = canvasPos - m_dragItemOffset;
-            QPointF logicalPos = m_canvas->c2p(newCanvasPos);
-            setCenter(logicalPos.x(), logicalPos.y());
-            event->accept();
-        } else {
-            event->ignore();
-        }
-    }
-
-
-    void mouseReleaseEvent(QMouseEvent *event) override {
-        if (m_dragging && event->button() == Qt::LeftButton) {
-            // auto p =getcanvas()->c2p(event->scenePosition());
-            // setCenter(p.x(),p.y());
-            m_dragging = false;
-            event->accept();
-        } else {
-            event->ignore();
-        }
-    }
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
 
 };

@@ -52,6 +52,7 @@ protected:
     QSGNode *updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *data) override;
     QColor m_color=Qt::yellow;
 private:
+    Scene * m_canvas;
     QPointF m_p1, m_p2;
     qreal m_thickness=6;
 };
