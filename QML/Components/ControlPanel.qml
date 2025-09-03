@@ -35,12 +35,17 @@ Rectangle {
         anchors.horizontalCenter: parent.horizontalCenter
     }
 
+    // Text {
+    //     id: txter
+    //     text: qsTr("text")+mobjectProperties()
+    //     anchors.fill: parent
+    //     color: "white"
+    // }
+
     MpropertiesEditor{
-        id:mprp
         anchors{
             top: txt.bottom
             left: parent.left
-            right: parent.right
         }
     }
 }

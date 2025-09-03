@@ -5,20 +5,23 @@ MRectangle::MRectangle(Scene *canvas, QQuickItem *parent)
 {
 
     setFlag(ItemHasContents, true);
-    auto position = properties->pos();
     properties->setSize({2,4});
 
-
-    updatePoints(properties->size().first/2,properties->size().second/2,position);
+    updatePoints(properties->size().x()/2,properties->size().y()/2);
     properties->setName("Rectangle");
 
-    // connect(properties, &MProperties::sizeChanged,
-    //         this, [this](const QPair<qreal, qreal> &sz) {
-    //             auto p =properties->pos();
-    //             m_rectHeight = sz.first;
-    //             m_rectWidth  = sz.second;
-    //             updatePoints(m_rectHeight/2,m_rectWidth/2,p);
-    //         });
+    connect(properties,&MProperties::sizeChanged,this,[this](auto s){
+        // auto p = properties->pos();
+        auto p = QPointF(0,0);
+        updatePoints(
+            properties->size().x()/2
+            ,properties->size().y()/2
+            );
+        update();
+        properties->setSize(s);
+        // removeAllMembers();
+        updateLines();
+    });
 
 
     buildPolygon();
@@ -26,18 +29,18 @@ MRectangle::MRectangle(Scene *canvas, QQuickItem *parent)
 }
 
 
-void MRectangle::updatePoints(qreal height, qreal width, QPointF &center)
+void MRectangle::updatePoints(qreal height, qreal width)
 {
     // height= height * getcanvas()->scalefactor();
     // width= width * getcanvas()->scalefactor();
     QList<QPointF> rectPoints = {
-        QPointF(center + QPointF(height*2,width/2)),
-        QPointF(center + QPointF(height*2,-width/2)),
-        QPointF(center + QPointF(-height*2,-width/2)),
-        QPointF(center + QPointF(-height*2,width/2)),
+        QPointF(QPointF(height,width)),
+        QPointF(QPointF(height,-width)),
+        QPointF(QPointF(-height,-width)),
+        QPointF(QPointF(-height,width)),
     };
 
     qDebug()<<rectPoints<<"Setting End Points";
 
-    properties->setEndPoints(rectPoints);
+    setPoints(rectPoints);
 }

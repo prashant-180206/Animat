@@ -15,11 +15,12 @@ public:
     explicit Group(Scene* canvas, QQuickItem *parent = nullptr);
     ~Group();  // Destructor to manage children destruction
 
-    void arrange();
     void addMember(Mobject *item);
-    void removeMember(Mobject *item);
+    void removeAllMembers();
 
 private:
+
+    QList<Mobject*> child;
     QRectF m_membersBoundingRect;
 };
 

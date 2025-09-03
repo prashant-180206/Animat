@@ -5,7 +5,7 @@ import Animat 1.0
 
 Item {
     id: root
-    property var mprop : canvas.SelectedMobject ? canvas.SelectedMobject.getProperties() : null
+    property MProperties mprop : canvas.SelectedMobject ? canvas.SelectedMobject.getProperties() : canvas.getProperties()
 
     // Component.onCompleted: {
     //     mprop = canvas.SelectedMobject ? canvas.SelectedMobject.getProperties() : null
@@ -38,20 +38,20 @@ Item {
         // Name: string
         TextField {
             placeholderText: "Name"
-            text: mprop ? (mprop.name || "") : ""
+            text:  mprop.name || ""
             color: inputTextColor
             background: Rectangle {
                 color: inputBackgroundColor
                 radius: 4
                 border.color: borderColor
             }
-            onTextChanged: if(mprop) mprop.name = text
-            visible: mprop !== null
+            onEditingFinished: {
+                if (mprop) mprop.name = text
+            }
         }
 
         // Pos: QPointF {x, y}
         Row {
-            visible: mprop !== null
             spacing: 4
             Label {
                 text: "Pos:"
@@ -61,38 +61,39 @@ Item {
             TextField {
                 width: 50
                 inputMethodHints: Qt.ImhFormattedNumbersOnly
-                text: (mprop && mprop.pos && mprop.pos.x !== undefined) ? mprop.pos.x.toFixed(2) : "0.00"
+                text: Number(mprop.pos.x).toFixed(2)
                 color: inputTextColor
+
                 background: Rectangle {
                     color: inputBackgroundColor
                     radius: 4
                     border.color: borderColor
                 }
-                onTextChanged: {
-                    if (!mprop) return;
+
+                onEditingFinished: {
                     var x = parseFloat(text)
                     if (!isNaN(x)) {
-                        var y = (mprop.pos && mprop.pos.y !== undefined) ? mprop.pos.y : 0
-                        mprop.pos = Qt.point(x, y)
+                        mprop.setPos(Qt.point(x, mprop.pos.y))
                     }
                 }
             }
+
             TextField {
                 width: 50
                 inputMethodHints: Qt.ImhFormattedNumbersOnly
-                text: (mprop && mprop.pos && mprop.pos.y !== undefined) ? mprop.pos.y.toFixed(2) : "0.00"
+                text: Number(mprop.pos.y).toFixed(2)
                 color: inputTextColor
                 background: Rectangle {
                     color: inputBackgroundColor
                     radius: 4
                     border.color: borderColor
                 }
-                onTextChanged: {
-                    if (!mprop) return;
+
+                onEditingFinished: {
                     var y = parseFloat(text)
                     if (!isNaN(y)) {
-                        var x = (mprop.pos && mprop.pos.x !== undefined) ? mprop.pos.x : 0
-                        mprop.pos = Qt.point(x, y)
+                        var x = mprop.pos.x
+                        mprop.setPos(Qt.point(x,y))
                     }
                 }
             }
@@ -108,50 +109,44 @@ Item {
                 width: 30
             }
             TextField {
+                property double xval: mprop.size.x.toFixed(2) || "0.00"
                 width: 50
                 inputMethodHints: Qt.ImhFormattedNumbersOnly
-                text: (mprop && mprop.size && mprop.size.first !== undefined) ? mprop.size.first.toFixed(2) : "0.00"
+                text: xval
                 color: inputTextColor
                 background: Rectangle {
                     color: inputBackgroundColor
                     radius: 4
                     border.color: borderColor
                 }
-                onTextChanged: {
-                    if (!mprop || !mprop.size) return;
+                onEditingFinished: {
                     var first = parseFloat(text)
                     if (!isNaN(first)) {
-                        var second = (mprop.size.second !== undefined) ? mprop.size.second : 0
-                        // Cannot assign plain object if C++ expects std::pair<double,double>
-                        // Use a setter method if available, else try mutating copy if allowed
-                        if (mprop.setSize) {
-                            mprop.setSize(first, second)
-                        } else {
-                            // fallback (may not work if property enforces std::pair)
-                            mprop.size = { first: first, second: second }
-                        }
+                        var second = mprop.size.y
+                        mprop.setSize(Qt.point(first,second))
                     }
                 }
             }
             TextField {
+                property double yval: mprop.size.y.toFixed(2) || "0.00"
                 width: 50
                 inputMethodHints: Qt.ImhFormattedNumbersOnly
-                text: (mprop && mprop.size && mprop.size.second !== undefined) ? mprop.size.second.toFixed(2) : "0.00"
+                text: yval
                 color: inputTextColor
                 background: Rectangle {
                     color: inputBackgroundColor
                     radius: 4
                     border.color: borderColor
                 }
-                onTextChanged: {
+                onEditingFinished: {
                     if (!mprop || !mprop.size) return;
                     var second = parseFloat(text)
                     if (!isNaN(second)) {
-                        var first = (mprop.size.first !== undefined) ? mprop.size.first : 0
+                        var first = (mprop.size.x !== undefined) ? mprop.size.x : 0
                         if (mprop.setSize) {
-                            mprop.setSize(first, second)
+                            mprop.setSize(Qt.point(first,second))
                         } else {
-                            mprop.size = { first: first, second: second }
+                            mprop.setSize(Qt.point(first,second))
                         }
                     }
                 }
@@ -212,14 +207,14 @@ Item {
                     width: 50
                     inputMethodHints: Qt.ImhFormattedNumbersOnly
                     text: (mprop && mprop.linePoints && mprop.linePoints.first && mprop.linePoints.first.x !== undefined)
-                        ? mprop.linePoints.first.x.toFixed(2) : "0.00"
+                          ? mprop.linePoints.first.x.toFixed(2) : "0.00"
                     color: inputTextColor
                     background: Rectangle {
                         color: inputBackgroundColor
                         radius: 4
                         border.color: borderColor
                     }
-                    onTextChanged: {
+                    onEditingFinished: {
                         if (!mprop || !mprop.linePoints || !mprop.linePoints.first) return;
                         var x = parseFloat(text)
                         if (!isNaN(x)) {
@@ -234,14 +229,14 @@ Item {
                     width: 50
                     inputMethodHints: Qt.ImhFormattedNumbersOnly
                     text: (mprop && mprop.linePoints && mprop.linePoints.first && mprop.linePoints.first.y !== undefined)
-                        ? mprop.linePoints.first.y.toFixed(2) : "0.00"
+                          ? mprop.linePoints.first.y.toFixed(2) : "0.00"
                     color: inputTextColor
                     background: Rectangle {
                         color: inputBackgroundColor
                         radius: 4
                         border.color: borderColor
                     }
-                    onTextChanged: {
+                    onEditingFinished: {
                         if (!mprop || !mprop.linePoints || !mprop.linePoints.first) return;
                         var y = parseFloat(text)
                         if (!isNaN(y)) {
@@ -260,14 +255,14 @@ Item {
                     width: 50
                     inputMethodHints: Qt.ImhFormattedNumbersOnly
                     text: (mprop && mprop.linePoints && mprop.linePoints.second && mprop.linePoints.second.x !== undefined)
-                        ? mprop.linePoints.second.x.toFixed(2) : "0.00"
+                          ? mprop.linePoints.second.x.toFixed(2) : "0.00"
                     color: inputTextColor
                     background: Rectangle {
                         color: inputBackgroundColor
                         radius: 4
                         border.color: borderColor
                     }
-                    onTextChanged: {
+                    onEditingFinished: {
                         if (!mprop || !mprop.linePoints || !mprop.linePoints.second) return;
                         var x = parseFloat(text)
                         if (!isNaN(x)) {
@@ -282,14 +277,14 @@ Item {
                     width: 50
                     inputMethodHints: Qt.ImhFormattedNumbersOnly
                     text: (mprop && mprop.linePoints && mprop.linePoints.second && mprop.linePoints.second.y !== undefined)
-                        ? mprop.linePoints.second.y.toFixed(2) : "0.00"
+                          ? mprop.linePoints.second.y.toFixed(2) : "0.00"
                     color: inputTextColor
                     background: Rectangle {
                         color: inputBackgroundColor
                         radius: 4
                         border.color: borderColor
                     }
-                    onTextChanged: {
+                    onEditingFinished: {
                         if (!mprop || !mprop.linePoints || !mprop.linePoints.second) return;
                         var y = parseFloat(text)
                         if (!isNaN(y)) {
@@ -318,7 +313,7 @@ Item {
                     radius: 4
                     border.color: borderColor
                 }
-                onTextChanged: {
+                onEditingFinished: {
                     if (!mprop) return;
                     var val = parseFloat(text)
                     if (!isNaN(val)) mprop.thickness = val
@@ -337,7 +332,9 @@ Item {
                 radius: 4
                 border.color: borderColor
             }
-            onTextChanged: if(mprop) mprop.curveXFunc = text
+            onEditingFinished: {
+                if(mprop) mprop.curveXFunc = text
+            }
         }
 
         // curveYFunc: string
@@ -351,7 +348,9 @@ Item {
                 radius: 4
                 border.color: borderColor
             }
-            onTextChanged: if(mprop) mprop.curveYFunc = text
+            onEditingFinished: {
+                if(mprop) mprop.curveYFunc = text
+            }
         }
 
         // tRange: QPair<qreal, qreal> {first, second}
@@ -369,7 +368,7 @@ Item {
                     radius: 4
                     border.color: borderColor
                 }
-                onTextChanged: {
+                onEditingFinished: {
                     if (!mprop) return;
                     var first = parseFloat(text)
                     if (!isNaN(first)) {
@@ -393,7 +392,7 @@ Item {
                     radius: 4
                     border.color: borderColor
                 }
-                onTextChanged: {
+                onEditingFinished: {
                     if (!mprop) return;
                     var second = parseFloat(text)
                     if (!isNaN(second)) {
@@ -424,7 +423,7 @@ Item {
                     radius: 4
                     border.color: borderColor
                 }
-                onTextChanged: {
+                onEditingFinished: {
                     if(!mprop) return;
                     var val = parseInt(text)
                     if(!isNaN(val)) mprop.segments = val
@@ -490,7 +489,7 @@ Item {
                     radius: 4
                 }
                 contentItem: Text {
-                    text: control.text || ""
+                    text: parent.text
                     anchors.centerIn: parent
                     color: buttonTextColor
                 }
@@ -518,7 +517,7 @@ Item {
                     radius: 4
                     border.color: borderColor
                 }
-                onTextChanged: {
+                onEditingFinished: {
                     if (!mprop) return;
                     var val = parseFloat(text)
                     if (!isNaN(val)) mprop.radius = val

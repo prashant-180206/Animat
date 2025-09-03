@@ -82,6 +82,11 @@ target_link_libraries(appAnimat
 
 target_include_directories(appAnimat
     PRIVATE ${CMAKE_SOURCE_DIR}/lib/include
+    PRIVATE ${CMAKE_SOURCE_DIR}/Math
+    PRIVATE ${CMAKE_SOURCE_DIR}/Math/Helper
+    PRIVATE ${CMAKE_SOURCE_DIR}/Math/Mobjects
+    PRIVATE ${CMAKE_SOURCE_DIR}/Math/ValueTracker
+    PRIVATE ${CMAKE_SOURCE_DIR}/Utils
 )
 
 

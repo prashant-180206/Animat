@@ -50,6 +50,7 @@ protected:
     int m_id = 0;
     MProperties* properties = new MProperties(this);
 
+
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;

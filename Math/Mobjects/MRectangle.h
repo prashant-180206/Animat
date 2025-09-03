@@ -13,7 +13,7 @@ public:
     explicit MRectangle(Scene *canvas, QQuickItem *parent = nullptr);
 
 protected:
-    void updatePoints(qreal height,qreal width , QPointF &center);
+    void updatePoints(qreal height,qreal width );
 
 private:
 };

@@ -7,7 +7,7 @@ Circle::Circle(Scene *canvas, QQuickItem *parent)
     setFlag(ItemHasContents, true);
 
     auto r = properties->radius();
-    setSize(2*r,2*r);
+    properties->setSize({2*r,2*r});
     setCenter(0,0);
     properties->setRadius(1);
     properties->setSegments(30);
@@ -25,16 +25,12 @@ void Circle::updatePoints()
         double y = properties->radius() *  qSin(angle);
         points.append((QPointF(x, y)));
     }
-    properties->setEndPoints(points);
 
-    // Adjust position and size of the Circle item based on boundingRect
-
-    // Translate points to local coords (subtract topLeft)
     QVector<QPointF> localPoints;
     localPoints.reserve(points.size());
     for (const QPointF& p : std::as_const(points))
         localPoints.append(p - (position()));
-    properties->setEndPoints(localPoints);
+    setPoints(localPoints);
 
     buildPolygon();
 

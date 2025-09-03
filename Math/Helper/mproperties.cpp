@@ -10,13 +10,13 @@ QString MProperties::name() const { return m_Name; }
 
 QPointF MProperties::pos() const { return m_pos; }
 
-QPair<qreal, qreal> MProperties::size() const { return m_size; }
+QPointF MProperties::size() const { return m_size; }
 
 QColor MProperties::color() const { return m_color; }
 
 QColor MProperties::borderColor() const{return m_bordercolor;}
 
-QPair<QPointF, QPointF> MProperties::linePoints() const { return m_linepoints; }
+// QPair<QPointF, QPointF> MProperties::linePoints() const { return m_linepoints; }
 
 qreal MProperties::thickness() const { return m_thickness; }
 
@@ -24,7 +24,7 @@ QString MProperties::curveXFunc() const { return m_Curve_X_func; }
 
 QString MProperties::curveYFunc() const { return m_Curve_Y_func; }
 
-QPair<qreal, qreal> MProperties::tRange() const { return m_tRange; }
+
 
 QList<QPointF> MProperties::endPoints() const { return m_endPoints; }
 
@@ -37,19 +37,9 @@ void MProperties::setName(const QString &name) {
     }
 }
 
-void MProperties::setPos(const QPointF &pos) {
-    if (m_pos != pos) {
-        m_pos = pos;
-        emit posChanged();
-    }
-}
 
-void MProperties::setSize(const QPair<qreal, qreal> &size) {
-    if (m_size != size) {
-        m_size = size;
-        emit sizeChanged();
-    }
-}
+
+
 
 void MProperties::setColor(const QColor &color) {
     if (m_color != color) {
@@ -66,12 +56,7 @@ void MProperties::setBorderColor(const QColor &color){
 
 }
 
-void MProperties::setLinePoints(const QPair<QPointF, QPointF> &points) {
-    if (m_linepoints != points) {
-        m_linepoints = points;
-        emit linePointsChanged();
-    }
-}
+
 
 void MProperties::setThickness(qreal thickness) {
     if (!qFuzzyCompare(m_thickness, thickness)) {
@@ -94,7 +79,7 @@ void MProperties::setCurveYFunc(const QString &func) {
     }
 }
 
-void MProperties::setTRange(const QPair<qreal, qreal> &range) {
+void MProperties::setTRange(const QPointF &range) {
     if (m_tRange != range) {
         m_tRange = range;
         emit tRangeChanged();

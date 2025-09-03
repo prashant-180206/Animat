@@ -2,6 +2,7 @@
 #define POLYGON_H
 
 #include "Group.h"
+#include "SimpleLine.h"
 #include <QColor>
 #include <QVector>
 #include <QPointF>
@@ -19,14 +20,23 @@ public:
 protected:
     QSGNode *updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *data) override;
     bool contains(const QPointF &) const override;
-    void extracted(QList<QPointF> &m_points, qreal &minX, qreal &maxX,
-                   qreal &minY, qreal &maxY) const;
     QRectF boundingRect() const override;
 
-    void updateGeometry();
+    QList<QPointF> points()const{
+        return m_points;
+    }
+
+    void setPoints(const QList<QPointF> & pts){
+        m_points = pts;
+    }
+
+    void updateLines() ;
+
 private:
 
     QSGGeometryNode *m_fillNode = nullptr;
+    QList<QPointF> m_points;
+    QList<SimpleLine * > m_lines{};
 
 signals:
     void borderColorChanged();

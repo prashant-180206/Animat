@@ -6,11 +6,25 @@ ClickableMobject::ClickableMobject(Scene *canvas, QQuickItem *parent)
 {
     setFlag(Mobject::ItemHasContents, true);
     setAcceptedMouseButtons(Qt::AllButtons);
-    m_canvas=canvas;
-    setSize(0,0);
+    m_canvas = canvas;
+
+    // Only update position when pos changes
+    connect(properties, &MProperties::posChanged, this, [this](const QPointF &newPos){
+        this->setCenter(newPos.x(), newPos.y());
+    });
+    // Only update size when size changes
+    connect(properties, &MProperties::sizeChanged, this, [this](const QPointF &newSize){
+        this->setSize(newSize.x(), newSize.y());
+    });
+    //qwertyuiopqwertyuiopasdfghjklxcvbnmas
+    connect(properties, &MProperties::colorChanged, this, [this]{
+        qDebug() << " rtyuiop colorChanged -> update";
+        update();
+    });
+
     properties->setColor(m_color);
-    properties->setPos(QPoint(0,0));
-    properties->setSize({0,0});
+    properties->setPos(QPoint(0, 0));
+    properties->setSize({0, 0});
     properties->setName("Mobject");
     properties->setParent(this);
 }
@@ -33,8 +47,6 @@ void ClickableMobject::setCenter(qreal xval, qreal yval)
     QPointF pt = QPointF(xval,yval);
 
     pt = getcanvas()->p2c(pt);
-
-
     setX(pt.x());
     setZ(50);
     setY(pt.y());
@@ -51,7 +63,6 @@ void ClickableMobject::setSize(qreal height, qreal width)
     auto w = width *getcanvas()->scalefactor();
     setHeight(h);
     setWidth(w);
-
 }
 
 MProperties* ClickableMobject::getProperties(){return properties;}
@@ -92,6 +103,7 @@ ClickableMobject::~ClickableMobject()
     properties = nullptr;
 }
 
+
 void ClickableMobject::mousePressEvent(QMouseEvent *event) {
     if (event->button() == Qt::LeftButton) {
         m_dragging = true;
@@ -111,7 +123,8 @@ void ClickableMobject::mouseMoveEvent(QMouseEvent *event) {
         QPointF canvasPos = m_canvas->mapFromScene(scenePos);
         QPointF newCanvasPos = canvasPos - m_dragItemOffset;
         QPointF logicalPos = m_canvas->c2p(newCanvasPos);
-        setCenter(logicalPos.x(), logicalPos.y());
+        properties->setPos(logicalPos);
+        // setCenter(logicalPos.x(), logicalPos.y());
         event->accept();
     } else {
         event->ignore();

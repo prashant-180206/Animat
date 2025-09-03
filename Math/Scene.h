@@ -11,6 +11,7 @@
 #include <QColor>
 // #include "Math/Helper/ClickableMobject.h"
 #include "Mobjects/Mobject.h"
+#include "mproperties.h"
 #include <QHash>
 
 class ClickableMobject;
@@ -27,7 +28,7 @@ private:
     int gridsize=50;
     QColor bgcol;
     QHash<int,ClickableMobject*> m_objects;
-
+    MProperties* m_prop = new MProperties(this);
 
 public:
     Scene() ;
@@ -36,9 +37,12 @@ public:
     Q_INVOKABLE void add_mobject(QString mobj);
     ClickableMobject* SelectedMobject();;
 
+    Q_INVOKABLE MProperties * getProperties(){return m_prop;};
+
     void setbg(QColor c){bgcol=c;}
     QColor getbg(){return bgcol;};
     QColor getBorderColor();
+
     int scalefactor();
 
     QPointF p2c(QPointF p);

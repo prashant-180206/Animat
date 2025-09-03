@@ -14,21 +14,17 @@ Line::Line(Scene* canvas,QQuickItem* parent) :ClickableMobject(canvas,parent){
         }
     });
     properties->setName("Line");
-    properties->setLinePoints({p1,p2});
+    properties->setLineStart(p1);
     properties->setColor(Qt::yellow);
     properties->setThickness(4);
     properties->setPos(canvas->c2p((p1+p2)/2));
 
-    connect(properties, &MProperties::linePointsChanged, this, [this]{
+    connect(properties, &MProperties::lineStartChanged ,this, [this]{
         // qDebug() << "[Line] linePointsChanged -> update";
         update();
     });
-    connect(properties, &MProperties::posChanged, this, [this]{
+    connect(properties, &MProperties::lineEndChanged, this, [this]{
         // qDebug() << "[Line] linePointsChanged -> update";
-        update();
-    });
-    connect(properties, &MProperties::colorChanged, this, [this]{
-        qDebug() << "[Line] colorChanged -> update";
         update();
     });
     connect(properties, &MProperties::thicknessChanged, this, [this]{
@@ -37,26 +33,32 @@ Line::Line(Scene* canvas,QQuickItem* parent) :ClickableMobject(canvas,parent){
     });
 
     start_pos=properties->pos();
-    m_p1=properties->linePoints().first;
-    m_p2=properties->linePoints().second;
+    m_p1=properties->lineStart();
+    m_p2=properties->lineEnd();
 
 }
 
 void Line::setCenter(qreal x, qreal y)
 {
     QPointF newCenter(x, y);
-    newCenter = newCenter+start_pos;
     QPointF shift = newCenter - start_pos;
+    m_p1 += shift;
+    m_p2 += shift;
+    start_pos = newCenter;
+    QPointF canvasCenter = getcanvas()->p2c(start_pos);
+    setX(canvasCenter.x());
+    setY(canvasCenter.y());
+    setZ(50);
 
-    properties->setLinePoints({m_p1 + shift, m_p2 + shift});
-    properties->setPos(newCenter);
 }
+
+
 
 void Line::mousePressEvent(QMouseEvent *event)
 {
     start_pos = properties->pos();
-    m_p1 = properties->linePoints().first;
-    m_p2 = properties->linePoints().second;
+    // properties->setLineStart(m_p1);
+    // properties->setLineEnd(m_p2);
     ClickableMobject::mousePressEvent(event);
 }
 
@@ -85,8 +87,8 @@ QSGNode *Line::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
     geometry->allocate(4);
     QSGGeometry::Point2D *vertices = geometry->vertexDataAsPoint2D();
 
-    QVector2D p1_vec(getcanvas()->p2c(properties->linePoints().first));
-    QVector2D p2_vec(getcanvas()->p2c(properties->linePoints().second));
+    QVector2D p1_vec(getcanvas()->p2c(properties->lineStart()));
+    QVector2D p2_vec(getcanvas()->p2c(properties->lineEnd()));
     QVector2D dir = p2_vec - p1_vec;
 
     // qDebug()<<p1_vec<<p2_vec<<dir;
@@ -113,8 +115,8 @@ QSGNode *Line::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 QRectF Line::boundingRect() const
 {
     // We already stored points in canvas coords, so use them directly.
-    QPointF p1 = getcanvas()->c2p(properties->linePoints().first);
-    QPointF p2 = getcanvas()->c2p(properties->linePoints().second);
+    QPointF p1 = getcanvas()->c2p(properties->lineStart());
+    QPointF p2 = getcanvas()->c2p(properties->lineEnd());
 
     QRectF rect(p1, p2);
     rect = rect.normalized();
@@ -125,15 +127,12 @@ QRectF Line::boundingRect() const
     return rect;
 }
 
-
-
-
 bool Line::contains(const QPointF &point) const
 {
     // point is in the same local coordinate system as boundingRect
     QVector2D p(point);
-    QVector2D p1(getcanvas()->p2c(properties->linePoints().first));
-    QVector2D p2(getcanvas()->p2c(properties->linePoints().second));
+    QVector2D p1(getcanvas()->p2c(properties->lineStart()));
+    QVector2D p2(getcanvas()->p2c(properties->lineEnd()));
     QVector2D v = p2 - p1;
     QVector2D w = p - p1;
 

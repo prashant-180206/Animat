@@ -95,8 +95,6 @@ Curve::CurveFunc Curve::curveFunction() const
 
 void Curve::buildCurveSegments()
 {
-
-    // Remove old line items (iterate over a copy to avoid iterator invalidation)
     {
         const auto childrenCopy = childItems();
         int removed = 0;
@@ -110,11 +108,10 @@ void Curve::buildCurveSegments()
         qDebug() << "[Curve] removed old SimpleLine segments:" << removed;
     }
 
-    // Generate new points
     QVector<QPointF> points;
     auto tr = properties->tRange();
-    const double t0 = tr.first;
-    const double t1 = tr.second;
+    const double t0 = tr.x();
+    const double t1 = tr.y();
 
     qDebug().nospace() << "[Curve] T-range = [" << t0 << ", " << t1
                        << "], segments=" << m_segmentCount;
@@ -163,7 +160,6 @@ void Curve::buildCurveSegments()
         addMember(segment);
         ++created;
     }
-    arrange();
     update();
 }
 
