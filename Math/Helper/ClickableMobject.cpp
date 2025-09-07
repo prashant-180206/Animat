@@ -8,17 +8,16 @@ ClickableMobject::ClickableMobject(Scene *canvas, QQuickItem *parent)
     setAcceptedMouseButtons(Qt::AllButtons);
     m_canvas = canvas;
 
-    // Only update position when pos changes
+
     connect(properties, &MProperties::posChanged, this, [this](const QPointF &newPos){
         this->setCenter(newPos.x(), newPos.y());
     });
-    // Only update size when size changes
+
     connect(properties, &MProperties::sizeChanged, this, [this](const QPointF &newSize){
         this->setSize(newSize.x(), newSize.y());
     });
-    //qwertyuiopqwertyuiopasdfghjklxcvbnmas
+
     connect(properties, &MProperties::colorChanged, this, [this]{
-        qDebug() << " rtyuiop colorChanged -> update";
         update();
     });
 

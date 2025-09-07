@@ -25,7 +25,6 @@ Polygon::Polygon(Scene *canvas, QQuickItem *parent)
 
 void Polygon::buildPolygon()
 {
-    // Remove old lines
     for (auto line :std::as_const(m_lines)){
         line->setParentItem(nullptr);
         line->deleteLater();
@@ -35,7 +34,6 @@ void Polygon::buildPolygon()
 
     auto pts = points();
 
-    qDebug()<<"Polygon with points "<<pts;
     if (pts.size() < 3)
         return;
 
@@ -55,58 +53,35 @@ void Polygon::buildPolygon()
         pts[i]=getcanvas()->p2c(pts[i]);
     }
 
-    // qDebug()<<m_points<<"Calling with Points";
-
-    // Add polygon edges as SimpleLine children
     for (int i = 0; i < n; ++i) {
         auto *line = new SimpleLine(getcanvas(), this);
         line->setP1(pts[i]);
         line->setP2(pts[(i + 1) % n]);
-        line->setColor(Qt::yellow);
+        line->setColor(properties->borderColor());
+        line->setThickness(properties->thickness());
         m_lines.append(line);
         addMember(line);
     }
-
-    qreal w = maxX - minX;
-    qreal h = maxY - minY;
-
-    properties->setSize({h,w});
     update();
 }
 
 void Polygon::updateLines()
 {
-    // qInfo() << "UPDATELINES CALLED";
-
     auto pts = points();
     QVector<QPointF> convertedPts;
     for (const QPointF &p : std::as_const(pts)) {
-        convertedPts.append(getcanvas()->p2c(p));  // convert to canvas coords
+        convertedPts.append(getcanvas()->p2c(p));
     }
-
-    // qInfo() << "m_lines size:" << m_lines.size() << "convertedPts size:" << convertedPts.size();
-
-
-    // qInfo() << "points converted";
-
-    // Safety check - skip update if mismatch in points and lines count
     if (m_lines.size() != convertedPts.size()) {
-        // qWarning() << "updateLines: m_lines size and points size mismatch!"
-        //            << "m_lines size:" << m_lines.size()
-        //            << "convertedPts size:" << convertedPts.size();
-        return;  // Avoid out-of-bounds crash
+        return;
     }
-
     for (int i = 0; i < m_lines.size(); ++i) {
         m_lines[i]->setP1(convertedPts[i]);
         m_lines[i]->setP2(convertedPts[(i + 1) % convertedPts.size()]);
+        m_lines[i]->setColor(properties->borderColor());
+        m_lines[i]->setThickness(properties->thickness());
     }
-    // qInfo() << "UPDATELINES End";
 }
-
-
-
-
 
 QSGNode *Polygon::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 {

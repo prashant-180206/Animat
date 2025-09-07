@@ -42,6 +42,7 @@ private:
     mu::Parser m_parserY;
 
     double m_tVal = 0.0;
+    QVector<QPointF> m_cachedPoints;
 };
 
 #endif // CURVE_H

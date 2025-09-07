@@ -2,18 +2,11 @@ import QtQuick 2.15
 import QtQuick.Controls.Basic
 import QtQuick.Dialogs
 import Animat 1.0
+import "Input"
 
 Item {
     id: root
     property MProperties mprop : canvas.SelectedMobject ? canvas.SelectedMobject.getProperties() : canvas.getProperties()
-
-    // Component.onCompleted: {
-    //     mprop = canvas.SelectedMobject ? canvas.SelectedMobject.getProperties() : null
-    //     if (!mprop) {
-    //         mprop = Qt.createQmlObject('import Animat 1.0; MProperties {}', root)
-    //         // or get a suitable default MProperties instance here
-    //     }
-    // }
 
     // Dark theme colors as properties for easy change
     property color backgroundColor: "#121212"
@@ -51,106 +44,22 @@ Item {
         }
 
         // Pos: QPointF {x, y}
-        Row {
-            spacing: 4
-            Label {
-                text: "Pos:"
-                color: labelColor
-                width: 30
-            }
-            TextField {
-                width: 50
-                inputMethodHints: Qt.ImhFormattedNumbersOnly
-                text: Number(mprop.pos.x).toFixed(2)
-                color: inputTextColor
 
-                background: Rectangle {
-                    color: inputBackgroundColor
-                    radius: 4
-                    border.color: borderColor
-                }
-
-                onEditingFinished: {
-                    var x = parseFloat(text)
-                    if (!isNaN(x)) {
-                        mprop.setPos(Qt.point(x, mprop.pos.y))
-                    }
-                }
-            }
-
-            TextField {
-                width: 50
-                inputMethodHints: Qt.ImhFormattedNumbersOnly
-                text: Number(mprop.pos.y).toFixed(2)
-                color: inputTextColor
-                background: Rectangle {
-                    color: inputBackgroundColor
-                    radius: 4
-                    border.color: borderColor
-                }
-
-                onEditingFinished: {
-                    var y = parseFloat(text)
-                    if (!isNaN(y)) {
-                        var x = mprop.pos.x
-                        mprop.setPos(Qt.point(x,y))
-                    }
-                }
-            }
+        PointInput{
+            pt: mprop.pos
+            label: "Pos:"
+            func: ()=>{
+                      mprop.pos = pt2;
+                  }
         }
 
         // Size: QPair<qreal, qreal> {first, second}
-        Row {
-            visible: mprop !== null
-            spacing: 4
-            Label {
-                text: "Size:"
-                color: labelColor
-                width: 30
-            }
-            TextField {
-                property double xval: mprop.size.x.toFixed(2) || "0.00"
-                width: 50
-                inputMethodHints: Qt.ImhFormattedNumbersOnly
-                text: xval
-                color: inputTextColor
-                background: Rectangle {
-                    color: inputBackgroundColor
-                    radius: 4
-                    border.color: borderColor
-                }
-                onEditingFinished: {
-                    var first = parseFloat(text)
-                    if (!isNaN(first)) {
-                        var second = mprop.size.y
-                        mprop.setSize(Qt.point(first,second))
-                    }
-                }
-            }
-            TextField {
-                property double yval: mprop.size.y.toFixed(2) || "0.00"
-                width: 50
-                inputMethodHints: Qt.ImhFormattedNumbersOnly
-                text: yval
-                color: inputTextColor
-                background: Rectangle {
-                    color: inputBackgroundColor
-                    radius: 4
-                    border.color: borderColor
-                }
-                onEditingFinished: {
-                    if (!mprop || !mprop.size) return;
-                    var second = parseFloat(text)
-                    if (!isNaN(second)) {
-                        var first = (mprop.size.x !== undefined) ? mprop.size.x : 0
-                        if (mprop.setSize) {
-                            mprop.setSize(Qt.point(first,second))
-                        } else {
-                            mprop.setSize(Qt.point(first,second))
-                        }
-                    }
-                }
-            }
+        PointInput{
+            pt: mprop.size
+            label: "Size:"
+            func: ()=>{
+                      mprop.size =pt2
+                  }
         }
 
         // Color: QColor
@@ -200,101 +109,19 @@ Item {
             visible: mprop !== null
             spacing: 4
             Label { text: "Line Points:"; color: labelColor }
-            Row {
-                spacing: 4
-                Label { text: "Start"; color: labelColor }
-                TextField {
-                    width: 50
-                    inputMethodHints: Qt.ImhFormattedNumbersOnly
-                    text: (mprop && mprop.linePoints && mprop.linePoints.first && mprop.linePoints.first.x !== undefined)
-                          ? mprop.linePoints.first.x.toFixed(2) : "0.00"
-                    color: inputTextColor
-                    background: Rectangle {
-                        color: inputBackgroundColor
-                        radius: 4
-                        border.color: borderColor
-                    }
-                    onEditingFinished: {
-                        if (!mprop || !mprop.linePoints || !mprop.linePoints.first) return;
-                        var x = parseFloat(text)
-                        if (!isNaN(x)) {
-                            var lp = mprop.linePoints
-                            var y = lp.first.y
-                            var second = lp.second || Qt.point(0,0)
-                            mprop.setLinePoints(Qt.point(x, y), second)
-                        }
-                    }
-                }
-                TextField {
-                    width: 50
-                    inputMethodHints: Qt.ImhFormattedNumbersOnly
-                    text: (mprop && mprop.linePoints && mprop.linePoints.first && mprop.linePoints.first.y !== undefined)
-                          ? mprop.linePoints.first.y.toFixed(2) : "0.00"
-                    color: inputTextColor
-                    background: Rectangle {
-                        color: inputBackgroundColor
-                        radius: 4
-                        border.color: borderColor
-                    }
-                    onEditingFinished: {
-                        if (!mprop || !mprop.linePoints || !mprop.linePoints.first) return;
-                        var y = parseFloat(text)
-                        if (!isNaN(y)) {
-                            var lp = mprop.linePoints
-                            var x = lp.first.x
-                            var second = lp.second || Qt.point(0,0)
-                            mprop.setLinePoints(Qt.point(x, y), second)
-                        }
-                    }
-                }
+            PointInput{
+                pt: mprop.lineStart
+                label: "Start:"
+                func: ()=>{
+                          mprop.lineStart = pt2
+                      }
             }
-            Row {
-                spacing: 4
-                Label { text: "End"; color: labelColor }
-                TextField {
-                    width: 50
-                    inputMethodHints: Qt.ImhFormattedNumbersOnly
-                    text: (mprop && mprop.linePoints && mprop.linePoints.second && mprop.linePoints.second.x !== undefined)
-                          ? mprop.linePoints.second.x.toFixed(2) : "0.00"
-                    color: inputTextColor
-                    background: Rectangle {
-                        color: inputBackgroundColor
-                        radius: 4
-                        border.color: borderColor
-                    }
-                    onEditingFinished: {
-                        if (!mprop || !mprop.linePoints || !mprop.linePoints.second) return;
-                        var x = parseFloat(text)
-                        if (!isNaN(x)) {
-                            var lp = mprop.linePoints
-                            var first = lp.first || Qt.point(0, 0)
-                            var y = lp.second.y
-                            mprop.setLinePoints(first, Qt.point(x, y))
-                        }
-                    }
-                }
-                TextField {
-                    width: 50
-                    inputMethodHints: Qt.ImhFormattedNumbersOnly
-                    text: (mprop && mprop.linePoints && mprop.linePoints.second && mprop.linePoints.second.y !== undefined)
-                          ? mprop.linePoints.second.y.toFixed(2) : "0.00"
-                    color: inputTextColor
-                    background: Rectangle {
-                        color: inputBackgroundColor
-                        radius: 4
-                        border.color: borderColor
-                    }
-                    onEditingFinished: {
-                        if (!mprop || !mprop.linePoints || !mprop.linePoints.second) return;
-                        var y = parseFloat(text)
-                        if (!isNaN(y)) {
-                            var lp = mprop.linePoints
-                            var first = lp.first || Qt.point(0, 0)
-                            var x = lp.second.x
-                            mprop.setLinePoints(first, Qt.point(x, y))
-                        }
-                    }
-                }
+            PointInput{
+                pt: mprop.lineEnd
+                label: "End:"
+                func: ()=>{
+                          mprop.lineEnd = pt2
+                      }
             }
         }
 
@@ -354,58 +181,12 @@ Item {
         }
 
         // tRange: QPair<qreal, qreal> {first, second}
-        Row {
-            visible: mprop !== null
-            spacing: 4
-            Label { text: "tRange:"; color: labelColor }
-            TextField {
-                width: 50
-                inputMethodHints: Qt.ImhFormattedNumbersOnly
-                text: (mprop && mprop.tRange && mprop.tRange.first !== undefined) ? mprop.tRange.first.toFixed(2) : "0.00"
-                color: inputTextColor
-                background: Rectangle {
-                    color: inputBackgroundColor
-                    radius: 4
-                    border.color: borderColor
-                }
-                onEditingFinished: {
-                    if (!mprop) return;
-                    var first = parseFloat(text)
-                    if (!isNaN(first)) {
-                        var second = (mprop.tRange && mprop.tRange.second !== undefined) ? mprop.tRange.second : 0
-                        if(mprop.setTRange) {
-                            mprop.setTRange(first, second)
-                        } else if(mprop.tRange) {
-                            mprop.tRange.first = first
-                            mprop.tRange.second = second
-                        }
-                    }
-                }
-            }
-            TextField {
-                width: 50
-                inputMethodHints: Qt.ImhFormattedNumbersOnly
-                text: (mprop && mprop.tRange && mprop.tRange.second !== undefined) ? mprop.tRange.second.toFixed(2) : "0.00"
-                color: inputTextColor
-                background: Rectangle {
-                    color: inputBackgroundColor
-                    radius: 4
-                    border.color: borderColor
-                }
-                onEditingFinished: {
-                    if (!mprop) return;
-                    var second = parseFloat(text)
-                    if (!isNaN(second)) {
-                        var first = (mprop.tRange && mprop.tRange.first !== undefined) ? mprop.tRange.first : 0
-                        if(mprop.setTRange) {
-                            mprop.setTRange(first, second)
-                        } else if(mprop.tRange) {
-                            mprop.tRange.first = first
-                            mprop.tRange.second = second
-                        }
-                    }
-                }
-            }
+        PointInput{
+            pt:mprop.tRange
+            label: "t Range"
+            func: ()=>{
+                      mprop.tRange = pt2
+                  }
         }
 
         // segments: int
@@ -432,75 +213,75 @@ Item {
         }
 
         // endPoints: QList<QPointF> (array of points)
-        Column {
-            visible: mprop !== null
-            spacing: 4
-            Label { text: "End Points:"; color: labelColor }
-            Repeater {
-                model: (mprop && mprop.endPoints) ? mprop.endPoints.length : 0
-                Row {
-                    spacing: 4
-                    TextField {
-                        width: 50
-                        inputMethodHints: Qt.ImhFormattedNumbersOnly
-                        text: modelData && modelData.x !== undefined ? modelData.x.toFixed(2) : "0.00"
-                        color: inputTextColor
-                        background: Rectangle {
-                            color: inputBackgroundColor
-                            radius: 4
-                            border.color: borderColor
-                        }
-                        onEditingFinished: {
-                            if (!mprop || !mprop.endPoints) return;
-                            var newPoints = mprop.endPoints.slice()
-                            var x = parseFloat(text)
-                            if (!isNaN(x)) {
-                                newPoints[index] = Qt.point(x, newPoints[index].y)
-                                mprop.endPoints = newPoints
-                            }
-                        }
-                    }
-                    TextField {
-                        width: 50
-                        inputMethodHints: Qt.ImhFormattedNumbersOnly
-                        text: modelData && modelData.y !== undefined ? modelData.y.toFixed(2) : "0.00"
-                        color: inputTextColor
-                        background: Rectangle {
-                            color: inputBackgroundColor
-                            radius: 4
-                            border.color: borderColor
-                        }
-                        onEditingFinished: {
-                            if (!mprop || !mprop.endPoints) return;
-                            var newPoints = mprop.endPoints.slice()
-                            var y = parseFloat(text)
-                            if (!isNaN(y)) {
-                                newPoints[index] = Qt.point(newPoints[index].x, y)
-                                mprop.endPoints = newPoints
-                            }
-                        }
-                    }
-                }
-            }
-            Button {
-                text: "Add Point"
-                background: Rectangle {
-                    color: buttonColor
-                    radius: 4
-                }
-                contentItem: Text {
-                    text: parent.text
-                    anchors.centerIn: parent
-                    color: buttonTextColor
-                }
-                onClicked: {
-                    if (!mprop || !mprop.endPoints) return;
-                    var newPoints = mprop.endPoints.slice()
-                    newPoints.push(Qt.point(0, 0))
-                    mprop.endPoints = newPoints
-                }
-            }
-        }
+        // Column {
+        //     visible: mprop !== null
+        //     spacing: 4
+        //     Label { text: "End Points:"; color: labelColor }
+        //     Repeater {
+        //         model: (mprop && mprop.endPoints) ? mprop.endPoints.length : 0
+        //         Row {
+        //             spacing: 4
+        //             TextField {
+        //                 width: 50
+        //                 inputMethodHints: Qt.ImhFormattedNumbersOnly
+        //                 text: modelData && modelData.x !== undefined ? modelData.x.toFixed(2) : "0.00"
+        //                 color: inputTextColor
+        //                 background: Rectangle {
+        //                     color: inputBackgroundColor
+        //                     radius: 4
+        //                     border.color: borderColor
+        //                 }
+        //                 onEditingFinished: {
+        //                     if (!mprop || !mprop.endPoints) return;
+        //                     var newPoints = mprop.endPoints.slice()
+        //                     var x = parseFloat(text)
+        //                     if (!isNaN(x)) {
+        //                         newPoints[index] = Qt.point(x, newPoints[index].y)
+        //                         mprop.endPoints = newPoints
+        //                     }
+        //                 }
+        //             }
+        //             TextField {
+        //                 width: 50
+        //                 inputMethodHints: Qt.ImhFormattedNumbersOnly
+        //                 text: modelData && modelData.y !== undefined ? modelData.y.toFixed(2) : "0.00"
+        //                 color: inputTextColor
+        //                 background: Rectangle {
+        //                     color: inputBackgroundColor
+        //                     radius: 4
+        //                     border.color: borderColor
+        //                 }
+        //                 onEditingFinished: {
+        //                     if (!mprop || !mprop.endPoints) return;
+        //                     var newPoints = mprop.endPoints.slice()
+        //                     var y = parseFloat(text)
+        //                     if (!isNaN(y)) {
+        //                         newPoints[index] = Qt.point(newPoints[index].x, y)
+        //                         mprop.endPoints = newPoints
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //     }
+        //     Button {
+        //         text: "Add Point"
+        //         background: Rectangle {
+        //             color: buttonColor
+        //             radius: 4
+        //         }
+        //         contentItem: Text {
+        //             text: parent.text
+        //             anchors.centerIn: parent
+        //             color: buttonTextColor
+        //         }
+        //         onClicked: {
+        //             if (!mprop || !mprop.endPoints) return;
+        //             var newPoints = mprop.endPoints.slice()
+        //             newPoints.push(Qt.point(0, 0))
+        //             mprop.endPoints = newPoints
+        //         }
+        //     }
+        // }
 
         // radius: qreal
         Row {

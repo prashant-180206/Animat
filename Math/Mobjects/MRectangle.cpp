@@ -11,7 +11,7 @@ MRectangle::MRectangle(Scene *canvas, QQuickItem *parent)
     properties->setName("Rectangle");
 
     connect(properties,&MProperties::sizeChanged,this,[this](auto s){
-        // auto p = properties->pos();
+
         auto p = QPointF(0,0);
         updatePoints(
             properties->size().x()/2
@@ -19,8 +19,18 @@ MRectangle::MRectangle(Scene *canvas, QQuickItem *parent)
             );
         update();
         properties->setSize(s);
-        // removeAllMembers();
+
         updateLines();
+    });
+    connect(properties,&MProperties::thicknessChanged,this,[this](){
+        qInfo()<<"Thickness changed";
+        // properties->setThickness(t);
+        updateLines();
+        update();
+    });
+    connect(properties,&MProperties::borderColorChanged,this,[this](){
+        updateLines();
+        update();
     });
 
 

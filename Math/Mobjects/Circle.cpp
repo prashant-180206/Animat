@@ -8,10 +8,21 @@ Circle::Circle(Scene *canvas, QQuickItem *parent)
 
     auto r = properties->radius();
     properties->setSize({2*r,2*r});
+    properties->setThickness(4);
     setCenter(0,0);
     properties->setRadius(1);
     properties->setSegments(30);
     properties->setName("Circle");
+
+    connect(properties,&MProperties::radiusChanged,this,[this]{
+        updatePoints();
+    });
+    connect(properties,&MProperties::thicknessChanged,this,[this]{
+        updatePoints();
+    });
+    connect(properties,&MProperties::borderColorChanged,this,[this]{
+        updatePoints();
+    });
     updatePoints();
 }
 
@@ -20,20 +31,14 @@ void Circle::updatePoints()
 {
     QVector<QPointF> points;
     for (int i = 0; i < m_segmentCount; ++i) {
-        double angle = (2 * M_PI * i) / m_segmentCount;
+        double angle = (2 * M_PI * i) / properties->segments();
         double x = properties->radius()  * qCos(angle);
         double y = properties->radius() *  qSin(angle);
-        points.append((QPointF(x, y)));
+        points.append(QPointF(x, y));
     }
-
-    QVector<QPointF> localPoints;
-    localPoints.reserve(points.size());
-    for (const QPointF& p : std::as_const(points))
-        localPoints.append(p - (position()));
-    setPoints(localPoints);
-
+    setPoints(points);      // <--- REMOVE the subtraction!
     buildPolygon();
-
     update();
 }
+
 

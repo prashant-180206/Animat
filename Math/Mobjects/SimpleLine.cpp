@@ -41,6 +41,12 @@ QSGNode *SimpleLine::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
         node->setMaterial(material);
         node->setFlag(QSGNode::OwnsMaterial);
     }
+    QSGFlatColorMaterial *material = static_cast<QSGFlatColorMaterial *>(node->material());
+    if (material) {
+        material->setColor(color());
+        node->markDirty(QSGNode::DirtyMaterial);
+    }
+
 
     QSGGeometry *geometry = node->geometry();
     geometry->allocate(4);
@@ -61,7 +67,7 @@ QSGNode *SimpleLine::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 
     dir.normalize();
 
-    float thickness = 4.0f;
+    float thickness = Thickness();
     QVector2D perp(-dir.y(), dir.x());
     perp *= thickness / 2.0f;
 

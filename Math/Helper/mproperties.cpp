@@ -37,6 +37,20 @@ void MProperties::setName(const QString &name) {
     }
 }
 
+void MProperties::setPos(const QPointF &pos) {
+    if (m_pos != pos) {
+        m_pos = pos;
+        emit posChanged(pos);
+    }
+}
+
+void MProperties::setSize(const QPointF &size) {
+    if (m_size != size) {
+        m_size = size;
+        emit sizeChanged(size);
+    }
+}
+
 
 
 
@@ -56,14 +70,27 @@ void MProperties::setBorderColor(const QColor &color){
 
 }
 
-
-
-void MProperties::setThickness(qreal thickness) {
-    if (!qFuzzyCompare(m_thickness, thickness)) {
-        m_thickness = thickness;
-        emit thicknessChanged();
+void MProperties::setLineStart(const QPointF &p){
+    if (p!=m_lineStart){
+        m_lineStart = p;
+        emit lineStartChanged(p);
     }
 }
+
+void MProperties::setLineEnd(const QPointF &p){
+    if (p!=m_lineEnd){
+        m_lineEnd = p;
+        emit lineEndChanged(p);
+    }
+}
+
+
+
+
+
+
+
+
 
 void MProperties::setCurveXFunc(const QString &func) {
     if (m_Curve_X_func != func) {

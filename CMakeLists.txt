@@ -74,6 +74,7 @@ qt_add_qml_module(appAnimat
         SOURCES Math/Helper/mproperties.h Math/Helper/mproperties.cpp
         SOURCES
         QML_FILES QML/Components/Elements/MpropertiesEditor.qml
+        QML_FILES QML/Components/Elements/Input/PointInput.qml
 )
 
 target_link_libraries(appAnimat

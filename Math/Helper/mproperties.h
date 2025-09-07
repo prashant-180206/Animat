@@ -20,7 +20,6 @@ class MProperties : public QObject
     Q_PROPERTY(QColor color READ color WRITE setColor NOTIFY colorChanged)
 
     // Lines
-    // Q_PROPERTY(QPair<QPointF, QPointF> linePoints READ linePoints WRITE setLinePoints NOTIFY linePointsChanged)
     Q_PROPERTY(QPointF lineStart READ lineStart WRITE setLineStart NOTIFY lineStartChanged)
     Q_PROPERTY(QPointF lineEnd READ lineEnd WRITE setLineEnd NOTIFY lineEndChanged)
     Q_PROPERTY(qreal thickness READ thickness WRITE setThickness NOTIFY thicknessChanged)
@@ -39,6 +38,7 @@ class MProperties : public QObject
     Q_PROPERTY(qreal radius READ radius WRITE setRadius NOTIFY radiusChanged)
 
 public:
+
     MProperties(QObject *parent = nullptr);
 
     // Getters
@@ -47,7 +47,6 @@ public:
     QPointF size() const;
     QColor color() const;
     QColor borderColor() const ;
-    // QPair<QPointF, QPointF> linePoints() const;
     QPointF lineStart() const{return m_lineStart;};
     QPointF lineEnd() const{return m_lineEnd;};
     qreal thickness() const;
@@ -61,39 +60,18 @@ public:
 public slots:
 
     void setName(const QString &name);
-    void setPos(const QPointF &pos) {
-        if (m_pos != pos) {
-            m_pos = pos;
-            emit posChanged(pos);
-        }
-    }
-    void setSize(const QPointF &size) {
-        if (m_size != size) {
-            m_size = size;
-            emit sizeChanged(size);
-        }
-    }
+    void setPos(const QPointF &pos);
+    void setSize(const QPointF &size);
     void setColor(const QColor &color);
     void setBorderColor(const QColor &color);
-    // Q_INVOKABLE void setLinePoints(const QPair<QPointF, QPointF> &points) {
-    //     if (m_linepoints != points) {
-    //         m_linepoints = points;
-    //         emit linePointsChanged();
-    //     }
-    // }
-    void setLineStart(const QPointF &p){
-        if (p!=m_lineStart){
-            m_lineStart = p;
-            emit lineStartChanged();
+    void setLineStart(const QPointF &p);
+    void setLineEnd(const QPointF &p);
+    void setThickness(qreal thickness) {
+        if (!qFuzzyCompare(m_thickness, thickness)) {
+            m_thickness = thickness;
+            emit thicknessChanged();
         }
     }
-    void setLineEnd(const QPointF &p){
-        if (p!=m_lineEnd){
-            m_lineEnd = p;
-            emit lineEndChanged();
-        }
-    }
-    void setThickness(qreal thickness);
     void setCurveXFunc(const QString &func);
     void setCurveYFunc(const QString &func);
     Q_INVOKABLE void setTRange(const QPointF &range);
@@ -107,9 +85,8 @@ signals:
     void posChanged(const QPointF& p);
     void sizeChanged(const QPointF& p);
     void colorChanged();
-    // void linePointsChanged();
-    void lineStartChanged();
-    void lineEndChanged();
+    void lineStartChanged(const QPointF &p);
+    void lineEndChanged(const QPointF &p);
     void thicknessChanged();
     void curveXFuncChanged();
     void curveYFuncChanged();
@@ -125,7 +102,6 @@ private:
     QPointF m_size{0,0};
     QColor m_color = Qt::transparent;
     QColor m_bordercolor = Qt::white;
-    // QPair<QPointF, QPointF> m_linepoints{{0,0},{0,0}};
     QPointF m_lineStart{0,0};
     QPointF m_lineEnd{0,0};
     qreal m_thickness = 0;

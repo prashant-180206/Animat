@@ -15,27 +15,24 @@ Line::Line(Scene* canvas,QQuickItem* parent) :ClickableMobject(canvas,parent){
     });
     properties->setName("Line");
     properties->setLineStart(p1);
+    properties->setLineEnd(p2);
     properties->setColor(Qt::yellow);
     properties->setThickness(4);
     properties->setPos(canvas->c2p((p1+p2)/2));
 
-    connect(properties, &MProperties::lineStartChanged ,this, [this]{
-        // qDebug() << "[Line] linePointsChanged -> update";
+    connect(properties, &MProperties::lineStartChanged ,this, [this](auto p){
         update();
     });
-    connect(properties, &MProperties::lineEndChanged, this, [this]{
-        // qDebug() << "[Line] linePointsChanged -> update";
+    connect(properties, &MProperties::lineEndChanged, this, [this](auto p){
         update();
     });
     connect(properties, &MProperties::thicknessChanged, this, [this]{
-        qDebug() << "[Line] thicknessChanged -> update";
         update();
     });
 
     start_pos=properties->pos();
     m_p1=properties->lineStart();
     m_p2=properties->lineEnd();
-
 }
 
 void Line::setCenter(qreal x, qreal y)
@@ -50,6 +47,7 @@ void Line::setCenter(qreal x, qreal y)
     setY(canvasCenter.y());
     setZ(50);
 
+
 }
 
 
@@ -57,8 +55,6 @@ void Line::setCenter(qreal x, qreal y)
 void Line::mousePressEvent(QMouseEvent *event)
 {
     start_pos = properties->pos();
-    // properties->setLineStart(m_p1);
-    // properties->setLineEnd(m_p2);
     ClickableMobject::mousePressEvent(event);
 }
 
@@ -82,6 +78,13 @@ QSGNode *Line::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
         node->setMaterial(material);
         node->setFlag(QSGNode::OwnsMaterial);
     }
+
+    QSGFlatColorMaterial *material = static_cast<QSGFlatColorMaterial *>(node->material());
+    if (material) {
+        material->setColor(properties->color());
+        node->markDirty(QSGNode::DirtyMaterial);
+    }
+
 
     QSGGeometry *geometry = node->geometry();
     geometry->allocate(4);
