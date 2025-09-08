@@ -10,19 +10,19 @@ Rectangle {
     anchors.right: parent.right
     width: 300
 
-    function mobjectProperties() {
-        if (canvas.SelectedMobject === null) {
-            return "NO MObject Selected"
-        }
-        var props = canvas.SelectedMobject.getProperties()
-        var str = ""
-        for (var key in props) {
-            if(props){
-                str += key + ": " + props[key] + "\n"
-            }
-        }
-        return str
-    }
+    // function mobjectProperties() {
+    //     if (canvas.SelectedMobject === null) {
+    //         return "NO MObject Selected"
+    //     }
+    //     var props = canvas.SelectedMobject.getProperties()
+    //     var str = ""
+    //     for (var key in props) {
+    //         if(props){
+    //             str += key + ": " + props[key] + "\n"
+    //         }
+    //     }
+    //     return str
+    // }
 
     Text {
         id: txt
@@ -43,9 +43,26 @@ Rectangle {
     // }
 
     MpropertiesEditor{
+        id:editor
         anchors{
             top: txt.bottom
             left: parent.left
+        }
+    }
+
+    ValueTracker {
+        id: val2
+        value: 2
+        onValueChanged: {
+            canvas.SelectedMobject.getProperties().size = Qt.point(3,val2.value)
+        }
+    }
+
+    Button{
+        anchors.top: editor.bottom
+        text: val2.value || "Start changing"
+        onClicked: {
+            val2.updateVal(4)
         }
     }
 }

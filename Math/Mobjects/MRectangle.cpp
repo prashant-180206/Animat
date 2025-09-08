@@ -9,6 +9,7 @@ MRectangle::MRectangle(Scene *canvas, QQuickItem *parent)
 
     updatePoints(properties->size().x()/2,properties->size().y()/2);
     properties->setName("Rectangle");
+    properties->setType("Rectangle");
 
     connect(properties,&MProperties::sizeChanged,this,[this](auto s){
 

@@ -18,6 +18,8 @@ class MProperties : public QObject
     Q_PROPERTY(QPointF pos READ pos WRITE setPos NOTIFY posChanged)
     Q_PROPERTY(QPointF size READ size WRITE setSize NOTIFY sizeChanged)
     Q_PROPERTY(QColor color READ color WRITE setColor NOTIFY colorChanged)
+    Q_PROPERTY(QString type READ type WRITE setType NOTIFY typeChanged)
+
 
     // Lines
     Q_PROPERTY(QPointF lineStart READ lineStart WRITE setLineStart NOTIFY lineStartChanged)
@@ -46,6 +48,7 @@ public:
     QPointF pos() const;
     QPointF size() const;
     QColor color() const;
+    QString type(){return m_type;};
     QColor borderColor() const ;
     QPointF lineStart() const{return m_lineStart;};
     QPointF lineEnd() const{return m_lineEnd;};
@@ -63,15 +66,11 @@ public slots:
     void setPos(const QPointF &pos);
     void setSize(const QPointF &size);
     void setColor(const QColor &color);
+    void setType(const QString &q);;
     void setBorderColor(const QColor &color);
     void setLineStart(const QPointF &p);
     void setLineEnd(const QPointF &p);
-    void setThickness(qreal thickness) {
-        if (!qFuzzyCompare(m_thickness, thickness)) {
-            m_thickness = thickness;
-            emit thicknessChanged();
-        }
-    }
+    void setThickness(qreal thickness);
     void setCurveXFunc(const QString &func);
     void setCurveYFunc(const QString &func);
     Q_INVOKABLE void setTRange(const QPointF &range);
@@ -85,6 +84,7 @@ signals:
     void posChanged(const QPointF& p);
     void sizeChanged(const QPointF& p);
     void colorChanged();
+    void typeChanged();
     void lineStartChanged(const QPointF &p);
     void lineEndChanged(const QPointF &p);
     void thicknessChanged();
@@ -101,6 +101,7 @@ private:
     QPointF m_pos{0,0};
     QPointF m_size{0,0};
     QColor m_color = Qt::transparent;
+    QString m_type = "Mobject";
     QColor m_bordercolor = Qt::white;
     QPointF m_lineStart{0,0};
     QPointF m_lineEnd{0,0};

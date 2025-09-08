@@ -13,6 +13,7 @@ Circle::Circle(Scene *canvas, QQuickItem *parent)
     properties->setRadius(1);
     properties->setSegments(30);
     properties->setName("Circle");
+    properties->setType("Circle");
 
     connect(properties,&MProperties::radiusChanged,this,[this]{
         updatePoints();

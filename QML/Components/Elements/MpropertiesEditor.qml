@@ -55,6 +55,7 @@ Item {
 
         // Size: QPair<qreal, qreal> {first, second}
         PointInput{
+            visible: mprop.type !=="Line" ||mprop.type !=="Curve"
             pt: mprop.size
             label: "Size:"
             func: ()=>{
@@ -85,7 +86,7 @@ Item {
 
         // BorderColor: QColor
         Rectangle {
-            visible: mprop !== null
+            visible: mprop.type ==="Rectangle" || mprop.type ==="Circle"
             width: 100; height: 30
             radius: 4
             color: mprop && mprop.borderColor !== undefined && mprop.borderColor !== null ? mprop.borderColor : "transparent"
@@ -106,7 +107,7 @@ Item {
 
         // linePoints: QPair<QPointF, QPointF> {first, second}
         Column {
-            visible: mprop !== null
+            visible: mprop.type === "Line"
             spacing: 4
             Label { text: "Line Points:"; color: labelColor }
             PointInput{
@@ -127,7 +128,7 @@ Item {
 
         // Thickness: qreal
         Row {
-            visible: mprop !== null
+            visible: mprop.thickness !== 0;
             spacing: 4
             Label { text: "Thickness:"; color: labelColor }
             TextField {
@@ -148,50 +149,55 @@ Item {
             }
         }
 
-        // curveXFunc: string
-        TextField {
-            visible: mprop !== null
-            placeholderText: "curveXFunc"
-            text: mprop ? (mprop.curveXFunc !== undefined ? mprop.curveXFunc : "") : ""
-            color: inputTextColor
-            background: Rectangle {
-                color: inputBackgroundColor
-                radius: 4
-                border.color: borderColor
-            }
-            onEditingFinished: {
-                if(mprop) mprop.curveXFunc = text
-            }
-        }
 
-        // curveYFunc: string
-        TextField {
-            visible: mprop !== null
-            placeholderText: "curveYFunc"
-            text: mprop ? (mprop.curveYFunc !== undefined ? mprop.curveYFunc : "") : ""
-            color: inputTextColor
-            background: Rectangle {
-                color: inputBackgroundColor
-                radius: 4
-                border.color: borderColor
+        Column{
+            visible: mprop.type ==="Curve"
+            spacing: 4
+            // curveXFunc: string
+            TextField {
+                visible: mprop !== null
+                placeholderText: "curveXFunc"
+                text: mprop ? (mprop.curveXFunc !== undefined ? mprop.curveXFunc : "") : ""
+                color: inputTextColor
+                background: Rectangle {
+                    color: inputBackgroundColor
+                    radius: 4
+                    border.color: borderColor
+                }
+                onEditingFinished: {
+                    if(mprop) mprop.curveXFunc = text
+                }
             }
-            onEditingFinished: {
-                if(mprop) mprop.curveYFunc = text
-            }
-        }
 
-        // tRange: QPair<qreal, qreal> {first, second}
-        PointInput{
-            pt:mprop.tRange
-            label: "t Range"
-            func: ()=>{
-                      mprop.tRange = pt2
-                  }
+            // curveYFunc: string
+            TextField {
+                visible: mprop !== null
+                placeholderText: "curveYFunc"
+                text: mprop ? (mprop.curveYFunc !== undefined ? mprop.curveYFunc : "") : ""
+                color: inputTextColor
+                background: Rectangle {
+                    color: inputBackgroundColor
+                    radius: 4
+                    border.color: borderColor
+                }
+                onEditingFinished: {
+                    if(mprop) mprop.curveYFunc = text
+                }
+            }
+
+            // tRange: QPair<qreal, qreal> {first, second}
+            PointInput{
+                pt:mprop.tRange
+                label: "t Range"
+                func: ()=>{
+                          mprop.tRange = pt2
+                      }
+            }
         }
 
         // segments: int
         Row {
-            visible: mprop !== null
+            visible: mprop.type === "Curve" || mprop.type ==="Circle"
             spacing: 4
             Label { text: "Segments:"; color: labelColor }
             TextField {
@@ -285,7 +291,7 @@ Item {
 
         // radius: qreal
         Row {
-            visible: mprop !== null
+            visible: mprop.type ==="Circle"
             spacing: 4
             Label { text: "Radius:"; color: labelColor }
             TextField {

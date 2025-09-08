@@ -16,6 +16,7 @@ Curve::Curve(Scene *canvas, QQuickItem *parent)
     properties->setTRange({-3, 3});
     properties->setSegments(30);
     properties->setThickness(4);
+    properties->setType("Curve");
 
     m_parserX.DefineVar(L"t", &m_tVal);
     m_parserY.DefineVar(L"t", &m_tVal);

@@ -62,6 +62,15 @@ void MProperties::setColor(const QColor &color) {
     }
 }
 
+void MProperties::setType(const QString &q){
+    if(q!=m_type){
+        m_type = q;
+        emit typeChanged();
+    }
+}
+
+
+
 void MProperties::setBorderColor(const QColor &color){
     if (m_bordercolor != color) {
         m_bordercolor = color;
@@ -81,6 +90,13 @@ void MProperties::setLineEnd(const QPointF &p){
     if (p!=m_lineEnd){
         m_lineEnd = p;
         emit lineEndChanged(p);
+    }
+}
+
+void MProperties::setThickness(qreal thickness) {
+    if (!qFuzzyCompare(m_thickness, thickness)) {
+        m_thickness = thickness;
+        emit thicknessChanged();
     }
 }
 

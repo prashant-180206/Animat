@@ -13,12 +13,14 @@ Line::Line(Scene* canvas,QQuickItem* parent) :ClickableMobject(canvas,parent){
             update();
         }
     });
+
     properties->setName("Line");
     properties->setLineStart(p1);
     properties->setLineEnd(p2);
     properties->setColor(Qt::yellow);
     properties->setThickness(4);
     properties->setPos(canvas->c2p((p1+p2)/2));
+    properties->setType("Line");
 
     connect(properties, &MProperties::lineStartChanged ,this, [this](auto p){
         update();

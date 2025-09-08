@@ -48,7 +48,7 @@ qt_add_qml_module(appAnimat
         RESOURCES lib/muparser.pc.in
         RESOURCES lib/muparserConfig.cmake.in
         SOURCES
-        SOURCES Math/ValueTracker/valuetacker.h Math/ValueTracker/valuetacker.cpp
+        SOURCES Math/ValueTracker/valuetracker.h Math/ValueTracker/valuetracker.cpp
         SOURCES Math/Mobjects/line.h Math/Mobjects/line.cpp
         SOURCES Math/Mobjects/Mobject.h Math/Mobjects/Mobject.cpp
         SOURCES Math/Mobjects/Group.h Math/Mobjects/Group.cpp
