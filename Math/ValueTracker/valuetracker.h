@@ -12,10 +12,15 @@ class ValueTracker : public QQuickItem
     Q_PROPERTY(qreal value READ value WRITE setValue NOTIFY valueChanged FINAL)
 public:
     ValueTracker();
-    qreal value();;
-    void setValue(qreal v);;
 
-    Q_INVOKABLE void updateVal(qreal target);
+    QString func();;
+    void setFunc(QString f);
+
+    qreal value() { return m_value; }
+    void setValue(qreal v);
+
+    Q_INVOKABLE void updateVal(qreal target,qreal sec=1, QString func = "default");
+
 
 private:
     qreal m_value = 1;
@@ -23,11 +28,11 @@ private:
     qreal m_stepDelta = 0;
     int m_currentStep = 0;
     QTimer *m_updateTimer = nullptr;
-
     QEasingCurve m_easingCurve = QEasingCurve::InOutQuad;
-signals:
-    void valueChanged();
-};
+    QString m_func = "default";
 
+signals:
+    void valueChanged(qreal v);
+};
 
 #endif // VALUETRACKER_H

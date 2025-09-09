@@ -10,20 +10,6 @@ Rectangle {
     anchors.right: parent.right
     width: 300
 
-    // function mobjectProperties() {
-    //     if (canvas.SelectedMobject === null) {
-    //         return "NO MObject Selected"
-    //     }
-    //     var props = canvas.SelectedMobject.getProperties()
-    //     var str = ""
-    //     for (var key in props) {
-    //         if(props){
-    //             str += key + ": " + props[key] + "\n"
-    //         }
-    //     }
-    //     return str
-    // }
-
     Text {
         id: txt
         text: qsTr("Properties") /* mobjectProperties()*/
@@ -35,34 +21,43 @@ Rectangle {
         anchors.horizontalCenter: parent.horizontalCenter
     }
 
-    // Text {
-    //     id: txter
-    //     text: qsTr("text")+mobjectProperties()
-    //     anchors.fill: parent
-    //     color: "white"
-    // }
-
     MpropertiesEditor{
+        anchors.top: txt.bottom
+        // anchors.horizontalCenter: parent.horizontalCenter
         id:editor
-        anchors{
-            top: txt.bottom
-            left: parent.left
-        }
+        height: 400
     }
 
-    ValueTracker {
-        id: val2
-        value: 2
-        onValueChanged: {
-            canvas.SelectedMobject.getProperties().size = Qt.point(3,val2.value)
-        }
-    }
+
 
     Button{
         anchors.top: editor.bottom
-        text: val2.value || "Start changing"
+        id: upbtn
+        text: val2.value.toString() || "Start changing"
         onClicked: {
-            val2.updateVal(4)
+            val2.updateVal(Qt.point(1,2))
+        }
+    }
+    Button{
+        anchors.top: upbtn.bottom
+        id: upbt
+        text: val2.value.toString() || "Start changing"
+        onClicked: {
+            val2.updateVal(Qt.point(6,6))
+        }
+    }
+
+    TextField{
+        color: "black"
+        anchors.top: upbt.bottom
+        placeholderText: "Enter Code "
+    }
+
+    PtValueTracker {
+        id: val2
+        value: Qt.point(0,0)
+        onValueChanged: {
+            canvas.SelectedMobject.getProperties().pos = val2.value
         }
     }
 }

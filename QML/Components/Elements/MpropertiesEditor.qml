@@ -18,13 +18,13 @@ Item {
     property color buttonTextColor: "#eeeeee"
 
     Rectangle {
-        anchors.fill: parent
+
         color: backgroundColor
         radius: 6
     }
 
     Column {
-        anchors.fill: parent
+
         anchors.margins: 12
         spacing: 10
 

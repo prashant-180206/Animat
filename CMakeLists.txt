@@ -10,6 +10,9 @@ find_package(Qt6 REQUIRED COMPONENTS Quick)
 find_package(Qt6 REQUIRED COMPONENTS Core Quick)
 find_package(Qt6 REQUIRED COMPONENTS Core Quick)
 find_package(Qt6 REQUIRED COMPONENTS Quick)
+find_package(Qt6 REQUIRED COMPONENTS Core)
+find_package(Qt6 REQUIRED COMPONENTS Core)
+find_package(Qt6 REQUIRED COMPONENTS Core)
 
 
 qt_standard_project_setup(REQUIRES 6.8)
@@ -75,6 +78,10 @@ qt_add_qml_module(appAnimat
         SOURCES
         QML_FILES QML/Components/Elements/MpropertiesEditor.qml
         QML_FILES QML/Components/Elements/Input/PointInput.qml
+        SOURCES
+        SOURCES Math/ValueTracker/ptvaluetracker.h Math/ValueTracker/ptvaluetracker.cpp
+        SOURCES Math/ValueTracker/playbackslider.h Math/ValueTracker/playbackslider.cpp
+        SOURCES Math/trackermanager.h Math/trackermanager.cpp
 )
 
 target_link_libraries(appAnimat
@@ -99,6 +106,9 @@ target_link_libraries(appAnimat PRIVATE Qt6::Quick)
 target_link_libraries(appAnimat PRIVATE Qt6::Core Qt6::Quick)
 target_link_libraries(appAnimat PRIVATE Qt6::Core Qt6::Quick)
 target_link_libraries(appAnimat PRIVATE Qt6::Quick)
+target_link_libraries(appAnimat PRIVATE Qt6::Core)
+target_link_libraries(appAnimat PRIVATE Qt6::Core)
+target_link_libraries(appAnimat PRIVATE Qt6::Core)
 
 
 include(GNUInstallDirs)

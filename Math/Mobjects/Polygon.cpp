@@ -156,8 +156,6 @@ QRectF Polygon::boundingRect() const
         maxY = qMax(maxY, pt.y());
     }
 
-
-
     return QRectF(minX, minY, maxX - minX, maxY - minY);
 }
 

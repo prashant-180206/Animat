@@ -9,7 +9,6 @@
 #include <QSGSimpleRectNode>
 #include <QSGNode>
 #include <QColor>
-// #include "Math/Helper/ClickableMobject.h"
 #include "Mobjects/Mobject.h"
 #include "mproperties.h"
 #include <QHash>
