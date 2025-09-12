@@ -36,40 +36,40 @@ public:
     using ValFunc = std::function<void(ClickableMobject*, qreal)>;
     using PtValFunc = std::function<void(ClickableMobject*, QPointF)>;
 
-    inline static const QMap<QString, ValFunc> s_valueTrackerFuncs = {
-        { "height", [](ClickableMobject* mobj, qreal v) {
-             auto pt = mobj->getProperties()->size();
-             mobj->getProperties()->setSize({ v, pt.y() });
-         }},
-        { "width", [](ClickableMobject* mobj, qreal v) {
-             auto pt = mobj->getProperties()->size();
-             mobj->getProperties()->setSize({ pt.x(), v });
-         }},
-        { "radius", [](ClickableMobject* mobj, qreal v) {
-             mobj->getProperties()->setRadius(v);
-         }},
-        { "opacity", [](ClickableMobject* mobj, qreal v) {
-             mobj->getProperties()->setOpacity(v);
-         }}
-    };
+    // inline static const QMap<QString, ValFunc> s_valueTrackerFuncs = {
+    //     { "height", [](ClickableMobject* mobj, qreal v) {
+    //          auto pt = mobj->getProperties()->size();
+    //          mobj->getProperties()->setSize({ v, pt.y() });
+    //      }},
+    //     { "width", [](ClickableMobject* mobj, qreal v) {
+    //          auto pt = mobj->getProperties()->size();
+    //          mobj->getProperties()->setSize({ pt.x(), v });
+    //      }},
+    //     { "radius", [](ClickableMobject* mobj, qreal v) {
+    //          mobj->getProperties()->setRadius(v);
+    //      }},
+    //     { "opacity", [](ClickableMobject* mobj, qreal v) {
+    //          mobj->getProperties()->setOpacity(v);
+    //      }}
+    // };
 
-    inline static const QMap<QString, PtValFunc> s_ptValueTrackerFuncs = {
-        { "size", [](ClickableMobject* mobj, QPointF v) {
-             mobj->getProperties()->setSize(v);
-         }},
-        { "pos", [](ClickableMobject* mobj, QPointF v) {
-             mobj->getProperties()->setPos(v);
-         }},
-        { "linestart", [](ClickableMobject* mobj, QPointF v) {
-             mobj->getProperties()->setLineStart(v);
-         }},
-        { "lineend", [](ClickableMobject* mobj, QPointF v) {
-             mobj->getProperties()->setLineEnd(v);
-         }},
-        { "trange", [](ClickableMobject* mobj, QPointF v) {
-             mobj->getProperties()->setTRange(v);
-         }}
-    };
+    // inline static const QMap<QString, PtValFunc> s_ptValueTrackerFuncs = {
+    //     { "size", [](ClickableMobject* mobj, QPointF v) {
+    //          mobj->getProperties()->setSize(v);
+    //      }},
+    //     { "pos", [](ClickableMobject* mobj, QPointF v) {
+    //          mobj->getProperties()->setPos(v);
+    //      }},
+    //     { "linestart", [](ClickableMobject* mobj, QPointF v) {
+    //          mobj->getProperties()->setLineStart(v);
+    //      }},
+    //     { "lineend", [](ClickableMobject* mobj, QPointF v) {
+    //          mobj->getProperties()->setLineEnd(v);
+    //      }},
+    //     { "trange", [](ClickableMobject* mobj, QPointF v) {
+    //          mobj->getProperties()->setTRange(v);
+    //      }}
+    // };
 
 
 signals:

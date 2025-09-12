@@ -3,7 +3,7 @@
 Group::Group(Scene* canvas, QQuickItem *parent)
     : ClickableMobject(canvas, parent)
 {
-    properties->setName("Group");
+    properties->base()->setName("Group");
 }
 
 Group::~Group()

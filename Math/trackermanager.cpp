@@ -77,27 +77,27 @@ void TrackerManager::addPtTracker(const QString &str, QPointF val) {
 }
 
 void TrackerManager::connectTracker(const QString &valname, ClickableMobject *mobj, const QString &property) {
-    ValueTracker* tracker = m_vals.value(valname, nullptr);
-    auto funcIt = s_valueTrackerFuncs.constFind(property);
-    if (!tracker || funcIt == s_valueTrackerFuncs.constEnd()) {
-        qInfo() << "INVALID VALNAME or PROPERTY for ValueTracker:" << valname << property;
-        return;
-    }
-    QObject::connect(tracker, &ValueTracker::valueChanged, mobj, [mobj, f = funcIt.value()](qreal v) {
-        f(mobj, v);
-    });
+    // ValueTracker* tracker = m_vals.value(valname, nullptr);
+    // auto funcIt = s_valueTrackerFuncs.constFind(property);
+    // if (!tracker || funcIt == s_valueTrackerFuncs.constEnd()) {
+    //     qInfo() << "INVALID VALNAME or PROPERTY for ValueTracker:" << valname << property;
+    //     return;
+    // }
+    // QObject::connect(tracker, &ValueTracker::valueChanged, mobj, [mobj, f = funcIt.value()](qreal v) {
+    //     f(mobj, v);
+    // });
 }
 
 void TrackerManager::connectPtTracker(const QString &valname, ClickableMobject *mobj, const QString &property) {
-    PtValueTracker* tracker = m_ptvals.value(valname, nullptr);
-    auto funcIt = s_ptValueTrackerFuncs.constFind(property);
-    if (!tracker || funcIt == s_ptValueTrackerFuncs.constEnd()) {
-        qInfo() << "INVALID VALNAME or PROPERTY for PtValueTracker:" << valname << property;
-        return;
-    }
-    QObject::connect(tracker, &PtValueTracker::valueChanged, mobj, [mobj, f = funcIt.value()](QPointF v) {
-        f(mobj, v);
-    });
+    // PtValueTracker* tracker = m_ptvals.value(valname, nullptr);
+    // auto funcIt = s_ptValueTrackerFuncs.constFind(property);
+    // if (!tracker || funcIt == s_ptValueTrackerFuncs.constEnd()) {
+    //     qInfo() << "INVALID VALNAME or PROPERTY for PtValueTracker:" << valname << property;
+    //     return;
+    // }
+    // QObject::connect(tracker, &PtValueTracker::valueChanged, mobj, [mobj, f = funcIt.value()](QPointF v) {
+    //     f(mobj, v);
+    // });
 }
 
 void TrackerManager::parse(QString code) {

@@ -6,22 +6,24 @@ Circle::Circle(Scene *canvas, QQuickItem *parent)
 {
     setFlag(ItemHasContents, true);
 
-    auto r = properties->radius();
-    properties->setSize({2*r,2*r});
-    properties->setThickness(4);
-    setCenter(0,0);
-    properties->setRadius(1);
-    properties->setSegments(30);
-    properties->setName("Circle");
-    properties->setType("Circle");
+    properties->setCircle(new CircleProperties(this));
 
-    connect(properties,&MProperties::radiusChanged,this,[this]{
+    auto r = properties->circle()->radius();
+    properties->base()->setSize({2*r,2*r});
+    properties->polygon()->setThickness(4);
+    setCenter(0,0);
+    properties->circle()->setRadius(1);
+    properties->circle()->setSegments(30);
+    properties->base()->setName("Circle");
+    properties->base()->setType("Circle");
+
+    connect(properties->circle(),&CircleProperties::radiusChanged,this,[this]{
         updatePoints();
     });
-    connect(properties,&MProperties::thicknessChanged,this,[this]{
+    connect(properties->polygon(),&PolygonProperties::thicknessChanged,this,[this]{
         updatePoints();
     });
-    connect(properties,&MProperties::borderColorChanged,this,[this]{
+    connect(properties->polygon(),&PolygonProperties::borderColorChanged,this,[this]{
         updatePoints();
     });
     updatePoints();
@@ -31,15 +33,14 @@ Circle::Circle(Scene *canvas, QQuickItem *parent)
 void Circle::updatePoints()
 {
     QVector<QPointF> points;
-    for (int i = 0; i < m_segmentCount; ++i) {
-        double angle = (2 * M_PI * i) / properties->segments();
-        double x = properties->radius()  * qCos(angle);
-        double y = properties->radius() *  qSin(angle);
+    for (int i = 0; i < properties->circle()->segments(); ++i) {
+        double angle = (2 * M_PI * i) / properties->circle()->segments();
+        double x = properties->circle()->radius()  * qCos(angle);
+        double y = properties->circle()->radius() *  qSin(angle);
         points.append(QPointF(x, y));
     }
     setPoints(points);      // <--- REMOVE the subtraction!
     buildPolygon();
-
 }
 
 

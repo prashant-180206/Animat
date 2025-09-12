@@ -10,19 +10,21 @@ Curve::Curve(Scene *canvas, QQuickItem *parent)
     : Group(canvas, parent)
 {
 
-    properties->setCurveXFunc("t");
-    properties->setCurveYFunc("-0.2*t^2");
-    properties->setName("Function");
-    properties->setTRange({-3, 3});
-    properties->setSegments(30);
-    properties->setThickness(4);
-    properties->setType("Curve");
+    properties->setCurve(new CurveProperties(this));
+
+    properties->curve()->setCurveXFunc("t");
+    properties->curve()->setCurveYFunc("-0.2*t^2");
+    properties->base()->setName("Function");
+    properties->curve()->setTRange({-3, 3});
+    properties->curve()->setSegments(30);
+    properties->curve()->setThickness(4);
+    properties->base()->setType("Curve");
 
     m_parserX.DefineVar(L"t", &m_tVal);
     m_parserY.DefineVar(L"t", &m_tVal);
 
-    m_parserX.SetExpr(properties->curveXFunc().toStdWString());
-    m_parserY.SetExpr(properties->curveYFunc().toStdWString());
+    m_parserX.SetExpr(properties->curve()->curveXFunc().toStdWString());
+    m_parserY.SetExpr(properties->curve()->curveYFunc().toStdWString());
 
     updateCurveFunction();
 
@@ -30,26 +32,26 @@ Curve::Curve(Scene *canvas, QQuickItem *parent)
     setFlag(ItemHasContents, true);
     setAcceptedMouseButtons(Qt::AllButtons);
 
-    connect(properties, &MProperties::curveXFuncChanged, this, [this]{
-        m_parserX.SetExpr(properties->curveXFunc().toStdWString());
+    connect(properties->curve(), &CurveProperties::curveXFuncChanged, this, [this]{
+        m_parserX.SetExpr(properties->curve()->curveXFunc().toStdWString());
         updateCurveFunction();
         buildCurveSegments();
     });
 
-    connect(properties, &MProperties::curveYFuncChanged, this, [this]{
-        m_parserY.SetExpr(properties->curveYFunc().toStdWString());
+    connect(properties->curve(), &CurveProperties::curveYFuncChanged, this, [this]{
+        m_parserY.SetExpr(properties->curve()->curveYFunc().toStdWString());
         updateCurveFunction();
         buildCurveSegments();
     });
 
-    connect(properties, &MProperties::tRangeChanged, this, [this]{
+    connect(properties->curve(), &CurveProperties::tRangeChanged, this, [this]{
         buildCurveSegments();
     });
 
-    connect(properties, &MProperties::colorChanged, this, [this]{
+    connect(properties->base(), &BaseProperties::colorChanged, this, [this]{
         buildCurveSegments();
     });
-    connect(properties, &MProperties::thicknessChanged, this, [this]{
+    connect(properties->curve(), &CurveProperties::thicknessChanged, this, [this]{
         buildCurveSegments();
     });
 
@@ -105,7 +107,7 @@ void Curve::buildCurveSegments()
         }
     }
     QVector<QPointF> points;
-    auto tr = properties->tRange();
+    auto tr = properties->curve()->tRange();
     const double t0 = tr.x();
     const double t1 = tr.y();
     int invalidPts = 0;
@@ -135,8 +137,8 @@ void Curve::buildCurveSegments()
         auto *segment = new SimpleLine(getcanvas(), this);
         segment->setP1(m_cachedPoints[i]);
         segment->setP2(m_cachedPoints[i + 1]);
-        segment->setColor(properties->color());
-        segment->setThickness(properties->thickness());
+        segment->setColor(properties->base()->color());
+        segment->setThickness(properties->curve()->thickness());
         addMember(segment);
         ++created;
     }

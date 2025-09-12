@@ -55,9 +55,5 @@ Rectangle {
 
     PtValueTracker {
         id: val2
-        value: Qt.point(0,0)
-        onValueChanged: {
-            canvas.SelectedMobject.getProperties().pos = val2.value
-        }
     }
 }

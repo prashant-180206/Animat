@@ -15,8 +15,6 @@ public:
 protected:
     void updatePoints();
 
-private:
-    int m_segmentCount =properties->segments();
 };
 
 #endif // CIRCLE_H

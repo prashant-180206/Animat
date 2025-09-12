@@ -8,6 +8,7 @@
 Polygon::Polygon(Scene *canvas, QQuickItem *parent)
     : Group(canvas, parent),m_fillNode(nullptr)
 {
+    properties->setPolygon( new PolygonProperties(this));
     setFlag(ItemHasContents, true);
     setPoints({
         QPointF(0,0),
@@ -17,10 +18,10 @@ Polygon::Polygon(Scene *canvas, QQuickItem *parent)
 
     buildPolygon();
 
-    properties->setBorderColor(Qt::yellow);
-    properties->setName("Polygon");
-    properties->setThickness(4);
-    properties->setColor(Qt::blue);
+    properties->polygon()->setBorderColor(Qt::yellow);
+    properties->base()->setName("Polygon");
+    properties->polygon()->setThickness(4);
+    properties->base()->setColor(Qt::blue);
 }
 
 
@@ -58,8 +59,8 @@ void Polygon::buildPolygon()
         auto *line = new SimpleLine(getcanvas(), this);
         line->setP1(pts[i]);
         line->setP2(pts[(i + 1) % n]);
-        line->setColor(properties->borderColor());
-        line->setThickness(properties->thickness());
+        line->setColor(properties->polygon()->borderColor());
+        line->setThickness(properties->polygon()->thickness());
         m_lines.append(line);
         addMember(line);
     }
@@ -79,8 +80,8 @@ void Polygon::updateLines()
     for (int i = 0; i < m_lines.size(); ++i) {
         m_lines[i]->setP1(convertedPts[i]);
         m_lines[i]->setP2(convertedPts[(i + 1) % convertedPts.size()]);
-        m_lines[i]->setColor(properties->borderColor());
-        m_lines[i]->setThickness(properties->thickness());
+        m_lines[i]->setColor(properties->polygon()->borderColor());
+        m_lines[i]->setThickness(properties->polygon()->thickness());
     }
 }
 
@@ -126,7 +127,7 @@ QSGNode *Polygon::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
     }
 
     auto material = static_cast<QSGFlatColorMaterial *>(m_fillNode->material());
-    material->setColor(properties->color());
+    material->setColor(properties->base()->color());
 
     m_fillNode->markDirty(QSGNode::DirtyGeometry | QSGNode::DirtyMaterial);
     return m_fillNode;

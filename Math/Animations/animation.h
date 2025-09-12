@@ -11,11 +11,11 @@ public:
     Animation();
 
     void execute(Scene * canvas){
-        ClickableMobject * mobj = canvas->getMobject(m_obj_id);
-        auto val = new ValueTracker();
-        QObject::connect(val,&ValueTracker::valueChanged,mobj,[this,mobj](qreal v){
-           auto func= TrackerManager::s_valueTrackerFuncs[m_prop];
-        });
+        // ClickableMobject * mobj = canvas->getMobject(m_obj_id);
+        // auto val = new ValueTracker();
+        // QObject::connect(val,&ValueTracker::valueChanged,mobj,[this,mobj](qreal v){
+        //    auto func= TrackerManager::s_valueTrackerFuncs[m_prop];
+        // });
     };
 
 private:

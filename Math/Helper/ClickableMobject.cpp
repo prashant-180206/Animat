@@ -8,31 +8,31 @@ ClickableMobject::ClickableMobject(Scene *canvas, QQuickItem *parent)
     setFlag(Mobject::ItemHasContents, true);
     setAcceptedMouseButtons(Qt::AllButtons);
     m_canvas = canvas;
+    properties->setBase(new BaseProperties(this));
 
-
-    connect(properties, &MProperties::posChanged, this, [this](const QPointF &newPos){
+    connect(properties->base(), &BaseProperties::posChanged, this, [this](const QPointF &newPos){
         this->setCenter(newPos.x(), newPos.y());
     });
 
-    connect(properties, &MProperties::sizeChanged, this, [this](const QPointF &newSize){
+    connect(properties->base(), &BaseProperties::sizeChanged, this, [this](const QPointF &newSize){
         this->setSize(newSize.x(), newSize.y());
     });
 
-    connect(properties, &MProperties::colorChanged, this, [this]{
+    connect(properties->base(), &BaseProperties::colorChanged, this, [this]{
         update();
     });
 
-    connect(properties,&MProperties::opacityChanged,this,[this](qreal op){
+    connect(properties->base(),&BaseProperties::opacityChanged,this,[this](qreal op){
         this->setOpacity(op);
         qInfo()<<"OPACITY CHANGED";
         update();
     });
 
-    properties->setColor(m_color);
-    properties->setPos(QPoint(0, 0));
-    properties->setSize({0, 0});
-    properties->setName("Mobject");
-    properties->setParent(this);
+    properties->base()->setColor(m_color);
+    properties->base()->setPos(QPoint(0, 0));
+    properties->base()->setSize({0, 0});
+    properties->base()->setName("Mobject");
+    properties->base()->setParent(this);
 }
 
 int ClickableMobject::getId() const { return m_id; }
@@ -49,7 +49,7 @@ Scene *ClickableMobject::getcanvas() const
 
 void ClickableMobject::setCenter(qreal xval, qreal yval)
 {
-    properties->setPos(QPointF(xval,yval));
+    properties->base()->setPos(QPointF(xval,yval));
     QPointF pt = QPointF(xval,yval);
 
     pt = getcanvas()->p2c(pt);
@@ -64,7 +64,7 @@ void ClickableMobject::setCenter(qreal xval, qreal yval)
 
 void ClickableMobject::setSize(qreal height, qreal width)
 {
-    properties->setSize({height,width});
+    properties->base()->setSize({height,width});
     auto h = height *getcanvas()->scalefactor();
     auto w = width *getcanvas()->scalefactor();
     setHeight(h);
@@ -129,7 +129,7 @@ void ClickableMobject::mouseMoveEvent(QMouseEvent *event) {
         QPointF canvasPos = m_canvas->mapFromScene(scenePos);
         QPointF newCanvasPos = canvasPos - m_dragItemOffset;
         QPointF logicalPos = m_canvas->c2p(newCanvasPos);
-        properties->setPos(logicalPos);
+        properties->base()->setPos(logicalPos);
         // setCenter(logicalPos.x(), logicalPos.y());
         event->accept();
     } else {
