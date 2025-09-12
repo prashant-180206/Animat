@@ -39,7 +39,7 @@ void Circle::updatePoints()
     }
     setPoints(points);      // <--- REMOVE the subtraction!
     buildPolygon();
-    update();
+
 }
 
 

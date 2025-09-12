@@ -19,6 +19,7 @@ class MProperties : public QObject
     Q_PROPERTY(QPointF size READ size WRITE setSize NOTIFY sizeChanged)
     Q_PROPERTY(QColor color READ color WRITE setColor NOTIFY colorChanged)
     Q_PROPERTY(QString type READ type WRITE setType NOTIFY typeChanged)
+    Q_PROPERTY(qreal opacity READ opacity WRITE setOpacity NOTIFY opacityChanged FINAL)
 
 
     // Lines
@@ -48,6 +49,7 @@ public:
     QPointF pos() const;
     QPointF size() const;
     QColor color() const;
+    qreal opacity() const;;
     QString type(){return m_type;};
     QColor borderColor() const ;
     QPointF lineStart() const{return m_lineStart;};
@@ -66,6 +68,7 @@ public slots:
     void setPos(const QPointF &pos);
     void setSize(const QPointF &size);
     void setColor(const QColor &color);
+    void setOpacity(qreal op);
     void setType(const QString &q);;
     void setBorderColor(const QColor &color);
     void setLineStart(const QPointF &p);
@@ -84,6 +87,7 @@ signals:
     void posChanged(const QPointF& p);
     void sizeChanged(const QPointF& p);
     void colorChanged();
+    void opacityChanged(qreal op);
     void typeChanged();
     void lineStartChanged(const QPointF &p);
     void lineEndChanged(const QPointF &p);
@@ -101,6 +105,7 @@ private:
     QPointF m_pos{0,0};
     QPointF m_size{0,0};
     QColor m_color = Qt::transparent;
+    qreal m_opacity =0.5;
     QString m_type = "Mobject";
     QColor m_bordercolor = Qt::white;
     QPointF m_lineStart{0,0};
@@ -111,6 +116,7 @@ private:
     QPointF m_tRange{0,0};
     QList<QPointF> m_endPoints = {};
     qreal m_radius = 0;
+
     int m_segments=30;
 };
 

@@ -149,6 +149,27 @@ Item {
             }
         }
 
+        Row {
+            spacing: 4
+            Label { text: "opacity:"; color: labelColor }
+            TextField {
+                width: 60
+                inputMethodHints: Qt.ImhFormattedNumbersOnly
+                text: (mprop && mprop.opacity !== undefined) ? mprop.opacity.toFixed(2) : "0.00"
+                color: inputTextColor
+                background: Rectangle {
+                    color: inputBackgroundColor
+                    radius: 4
+                    border.color: borderColor
+                }
+                onEditingFinished: {
+                    if (!mprop) return;
+                    var val = parseFloat(text)
+                    if (!isNaN(val)) mprop.opacity = val
+                }
+            }
+        }
+
 
         Column{
             visible: mprop.type ==="Curve"

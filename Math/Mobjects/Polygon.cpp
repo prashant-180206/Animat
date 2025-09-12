@@ -1,5 +1,6 @@
 #include "Math/Mobjects/Polygon.h"
 #include "Math/Mobjects/SimpleLine.h"
+#include "Math/Scene.h"
 #include <QSGFlatColorMaterial>
 #include <QSGGeometry>
 #include <QSGGeometryNode>

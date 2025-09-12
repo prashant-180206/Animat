@@ -1,4 +1,5 @@
 #include "Math/Mobjects/line.h"
+#include "Math/Scene.h"
 
 
 Line::Line(Scene* canvas,QQuickItem* parent) :ClickableMobject(canvas,parent){

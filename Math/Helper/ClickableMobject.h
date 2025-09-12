@@ -1,6 +1,6 @@
 #pragma once
 #include "Math/Helper/mproperties.h"
-#include "Math/scene.h"
+#include "Math/Mobjects/Mobject.h"
 #include <QQuickItem>
 #include <QSGSimpleRectNode>
 #include <QMouseEvent>

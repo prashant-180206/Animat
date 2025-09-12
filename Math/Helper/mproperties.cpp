@@ -14,6 +14,8 @@ QPointF MProperties::size() const { return m_size; }
 
 QColor MProperties::color() const { return m_color; }
 
+qreal MProperties::opacity() const {return m_opacity;}
+
 QColor MProperties::borderColor() const{return m_bordercolor;}
 
 // QPair<QPointF, QPointF> MProperties::linePoints() const { return m_linepoints; }
@@ -59,6 +61,13 @@ void MProperties::setColor(const QColor &color) {
     if (m_color != color) {
         m_color = color;
         emit colorChanged();
+    }
+}
+
+void MProperties::setOpacity(qreal op){
+    if(m_opacity!=op){
+        m_opacity=op;
+        emit opacityChanged(op);
     }
 }
 

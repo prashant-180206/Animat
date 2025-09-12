@@ -3,6 +3,7 @@ import QtQuick.Controls.Basic
 import Animat 1.0
 
 Rectangle {
+
     color: Constants.darkGrayA
     anchors.top: parent.top
     anchors.right: parent.right
@@ -16,7 +17,7 @@ Rectangle {
 
     Component.onCompleted: {
         trackerManager.parse("val qwer = 100\npval vaort = (50, 75)");
-        infoText.text = trackerManager.getTrackerInfoString()
+        // infoText.text = trackerManager.getTrackerInfoString()
         // console.log(trackerManager.getTrackerInfoString())
     }
 
@@ -24,7 +25,7 @@ Rectangle {
         id: infoText
         color: "white"
         anchors.centerIn: parent
-        text: trackerManager.getTrackerInfoString()
+        text: "qwsdfg"
         wrapMode: Text.WordWrap
     }
 }

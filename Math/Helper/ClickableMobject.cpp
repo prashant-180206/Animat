@@ -1,4 +1,5 @@
 #include "ClickableMobject.h"
+#include "Math/Scene.h"
 
 
 ClickableMobject::ClickableMobject(Scene *canvas, QQuickItem *parent)
@@ -18,6 +19,12 @@ ClickableMobject::ClickableMobject(Scene *canvas, QQuickItem *parent)
     });
 
     connect(properties, &MProperties::colorChanged, this, [this]{
+        update();
+    });
+
+    connect(properties,&MProperties::opacityChanged,this,[this](qreal op){
+        this->setOpacity(op);
+        qInfo()<<"OPACITY CHANGED";
         update();
     });
 

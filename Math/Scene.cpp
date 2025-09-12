@@ -29,7 +29,6 @@ Scene::~Scene()
 {
     qDeleteAll(m_objects);
     m_objects.clear();
-
 }
 
 void Scene::add_mobject(QString mobj)
@@ -41,11 +40,11 @@ void Scene::add_mobject(QString mobj)
 
     m->setParentItem(this);
     m->setId(total_mobj);
+    // m->getProperties()->setOpacity(0.1);
     m->setCenter(5,4);
     m->setZ(20);
     qDebug()<<m<<m->getCenter();
     m_objects.insert(total_mobj,m);
-
 
     total_mobj++;
 
@@ -53,11 +52,22 @@ void Scene::add_mobject(QString mobj)
 
 ClickableMobject *Scene::SelectedMobject(){return active_m_id>=0?m_objects[active_m_id]:nullptr;}
 
+TrackerManager *Scene::trackers(){
+    return m_trackers;
+}
+
+PlaybackSlider *Scene::player(){
+    return m_player;
+}
+
+AnimationManager *Scene::animator(){
+    return m_animator;
+}
+
 
 QColor Scene::getBorderColor(){return TEXT_LIGHT;}
 
 int Scene::scalefactor(){return gridsize;}
-
 
 QPointF Scene::p2c(QPointF p) {
     double x = p.x() * gridsize ;
@@ -74,8 +84,6 @@ QPointF Scene::c2p(QPointF c) {
     auto res=QPointF(x, y);
     return res;
 }
-
-
 
 void Scene::setActiveMobjectId(int val) {
     if (active_m_id != val) {
