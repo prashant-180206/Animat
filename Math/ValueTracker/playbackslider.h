@@ -16,7 +16,7 @@ public:
         , m_maxDuration(60000) // 1 minute max
     {
         m_updateTimer = new QTimer(this);
-        m_updateTimer->setInterval(30); // ~33 FPS update
+        m_updateTimer->setInterval(10); // ~33 FPS update
         connect(m_updateTimer, &QTimer::timeout, this, &PlaybackSlider::onTimeout);
         this->setParentItem(parent);
         setValue(0);

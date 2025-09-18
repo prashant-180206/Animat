@@ -2,7 +2,9 @@
 #include "Scene.h"
 #include "funcmap.h"
 
-Animation::Animation(qreal startOffset, qreal duration)
+
+
+Animation::Animation(qreal startOffset, qreal duration, QEasingCurve::Type easingtype)
     : m_startOffset(startOffset), m_duration(duration), m_ltime(0) {}
 
 Animation::~Animation() {}
@@ -16,6 +18,8 @@ void Animation::setLtime(qreal sceneTime) {
 
 qreal Animation::progress() const { return m_ltime; }
 
+
+
 qreal Animation::getStartOffset() const { return m_startOffset; }
 
 qreal Animation::getDuration() const { return m_duration; }
@@ -26,17 +30,20 @@ MoveAnimation::MoveAnimation(ClickableMobject *mobj, QPointF startPos, QPointF t
 {}
 
 void MoveAnimation::apply() {
+    qreal t = easedProgress();
     QPointF diff = m_targetPos - m_startPos;
-    QPointF newPos = m_startPos + diff * m_ltime;
+    QPointF newPos = m_startPos + diff * t;
     m_mobj->getProperties()->base()->setPos(newPos);
 }
+
+
 
 CreateAnimation::CreateAnimation(ClickableMobject *mobj, qreal startOffset, qreal duration)
     : Animation(startOffset, duration), m_mobj(mobj)
 {}
 
 void CreateAnimation::apply() {
-    qreal newOpacity = m_ltime; // from 0 to 1
+    qreal newOpacity = easedProgress(); // from 0 to 1 with easing
     m_mobj->getProperties()->base()->setOpacity(newOpacity);
 }
 
@@ -45,7 +52,7 @@ DestroyAnimation::DestroyAnimation(ClickableMobject *mobj, qreal startOffset, qr
 {}
 
 void DestroyAnimation::apply() {
-    qreal newOpacity = 1.0 - m_ltime; // from 1 to 0
+    qreal newOpacity = 1.0 - easedProgress(); // from 1 to 0 with easing
     m_mobj->getProperties()->base()->setOpacity(newOpacity);
 }
 
@@ -57,8 +64,9 @@ CustomScalarAnimation::CustomScalarAnimation(ClickableMobject *mobj, QString pro
 void CustomScalarAnimation::apply() {
     auto func = FuncMap::ConnectFunc[m_prop];
     if (!func) return;
+    qreal t = easedProgress();
     qreal diff = m_targetVal - m_startVal;
-    qreal newVal = m_startVal + diff * m_ltime;
+    qreal newVal = m_startVal + diff * t;
     func(m_mobj, newVal);
 }
 
@@ -70,8 +78,9 @@ CustomPointAnimation::CustomPointAnimation(ClickableMobject *mobj, QString prop,
 void CustomPointAnimation::apply() {
     auto func = FuncMap::PtConnectFunc[m_prop];
     if (!func) return;
+    qreal t = easedProgress();
     QPointF diff = m_targetVal - m_startVal;
-    QPointF newVal = m_startVal + diff * m_ltime;
+    QPointF newVal = m_startVal + diff * t;
     func(m_mobj, newVal);
 }
 
@@ -83,7 +92,8 @@ void ValueAnimation::addTarget(ClickableMobject *mobj, QString prop) {
 }
 
 void ValueAnimation::apply() {
-    qreal currentVal = m_startVal + (m_endVal - m_startVal) * m_ltime;
+    qreal t = easedProgress();
+    qreal currentVal = m_startVal + (m_endVal - m_startVal) * t;
     for (const auto& target : std::as_const(m_targets)) {
         auto func = FuncMap::ConnectFunc[target.prop];
         if (func) {
@@ -91,7 +101,6 @@ void ValueAnimation::apply() {
         }
     }
 }
-
 
 
 

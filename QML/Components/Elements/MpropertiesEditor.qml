@@ -1,420 +1,260 @@
 import QtQuick 2.15
 import QtQuick.Controls.Basic
-import QtQuick.Dialogs
+import QtQuick.Layouts
 import Animat 1.0
 import "Input"
 
-
-Item {
+Rectangle {
     id: root
-    property MProperties mprop : canvas.SelectedMobject ?
-                                     canvas.SelectedMobject.getProperties() :
-                                     canvas.getProperties()
+    property MProperties mprop: canvas.SelectedMobject ?
+                                    canvas.SelectedMobject.getProperties() :
+                                    canvas.getProperties()
 
-    property color backgroundColor: "#121212"
-    property color inputBackgroundColor: "#1e1e1e"
-    property color inputTextColor: "#ffffff"
-    property color labelColor: "#bbbbbb"
-    property color borderColor: "#444444"
-    property color buttonColor: "#2a2a2a"
-    property color buttonTextColor: "#eeeeee"
+    color: "#121212"
+    radius: 8
+    border.color: "#2a2a2a"
+    border.width: 1
 
-    Rectangle {
-        color: backgroundColor
-        radius: 6
-    }
+    ScrollView {
+        anchors.fill: parent
+        anchors.margins: 16
+        contentWidth: availableWidth
 
-    Column {
-        anchors.margins: 12
-        spacing: 10
+        ColumnLayout {
+            width: parent.width
+            spacing: 16
 
-        Loader {
-            id: idLoader
-            active: canvas.activeId
-            sourceComponent: Rectangle {
-                color: inputBackgroundColor
-                radius: 4
-                height: 30
-                width: 80
-                border.color: borderColor
+            // ID Display
+            Rectangle {
+                visible: canvas.activeId
+                Layout.fillWidth: true
+                height: 36
+                color: "#1e1e1e"
+                radius: 6
+                border.color: "#444444"
 
                 Text {
-                    // placeholderText: "Name"
-                    text: canvas.activeId ||""
-                    color: inputTextColor
+                    text: "ID: " + (canvas.activeId || "")
+                    color: "#ffffff"
                     anchors.centerIn: parent
+                    font.pixelSize: 13
+                    font.bold: true
                 }
             }
-        }
 
+            // Name Input
+            ColumnLayout {
+                visible: mprop && mprop.base
+                Layout.fillWidth: true
+                spacing: 6
 
-
-        Loader {
-            id: nameLoader
-            active: mprop && mprop.base !== null
-            sourceComponent: nameComponent
-        }
-        Component {
-            id: nameComponent
-            TextField {
-                placeholderText: "Name"
-                text: mprop.base ? mprop.base.name : ""
-                color: inputTextColor
-                background: Rectangle {
-                    color: inputBackgroundColor
-                    radius: 4
-                    border.color: borderColor
+                Text {
+                    text: "Name"
+                    color: "#bbbbbb"
+                    font.pixelSize: 13
                 }
-                onEditingFinished: {
-                    if (mprop && mprop.base) mprop.base.name = text
-                }
-            }
-        }
 
-        Loader {
-            id: posLoader
-            active: mprop && mprop.base !== null
-            sourceComponent: posComponent
-        }
-        Component {
-            id: posComponent
-            PointInput {
-                pt: mprop.base.pos
-                label: "Pos:"
-                func: ()=> {
-                          if (mprop && mprop.base) mprop.base.pos = pt2
-                      }
-            }
-        }
-
-        Loader {
-            id: sizeLoader
-            active: mprop && mprop.base !== null && mprop.type !== "Line" && mprop.type !== "Curve"
-            sourceComponent: sizeComponent
-        }
-        Component {
-            id: sizeComponent
-            PointInput {
-                pt: mprop.base.size
-                label: "Size:"
-                func: ()=> {
-                          if (mprop && mprop.base) mprop.base.size = pt2
-                      }
-            }
-        }
-
-        Loader {
-            id: colorLoader
-            active: mprop && mprop.base !== null
-            sourceComponent: colorComponent
-        }
-        Component {
-            id: colorComponent
-            Rectangle {
-                width: 100; height: 30
-                radius: 4
-                color: mprop.base.color !== undefined && mprop.base.color !== null ? mprop.base.color : "transparent"
-                border.color: borderColor
-                border.width: 1
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: colorDialog.open()
-                }
-                ColorDialog {
-                    id: colorDialog
-                    selectedColor: mprop.base.color ? mprop.base.color : "transparent"
-                    onAccepted: {
-                        if(mprop && mprop.base) mprop.base.color = selectedColor
+                StyledTextField {
+                    Layout.fillWidth: true
+                    placeholderText: "Enter name"
+                    text: mprop && mprop.base ? mprop.base.name : ""
+                    onEditingFinished: {
+                        if (mprop && mprop.base) mprop.base.name = text
                     }
                 }
             }
-        }
 
-        Loader {
-            id: borderColorLoader
-            active: mprop && mprop.polygon !== null
-            sourceComponent: borderColorComponent
-        }
-        Component {
-            id: borderColorComponent
-            Rectangle {
-                width: 100; height: 30
-                radius: 4
-                color: mprop.polygon.borderColor !== undefined && mprop.polygon.borderColor !== null ? mprop.polygon.borderColor : "transparent"
-                border.color: borderColor
-                border.width: 1
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: borderColorDialog.open()
-                }
-                ColorDialog {
-                    id: borderColorDialog
-                    selectedColor: mprop.polygon.borderColor ? mprop.polygon.borderColor : "transparent"
-                    onAccepted: {
-                        if(mprop && mprop.polygon) mprop.polygon.borderColor = selectedColor
-                    }
-                }
-            }
-        }
+            // Position
+            ColumnLayout {
+                visible: mprop && mprop.base
+                Layout.fillWidth: true
+                spacing: 6
 
-        Loader {
-            id: linePointsLoader
-            active: mprop && mprop.line !== null
-            sourceComponent: linePointsComponent
-        }
-        Component {
-            id: linePointsComponent
-            Column {
-                spacing: 4
-                Label { text: "Line Points:"; color: labelColor }
+                Text {
+                    text: "Position"
+                    color: "#bbbbbb"
+                    font.pixelSize: 13
+                }
+
                 PointInput {
-                    pt: mprop.line.lineStart
+                    Layout.fillWidth: true
+                    pt: mprop && mprop.base ? mprop.base.pos : Qt.point(0, 0)
+                    func: function() {
+                        if (mprop && mprop.base) mprop.base.pos = pt2
+                    }
+                }
+            }
+
+            // Size (not for Line/Curve)
+            ColumnLayout {
+                visible: mprop && mprop.base && mprop.type !== "Line" && mprop.type !== "Curve"
+                Layout.fillWidth: true
+                spacing: 6
+
+                Text {
+                    text: "Size"
+                    color: "#bbbbbb"
+                    font.pixelSize: 13
+                }
+
+                PointInput {
+                    Layout.fillWidth: true
+                    pt: mprop && mprop.base ? mprop.base.size : Qt.point(0, 0)
+                    func: function() {
+                        if (mprop && mprop.base) mprop.base.size = pt2
+                    }
+                }
+            }
+
+            // Colors Section
+            GridLayout {
+                visible: mprop && mprop.base
+                Layout.fillWidth: true
+                columns: 2
+                rowSpacing: 12
+                columnSpacing: 16
+
+                Text {
+                    text: "Fill Color"
+                    color: "#bbbbbb"
+                    font.pixelSize: 13
+                }
+
+                ColorPicker {
+                    selectedColor: mprop && mprop.base ? mprop.base.color : "transparent"
+                    func:()=> {
+                        if (mprop && mprop.base) mprop.base.color = newColor
+                    }
+                }
+
+                Text {
+                    visible: mprop && mprop.polygon
+                    text: "Border Color"
+                    color: "#bbbbbb"
+                    font.pixelSize: 13
+                }
+
+                ColorPicker {
+                    visible: mprop && mprop.polygon
+                    selectedColor: mprop && mprop.polygon ? mprop.polygon.borderColor : "transparent"
+                    func:()=> {
+                        if (mprop && mprop.polygon) mprop.polygon.borderColor = newColor
+                    }
+                }
+            }
+
+            // Numeric Properties
+            ColumnLayout {
+                Layout.fillWidth: true
+                spacing: 12
+
+                NumberInput {
+                    visible: mprop && mprop.base
+                    label: "Opacity:"
+                    value: mprop && mprop.base ? mprop.base.opacity : 1.0
+                    func:()=> {
+                             if (mprop && mprop.base) mprop.base.opacity = newValue
+                         }
+                }
+
+                NumberInput {
+                    visible: mprop && mprop.polygon
+                    label: "Thickness:"
+                    value: mprop && mprop.polygon ? mprop.polygon.thickness : 0
+                    func:()=> {
+                             if (mprop && mprop.polygon) mprop.polygon.thickness = newValue
+                         }
+                }
+
+                NumberInput {
+                    visible: mprop && mprop.circle
+                    label: "Radius:"
+                    value: mprop && mprop.circle ? mprop.circle.radius : 0
+                    func:()=> {
+                             if (mprop && mprop.circle) mprop.circle.radius = newValue
+                         }
+                }
+
+                NumberInput {
+                    visible: mprop && (mprop.type === "Curve" || mprop.type === "Circle")
+                    label: "Segments:"
+                    value: mprop && mprop.curve ? mprop.curve.segments : 0
+                    integersOnly: true
+                    func:()=> {
+                             if (mprop && mprop.curve) mprop.curve.segments = newValue
+                         }
+                }
+            }
+
+            // Line Points
+            ColumnLayout {
+                visible: mprop && mprop.line
+                Layout.fillWidth: true
+                spacing: 8
+
+                Text {
+                    text: "Line Points"
+                    color: "#ffffff"
+                    font.pixelSize: 14
+                    font.bold: true
+                }
+
+                PointInput {
+                    pt: mprop && mprop.line ? mprop.line.lineStart : Qt.point(0, 0)
                     label: "Start:"
-                    func: ()=> {
-                              if(mprop && mprop.line) mprop.line.lineStart = pt2
-                          }
+                    func: function() {
+                        if (mprop && mprop.line) mprop.line.lineStart = pt2
+                    }
                 }
+
                 PointInput {
-                    pt: mprop.line.lineEnd
+                    pt: mprop && mprop.line ? mprop.line.lineEnd : Qt.point(0, 0)
                     label: "End:"
-                    func: ()=> {
-                              if(mprop && mprop.line) mprop.line.lineEnd = pt2
-                          }
-                }
-            }
-        }
-
-        Loader {
-            id: thicknessLoader
-            active: mprop && mprop.polygon !== null
-            sourceComponent: thicknessComponent
-        }
-        Component {
-            id: thicknessComponent
-            Row {
-                spacing: 4
-                Label { text: "Thickness:"; color: labelColor }
-                TextField {
-                    width: 60
-                    inputMethodHints: Qt.ImhFormattedNumbersOnly
-                    text: mprop.polygon.thickness !== undefined ? mprop.polygon.thickness.toFixed(2) : "0.00"
-                    color: inputTextColor
-                    background: Rectangle {
-                        color: inputBackgroundColor
-                        radius: 4
-                        border.color: borderColor
-                    }
-                    onEditingFinished: {
-                        if (!mprop) return;
-                        var val = parseFloat(text)
-                        if (!isNaN(val) && mprop.polygon) mprop.polygon.thickness = val
+                    func: function() {
+                        if (mprop && mprop.line) mprop.line.lineEnd = pt2
                     }
                 }
             }
-        }
 
-        Loader {
-            id: opacityLoader
-            active: mprop && mprop.base !== null
-            sourceComponent: opacityComponent
-        }
-        Component {
-            id: opacityComponent
-            Row {
-                spacing: 4
-                Label { text: "opacity:"; color: labelColor }
-                TextField {
-                    width: 60
-                    inputMethodHints: Qt.ImhFormattedNumbersOnly
-                    text: mprop.base.opacity !== undefined ? mprop.base.opacity.toFixed(2) : "0.00"
-                    color: inputTextColor
-                    background: Rectangle {
-                        color: inputBackgroundColor
-                        radius: 4
-                        border.color: borderColor
-                    }
-                    onEditingFinished: {
-                        if (!mprop) return;
-                        var val = parseFloat(text)
-                        if (!isNaN(val) && mprop.base) mprop.base.opacity = val
-                    }
-                }
-            }
-        }
+            // Curve Functions
+            ColumnLayout {
+                visible: mprop && mprop.curve
+                Layout.fillWidth: true
+                spacing: 8
 
-        Loader {
-            id: curveLoader
-            active: mprop && mprop.curve !== null
-            sourceComponent: curveComponent
-        }
-        Component {
-            id: curveComponent
-            Column {
-                spacing: 4
-                TextField {
-                    placeholderText: "curveXFunc"
-                    text: mprop.curve.curveXFunc !== undefined ? mprop.curve.curveXFunc : ""
-                    color: inputTextColor
-                    background: Rectangle {
-                        color: inputBackgroundColor
-                        radius: 4
-                        border.color: borderColor
-                    }
+                Text {
+                    text: "Curve Functions"
+                    color: "#ffffff"
+                    font.pixelSize: 14
+                    font.bold: true
+                }
+
+                StyledTextField {
+                    Layout.fillWidth: true
+                    placeholderText: "X Function (e.g., t * cos(t))"
+                    text: mprop && mprop.curve ? mprop.curve.curveXFunc : ""
                     onEditingFinished: {
-                        if(mprop && mprop.curve) mprop.curve.curveXFunc = text
+                        if (mprop && mprop.curve) mprop.curve.curveXFunc = text
                     }
                 }
-                TextField {
-                    placeholderText: "curveYFunc"
-                    text: mprop.curve.curveYFunc !== undefined ? mprop.curve.curveYFunc : ""
-                    color: inputTextColor
-                    background: Rectangle {
-                        color: inputBackgroundColor
-                        radius: 4
-                        border.color: borderColor
-                    }
+
+                StyledTextField {
+                    Layout.fillWidth: true
+                    placeholderText: "Y Function (e.g., t * sin(t))"
+                    text: mprop && mprop.curve ? mprop.curve.curveYFunc : ""
                     onEditingFinished: {
-                        if(mprop && mprop.curve) mprop.curve.curveYFunc = text
+                        if (mprop && mprop.curve) mprop.curve.curveYFunc = text
                     }
                 }
+
                 PointInput {
-                    pt: mprop.curve.tRange
-                    label: "t Range"
-                    func: ()=> {
-                              if(mprop && mprop.curve) mprop.curve.tRange = pt2
-                          }
-                }
-            }
-        }
-
-        Loader {
-            id: segmentsLoader
-            active: mprop && (mprop.type === "Curve" || mprop.type === "Circle")
-            sourceComponent: segmentsComponent
-        }
-        Component {
-            id: segmentsComponent
-            Row {
-                spacing: 4
-                Label { text: "Segments:"; color: labelColor }
-                TextField {
-                    width: 60
-                    inputMethodHints: Qt.ImhDigitsOnly
-                    text: mprop.curve.segments !== undefined ? mprop.curve.segments.toString() : "0"
-                    color: inputTextColor
-                    background: Rectangle {
-                        color: inputBackgroundColor
-                        radius: 4
-                        border.color: borderColor
-                    }
-                    onEditingFinished: {
-                        if(!mprop) return;
-                        var val = parseInt(text)
-                        if(!isNaN(val) && mprop.curve) mprop.curve.segments = val
-                    }
-                }
-            }
-        }
-
-        Loader {
-            id: radiusLoader
-            active: mprop && mprop.circle !== null
-            sourceComponent: radiusComponent
-        }
-        Component {
-            id: radiusComponent
-            Row {
-                spacing: 4
-                Label { text: "Radius:"; color: labelColor }
-                TextField {
-                    width: 60
-                    inputMethodHints: Qt.ImhFormattedNumbersOnly
-                    text: mprop.circle.radius !== undefined ? mprop.circle.radius.toFixed(2) : "0.00"
-                    color: inputTextColor
-                    background: Rectangle {
-                        color: inputBackgroundColor
-                        radius: 4
-                        border.color: borderColor
-                    }
-                    onEditingFinished: {
-                        if (mprop && mprop.circle) {
-                            var val = parseFloat(text)
-                            if (!isNaN(val)) mprop.circle.radius = val
-                        }
+                    pt: mprop && mprop.curve ? mprop.curve.tRange : Qt.point(0, 1)
+                    label: "t Range:"
+                    func: function() {
+                        if (mprop && mprop.curve) mprop.curve.tRange = pt2
                     }
                 }
             }
         }
     }
 }
-
-// endPoints: QList<QPointF> (array of points)
-// Column {
-//     visible: mprop !== null
-//     spacing: 4
-//     Label { text: "End Points:"; color: labelColor }
-//     Repeater {
-//         model: (mprop && mprop.endPoints) ? mprop.endPoints.length : 0
-//         Row {
-//             spacing: 4
-//             TextField {
-//                 width: 50
-//                 inputMethodHints: Qt.ImhFormattedNumbersOnly
-//                 text: modelData && modelData.x !== undefined ? modelData.x.toFixed(2) : "0.00"
-//                 color: inputTextColor
-//                 background: Rectangle {
-//                     color: inputBackgroundColor
-//                     radius: 4
-//                     border.color: borderColor
-//                 }
-//                 onEditingFinished: {
-//                     if (!mprop || !mprop.endPoints) return;
-//                     var newPoints = mprop.endPoints.slice()
-//                     var x = parseFloat(text)
-//                     if (!isNaN(x)) {
-//                         newPoints[index] = Qt.point(x, newPoints[index].y)
-//                         mprop.endPoints = newPoints
-//                     }
-//                 }
-//             }
-//             TextField {
-//                 width: 50
-//                 inputMethodHints: Qt.ImhFormattedNumbersOnly
-//                 text: modelData && modelData.y !== undefined ? modelData.y.toFixed(2) : "0.00"
-//                 color: inputTextColor
-//                 background: Rectangle {
-//                     color: inputBackgroundColor
-//                     radius: 4
-//                     border.color: borderColor
-//                 }
-//                 onEditingFinished: {
-//                     if (!mprop || !mprop.endPoints) return;
-//                     var newPoints = mprop.endPoints.slice()
-//                     var y = parseFloat(text)
-//                     if (!isNaN(y)) {
-//                         newPoints[index] = Qt.point(newPoints[index].x, y)
-//                         mprop.endPoints = newPoints
-//                     }
-//                 }
-//             }
-//         }
-//     }
-//     Button {
-//         text: "Add Point"
-//         background: Rectangle {
-//             color: buttonColor
-//             radius: 4
-//         }
-//         contentItem: Text {
-//             text: parent.text
-//             anchors.centerIn: parent
-//             color: buttonTextColor
-//         }
-//         onClicked: {
-//             if (!mprop || !mprop.endPoints) return;
-//             var newPoints = mprop.endPoints.slice()
-//             newPoints.push(Qt.point(0, 0))
-//             mprop.endPoints = newPoints
-//         }
-//     }
-// }

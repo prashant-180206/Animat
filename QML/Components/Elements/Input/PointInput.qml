@@ -9,6 +9,7 @@ Row {
     property color inputBackgroundColor: "#1e1e1e"
     property color inputTextColor: "#ffffff"
     property color labelColor: "#bbbbbb"
+    property color borderColor: "#bbbbbb"
     property point pt: Qt.point(0,0)
     property var func: ()=>{
                            console.log("Point changed")
@@ -20,7 +21,7 @@ Row {
     Label {
         text: label
         color: labelColor
-        width: 30
+        width: 70
     }
     TextField {
         width: 50

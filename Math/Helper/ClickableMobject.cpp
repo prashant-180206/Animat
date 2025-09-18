@@ -24,7 +24,6 @@ ClickableMobject::ClickableMobject(Scene *canvas, QQuickItem *parent)
 
     connect(properties->base(),&BaseProperties::opacityChanged,this,[this](qreal op){
         this->setOpacity(op);
-        qInfo()<<"OPACITY CHANGED";
         update();
     });
 
@@ -33,11 +32,8 @@ ClickableMobject::ClickableMobject(Scene *canvas, QQuickItem *parent)
     properties->base()->setSize({0, 0});
     properties->base()->setName("Mobject");
     properties->base()->setParent(this);
+
 }
-
-
-
-
 
 Scene *ClickableMobject::getcanvas() const
 {
@@ -84,7 +80,6 @@ QPointF ClickableMobject::top() const
 
 QPointF ClickableMobject::bottom() const
 {
-    // Middle of the bottom edge (x center, y bottom)
     return QPointF(x() + width() / 2, y() + height());
 }
 

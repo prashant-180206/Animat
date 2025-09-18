@@ -16,6 +16,8 @@ void AnimPacket::addAnimation(const QString &type,
     Animation* anim = nullptr;
     QString t = type.toLower(); // normalize for safety
 
+    qInfo()<<"ADD ANIM CALLED";
+
     if (t == "move") {
         anim = new MoveAnimation(
             mobj,
@@ -31,6 +33,7 @@ void AnimPacket::addAnimation(const QString &type,
         anim = new DestroyAnimation(mobj, startOffset, duration);
     }
     else if (t == "customscalar") {
+        qInfo()<<"SCALR ANIM CALLED";
         anim = new CustomScalarAnimation(
             mobj,
             prop,

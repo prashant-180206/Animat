@@ -91,7 +91,7 @@ qt_add_qml_module(appAnimat
         SOURCES Math/ValueTracker/ptvaluetracker.h Math/ValueTracker/ptvaluetracker.cpp
         SOURCES Math/ValueTracker/playbackslider.h Math/ValueTracker/playbackslider.cpp
         SOURCES Math/Managers/trackermanager.h Math/Managers/trackermanager.cpp
-        SOURCES Math/Animations/animation.sh Math/Animations/animation.cpp
+        SOURCES  Math/Animations/animation.cpp
         SOURCES Math/Animations/animationmanager.h Math/Animations/animationmanager.cpp
         SOURCES
         SOURCES
@@ -105,6 +105,9 @@ qt_add_qml_module(appAnimat
         SOURCES Math/Animations/animpacket.h Math/Animations/animpacket.cpp
         QML_FILES QML/Components/Elements/Input/AnimInput.qml
         QML_FILES QML/Components/Elements/Input/PlaybackInput.qml
+        QML_FILES QML/Components/Elements/Input/StyledTextField.qml
+        QML_FILES QML/Components/Elements/Input/ColorPicker.qml
+        QML_FILES QML/Components/Elements/Input/NumberInput.qml
 )
 
 target_link_libraries(appAnimat

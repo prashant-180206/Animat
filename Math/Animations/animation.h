@@ -2,12 +2,13 @@
 #define ANIMATION_H
 
 #include "ClickableMobject.h"
+#include <qeasingcurve.h>
 
 // Base abstract Animation class
 class Animation
 {
 public:
-    Animation(qreal startOffset, qreal duration);
+    Animation(qreal startOffset, qreal duration,QEasingCurve::Type easingtype=QEasingCurve::InBounce);
 
     virtual ~Animation();
 
@@ -15,6 +16,10 @@ public:
     void setLtime(qreal sceneTime);
 
     qreal progress() const;
+
+    qreal easedProgress() const {
+        return m_easing.valueForProgress(m_ltime);
+    }
 
     // Each animation must implement how to apply progress to its target(s)
     virtual void apply() = 0;
@@ -26,6 +31,8 @@ protected:
     qreal m_ltime;           // Normalized local time (0 to 1)
     qreal m_startOffset;     // Absolute start time of animation in scene
     qreal m_duration;        // Duration of animation
+
+    QEasingCurve m_easing = QEasingCurve::InOutQuad;
 };
 
 // Move Animation: moves a mobject from start to target position

@@ -58,6 +58,7 @@ QSGNode *SimpleLine::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
     QVector2D p2_vec(m_p2);
     QVector2D dir = p2_vec - p1_vec;
 
+
     // qDebug()<<p1_vec<<p2_vec<<dir;
 
     if (dir.lengthSquared() < 1e-6) {
@@ -73,6 +74,7 @@ QSGNode *SimpleLine::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 
     // Extend ends by thickness/2 along the line direction
     QVector2D extension =dir* (thickness / 2.0f);
+    // extension*=0;
 
     vertices[0].set((p1_vec - extension).x() + perp.x(), (p1_vec - extension).y() + perp.y());
     vertices[1].set((p1_vec - extension).x() - perp.x(), (p1_vec - extension).y() - perp.y());
