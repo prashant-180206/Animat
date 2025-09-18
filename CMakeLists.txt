@@ -21,6 +21,7 @@ find_package(Qt6 REQUIRED COMPONENTS Core)
 find_package(Qt6 REQUIRED COMPONENTS Core)
 find_package(Qt6 REQUIRED COMPONENTS Core)
 find_package(Qt6 REQUIRED COMPONENTS Core)
+find_package(Qt6 REQUIRED COMPONENTS Core)
 
 
 qt_standard_project_setup(REQUIRES 6.8)
@@ -89,8 +90,8 @@ qt_add_qml_module(appAnimat
         SOURCES
         SOURCES Math/ValueTracker/ptvaluetracker.h Math/ValueTracker/ptvaluetracker.cpp
         SOURCES Math/ValueTracker/playbackslider.h Math/ValueTracker/playbackslider.cpp
-        SOURCES Math/trackermanager.h Math/trackermanager.cpp
-        SOURCES Math/Animations/animation.h Math/Animations/animation.cpp
+        SOURCES Math/Managers/trackermanager.h Math/Managers/trackermanager.cpp
+        SOURCES Math/Animations/animation.sh Math/Animations/animation.cpp
         SOURCES Math/Animations/animationmanager.h Math/Animations/animationmanager.cpp
         SOURCES
         SOURCES
@@ -99,6 +100,11 @@ qt_add_qml_module(appAnimat
         SOURCES Math/Helper/Properties/curveproperties.h Math/Helper/Properties/curveproperties.cpp
         SOURCES Math/Helper/Properties/circleproperties.h Math/Helper/Properties/circleproperties.cpp
         SOURCES Math/Helper/Properties/polygonproperties.h Math/Helper/Properties/polygonproperties.cpp
+        SOURCES Math/Managers/funcmap.h Math/Managers/funcmap.cpp
+        SOURCES Math/Animations/animation.h Math/Animations/animation.cpp
+        SOURCES Math/Animations/animpacket.h Math/Animations/animpacket.cpp
+        QML_FILES QML/Components/Elements/Input/AnimInput.qml
+        QML_FILES QML/Components/Elements/Input/PlaybackInput.qml
 )
 
 target_link_libraries(appAnimat
@@ -112,6 +118,7 @@ target_include_directories(appAnimat
     PRIVATE ${CMAKE_SOURCE_DIR}/Math/Helper/Properties
     PRIVATE ${CMAKE_SOURCE_DIR}/Math/Mobjects
     PRIVATE ${CMAKE_SOURCE_DIR}/Math/ValueTracker
+    PRIVATE ${CMAKE_SOURCE_DIR}/Math/Managers
     PRIVATE ${CMAKE_SOURCE_DIR}/Math/Animations
     PRIVATE ${CMAKE_SOURCE_DIR}/Utils
 )
@@ -125,6 +132,7 @@ target_link_libraries(appAnimat PRIVATE Qt6::Quick)
 target_link_libraries(appAnimat PRIVATE Qt6::Core Qt6::Quick)
 target_link_libraries(appAnimat PRIVATE Qt6::Core Qt6::Quick)
 target_link_libraries(appAnimat PRIVATE Qt6::Quick)
+target_link_libraries(appAnimat PRIVATE Qt6::Core)
 target_link_libraries(appAnimat PRIVATE Qt6::Core)
 target_link_libraries(appAnimat PRIVATE Qt6::Core)
 target_link_libraries(appAnimat PRIVATE Qt6::Core)

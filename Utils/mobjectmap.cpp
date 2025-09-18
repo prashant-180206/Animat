@@ -7,7 +7,7 @@
 #include "Math/Mobjects/line.h"
 // #include "Math/Mobjects/Circle.h"
 
-QMap<QString, MobjectMap::Factory> MobjectMap::map;
+QHash<QString, MobjectMap::Factory> MobjectMap::map;
 
 void MobjectMap::init(Scene* canvas)
 {

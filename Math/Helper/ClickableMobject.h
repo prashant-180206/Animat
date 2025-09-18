@@ -15,8 +15,11 @@ class ClickableMobject : public Mobject {
 public:
     explicit ClickableMobject(Scene * canvas,QQuickItem *parent = nullptr);
 
-    int getId() const;
-    void setId(int newid);
+    QString getId() const { return m_id; }
+    void setId(QString newid)
+    {
+        m_id=newid;
+    }
     Scene* getcanvas() const;
 
     virtual void setCenter(qreal xval, qreal yval);
@@ -45,9 +48,8 @@ private:
     QPointF m_itemStartPos;
     QPointF m_localpos;
 
-
 protected:
-    int m_id = 0;
+    QString m_id = 0;
     MProperties* properties = new MProperties(this);
 
 

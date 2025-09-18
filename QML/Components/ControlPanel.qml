@@ -28,32 +28,9 @@ Rectangle {
         height: 400
     }
 
+  AnimInput{
+      anchors.top: editor.bottom
+      packet: canvas.animator()
+  }
 
-
-    Button{
-        anchors.top: editor.bottom
-        id: upbtn
-        text: val2.value.toString() || "Start changing"
-        onClicked: {
-            val2.updateVal(Qt.point(1,2))
-        }
-    }
-    Button{
-        anchors.top: upbtn.bottom
-        id: upbt
-        text: val2.value.toString() || "Start changing"
-        onClicked: {
-            val2.updateVal(Qt.point(6,6))
-        }
-    }
-
-    TextField{
-        color: "black"
-        anchors.top: upbt.bottom
-        placeholderText: "Enter Code "
-    }
-
-    PtValueTracker {
-        id: val2
-    }
 }

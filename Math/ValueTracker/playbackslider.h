@@ -11,22 +11,55 @@ class PlaybackSlider : public ValueTracker
     Q_PROPERTY(qreal maxDuration READ maxDuration CONSTANT FINAL)
 
 public:
-    explicit PlaybackSlider(QQuickItem *parent = nullptr);
+    explicit PlaybackSlider(QQuickItem *parent = nullptr)
+        : ValueTracker()
+        , m_maxDuration(60000) // 1 minute max
+    {
+        m_updateTimer = new QTimer(this);
+        m_updateTimer->setInterval(30); // ~33 FPS update
+        connect(m_updateTimer, &QTimer::timeout, this, &PlaybackSlider::onTimeout);
+        this->setParentItem(parent);
+        setValue(0);
+    }
 
-    bool isPlaying() const;
-    qreal maxDuration() const;
+    ~PlaybackSlider() {
+        qDebug() << "PlaybackSlider destroyed";
+    }
 
-    Q_INVOKABLE void play();
+    bool isPlaying() const { return m_updateTimer->isActive(); }
+    qreal maxDuration() const { return m_maxDuration; }
 
-    Q_INVOKABLE void pause();
+    Q_INVOKABLE void play() {
+        if (value() >= m_maxDuration)
+            setValue(0);
+        m_updateTimer->start();
+        emit playingChanged();
+    }
 
-    Q_INVOKABLE void reset();
+    Q_INVOKABLE void pause() {
+        m_updateTimer->stop();
+        emit playingChanged();
+    }
+
+    Q_INVOKABLE void reset() {
+        m_updateTimer->stop();
+        setValue(0);
+        emit playingChanged();
+    }
 
 signals:
     void playingChanged();
 
 private slots:
-    void onTimeout();
+    void onTimeout() {
+        if (value() < m_maxDuration) {
+            // Increment value by timer interval
+            setValue(qMin(value() + m_updateTimer->interval(), m_maxDuration));
+
+        } else {
+            pause();
+        }
+    }
 
 private:
     qreal m_maxDuration;

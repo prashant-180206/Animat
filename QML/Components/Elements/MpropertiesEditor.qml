@@ -3,10 +3,14 @@ import QtQuick.Controls.Basic
 import QtQuick.Dialogs
 import Animat 1.0
 import "Input"
+
+
 Item {
     id: root
-    property MProperties mprop : canvas.SelectedMobject ? canvas.SelectedMobject.getProperties() : canvas.getProperties()
-    // Dark theme colors as properties for easy change
+    property MProperties mprop : canvas.SelectedMobject ?
+                                     canvas.SelectedMobject.getProperties() :
+                                     canvas.getProperties()
+
     property color backgroundColor: "#121212"
     property color inputBackgroundColor: "#1e1e1e"
     property color inputTextColor: "#ffffff"
@@ -25,6 +29,27 @@ Item {
         spacing: 10
 
         Loader {
+            id: idLoader
+            active: canvas.activeId
+            sourceComponent: Rectangle {
+                color: inputBackgroundColor
+                radius: 4
+                height: 30
+                width: 80
+                border.color: borderColor
+
+                Text {
+                    // placeholderText: "Name"
+                    text: canvas.activeId ||""
+                    color: inputTextColor
+                    anchors.centerIn: parent
+                }
+            }
+        }
+
+
+
+        Loader {
             id: nameLoader
             active: mprop && mprop.base !== null
             sourceComponent: nameComponent
@@ -33,7 +58,7 @@ Item {
             id: nameComponent
             TextField {
                 placeholderText: "Name"
-                text: mprop.base.name ? mprop.base.name : ""
+                text: mprop.base ? mprop.base.name : ""
                 color: inputTextColor
                 background: Rectangle {
                     color: inputBackgroundColor

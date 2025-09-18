@@ -9,7 +9,7 @@ class MobjectMap
 {
 public:
     using Factory = std::function<ClickableMobject*()>;
-    static QMap<QString,Factory> map;
+    static QHash<QString,Factory> map;
     static void init(Scene *canvas);
 };
 

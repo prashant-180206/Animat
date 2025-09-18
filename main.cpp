@@ -26,6 +26,8 @@ int main(int argc, char *argv[])
     qmlRegisterType<ValueTracker>("Animat", 1, 0, "ValueTracker");
     qmlRegisterType<PtValueTracker>("Animat", 1, 0, "PtValueTracker");
     qmlRegisterType<PlaybackSlider>("Animat", 1, 0, "PlaybackSlider");
+    qmlRegisterType<AnimationManager>("Animat", 1, 0, "AnimManager");
+    qmlRegisterType<AnimPacket>("Animat", 1, 0, "AnimPacket");
     qmlRegisterType<TrackerManager>("Animat", 1, 0, "TrackerManager");
 
 

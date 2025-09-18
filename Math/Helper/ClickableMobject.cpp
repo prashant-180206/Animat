@@ -35,12 +35,9 @@ ClickableMobject::ClickableMobject(Scene *canvas, QQuickItem *parent)
     properties->base()->setParent(this);
 }
 
-int ClickableMobject::getId() const { return m_id; }
 
-void ClickableMobject::setId(int newid)
-{
-    m_id=newid;
-}
+
+
 
 Scene *ClickableMobject::getcanvas() const
 {
@@ -116,7 +113,7 @@ void ClickableMobject::mousePressEvent(QMouseEvent *event) {
         QPointF pressScenePos = event->scenePosition();
         QPointF pressCanvasPos = m_canvas->mapFromScene(pressScenePos);
         m_dragItemOffset = pressCanvasPos - QPointF(x(), y());
-        m_canvas->setActiveMobjectId(getId());
+        m_canvas->setActiveId(getId());
         event->accept();
     } else {
         event->ignore();

@@ -1,7 +1,6 @@
 #ifndef SCENE_H
 #define SCENE_H
 
-
 #include <QList>
 #include <QPointF>
 #include <QPainter>
@@ -23,11 +22,14 @@ class Scene : public QQuickItem
     Q_OBJECT
     QML_ELEMENT
     Q_PROPERTY(ClickableMobject* SelectedMobject READ SelectedMobject NOTIFY SelectedMobjectChanged FINAL)
+    Q_PROPERTY(QString activeId READ activeId WRITE setActiveId NOTIFY activeIdChanged FINAL)
 
 
 public:
-    Scene() ;
+    Scene();
     ~Scene();
+
+    QString activeId(){return active_m_id;};
 
     Q_INVOKABLE void add_mobject(QString mobj);
 
@@ -36,12 +38,11 @@ public:
     Q_INVOKABLE TrackerManager* trackers();
 
     Q_INVOKABLE PlaybackSlider * player();
-
     Q_INVOKABLE AnimationManager* animator();;
-
     Q_INVOKABLE MProperties * getProperties(){return m_prop;};
 
-    ClickableMobject * getMobject(int id){
+
+    Q_INVOKABLE ClickableMobject * getMobject(QString id){
         return m_objects[id];
     }
 
@@ -54,7 +55,13 @@ public:
     QPointF p2c(QPointF p);
     QPointF c2p(QPointF c);
 
-    void setActiveMobjectId(int val);
+    void setActiveId(QString val) {
+        if (active_m_id != val) {
+            active_m_id = val;
+        }
+        emit SelectedMobjectChanged();
+        emit activeIdChanged();
+    }
 
 protected:
     QSGNode* updatePaintNode(QSGNode* oldNode, UpdatePaintNodeData*) override;
@@ -62,19 +69,20 @@ protected:
 private:
 
     int total_mobj;
-    int active_m_id=-1;
+    QString active_m_id="";
     int gridsize=50;
     QColor bgcol;
-    QHash<int,ClickableMobject*> m_objects;
+    QHash<QString,ClickableMobject*> m_objects;
     MProperties* m_prop = new MProperties(this);
 
-    TrackerManager* m_trackers= new TrackerManager(this);
+    TrackerManager* m_trackers= new TrackerManager(this,this);
     PlaybackSlider* m_player = new PlaybackSlider(this);
     AnimationManager * m_animator = new AnimationManager(this);
 
 
 signals:
     void SelectedMobjectChanged();
+    void activeIdChanged();
 };
 
 #endif // SCENE_H

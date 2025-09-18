@@ -7,6 +7,8 @@
 #include "Utils/mobjectmap.h"
 
 
+
+
 Scene::Scene()
 {
     total_mobj =0;
@@ -23,6 +25,12 @@ Scene::Scene()
     connect(this, &QQuickItem::windowChanged, this, [this](QQuickWindow* w){
         if(w) update();
     });
+
+    connect(m_player,&ValueTracker::valueChanged,m_animator,[this](qreal v){
+        if(animator()->activePacket()){
+            animator()->setTime(v/1000);
+        }
+    });
 }
 
 Scene::~Scene()
@@ -38,19 +46,21 @@ void Scene::add_mobject(QString mobj)
     qDebug()<<"Adding Mobject";
     if (!m) return;
 
+    auto mbj_id = QString("%1%2").arg(m->getProperties()->base()->name()).arg(total_mobj);
+
     m->setParentItem(this);
-    m->setId(total_mobj);
-    // m->getProperties()->setOpacity(0.1);
+    m->setId(mbj_id);
+
     m->setCenter(5,4);
-    m->setZ(20);
+    m->setZ(total_mobj*0.1);
     qDebug()<<m<<m->getCenter();
-    m_objects.insert(total_mobj,m);
+    m_objects.insert(mbj_id,m);
 
     total_mobj++;
 
 }
 
-ClickableMobject *Scene::SelectedMobject(){return active_m_id>=0?m_objects[active_m_id]:nullptr;}
+ClickableMobject *Scene::SelectedMobject(){return active_m_id!=""?m_objects[active_m_id]:nullptr;}
 
 TrackerManager *Scene::trackers(){
     return m_trackers;
@@ -85,12 +95,7 @@ QPointF Scene::c2p(QPointF c) {
     return res;
 }
 
-void Scene::setActiveMobjectId(int val) {
-    if (active_m_id != val) {
-        active_m_id = val;
-    }
-    emit SelectedMobjectChanged();
-}
+
 
 QSGNode* Scene::updatePaintNode(QSGNode* oldNode, UpdatePaintNodeData*) {
     QSGNode* rootNode = oldNode;
