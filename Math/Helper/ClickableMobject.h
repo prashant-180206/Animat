@@ -16,10 +16,7 @@ public:
     explicit ClickableMobject(Scene * canvas,QQuickItem *parent = nullptr);
 
     QString getId() const { return m_id; }
-    void setId(QString newid)
-    {
-        m_id=newid;
-    }
+    void setId(QString newid);
     Scene* getcanvas() const;
 
     virtual void setCenter(qreal xval, qreal yval);

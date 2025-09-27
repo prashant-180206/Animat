@@ -6,9 +6,7 @@ import "Input"
 
 Rectangle {
     id: root
-    property MProperties mprop: canvas.SelectedMobject ?
-                                    canvas.SelectedMobject.getProperties() :
-                                    canvas.getProperties()
+    property MProperties mprop: canvas.SelectedMobject ? canvas.SelectedMobject.getProperties() : canvas.getProperties()
 
     color: "#121212"
     radius: 8
@@ -33,12 +31,41 @@ Rectangle {
                 radius: 6
                 border.color: "#444444"
 
-                Text {
-                    text: "ID: " + (canvas.activeId || "")
-                    color: "#ffffff"
-                    anchors.centerIn: parent
-                    font.pixelSize: 13
-                    font.bold: true
+                RowLayout {
+                    anchors.fill: parent
+                    anchors.margins: 8
+                    spacing: 8
+
+                    Text {
+                        text: "ID: " + (canvas.activeId || "")
+                        color: "#ffffff"
+                        font.pixelSize: 13
+                        font.bold: true
+                        Layout.fillWidth: true
+                    }
+
+                    Button {
+                        text: "Delete"
+                        Layout.preferredWidth: 60
+                        Layout.preferredHeight: 24
+                        background: Rectangle {
+                            color: parent.pressed ? "#b71c1c" : parent.hovered ? "#d32f2f" : "#c62828"
+                            radius: 4
+                        }
+                        contentItem: Text {
+                            text: parent.text
+                            color: "#ffffff"
+                            font.pixelSize: 10
+                            font.bold: true
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                        }
+                        onClicked: {
+                            if (canvas.activeId) {
+                                canvas.removeMobject(canvas.activeId);
+                            }
+                        }
+                    }
                 }
             }
 
@@ -59,7 +86,8 @@ Rectangle {
                     placeholderText: "Enter name"
                     text: mprop && mprop.base ? mprop.base.name : ""
                     onEditingFinished: {
-                        if (mprop && mprop.base) mprop.base.name = text
+                        if (mprop && mprop.base)
+                            mprop.base.name = text;
                     }
                 }
             }
@@ -79,8 +107,9 @@ Rectangle {
                 PointInput {
                     Layout.fillWidth: true
                     pt: mprop && mprop.base ? mprop.base.pos : Qt.point(0, 0)
-                    func: function() {
-                        if (mprop && mprop.base) mprop.base.pos = pt2
+                    func: function () {
+                        if (mprop && mprop.base)
+                            mprop.base.pos = pt2;
                     }
                 }
             }
@@ -100,8 +129,9 @@ Rectangle {
                 PointInput {
                     Layout.fillWidth: true
                     pt: mprop && mprop.base ? mprop.base.size : Qt.point(0, 0)
-                    func: function() {
-                        if (mprop && mprop.base) mprop.base.size = pt2
+                    func: function () {
+                        if (mprop && mprop.base)
+                            mprop.base.size = pt2;
                     }
                 }
             }
@@ -122,8 +152,9 @@ Rectangle {
 
                 ColorPicker {
                     selectedColor: mprop && mprop.base ? mprop.base.color : "transparent"
-                    func:()=> {
-                        if (mprop && mprop.base) mprop.base.color = newColor
+                    func: () => {
+                        if (mprop && mprop.base)
+                            mprop.base.color = newColor;
                     }
                 }
 
@@ -137,8 +168,9 @@ Rectangle {
                 ColorPicker {
                     visible: mprop && mprop.polygon
                     selectedColor: mprop && mprop.polygon ? mprop.polygon.borderColor : "transparent"
-                    func:()=> {
-                        if (mprop && mprop.polygon) mprop.polygon.borderColor = newColor
+                    func: () => {
+                        if (mprop && mprop.polygon)
+                            mprop.polygon.borderColor = newColor;
                     }
                 }
             }
@@ -152,27 +184,30 @@ Rectangle {
                     visible: mprop && mprop.base
                     label: "Opacity:"
                     value: mprop && mprop.base ? mprop.base.opacity : 1.0
-                    func:()=> {
-                             if (mprop && mprop.base) mprop.base.opacity = newValue
-                         }
+                    func: () => {
+                        if (mprop && mprop.base)
+                            mprop.base.opacity = newValue;
+                    }
                 }
 
                 NumberInput {
                     visible: mprop && mprop.polygon
                     label: "Thickness:"
                     value: mprop && mprop.polygon ? mprop.polygon.thickness : 0
-                    func:()=> {
-                             if (mprop && mprop.polygon) mprop.polygon.thickness = newValue
-                         }
+                    func: () => {
+                        if (mprop && mprop.polygon)
+                            mprop.polygon.thickness = newValue;
+                    }
                 }
 
                 NumberInput {
                     visible: mprop && mprop.circle
                     label: "Radius:"
                     value: mprop && mprop.circle ? mprop.circle.radius : 0
-                    func:()=> {
-                             if (mprop && mprop.circle) mprop.circle.radius = newValue
-                         }
+                    func: () => {
+                        if (mprop && mprop.circle)
+                            mprop.circle.radius = newValue;
+                    }
                 }
 
                 NumberInput {
@@ -180,9 +215,10 @@ Rectangle {
                     label: "Segments:"
                     value: mprop && mprop.curve ? mprop.curve.segments : 0
                     integersOnly: true
-                    func:()=> {
-                             if (mprop && mprop.curve) mprop.curve.segments = newValue
-                         }
+                    func: () => {
+                        if (mprop && mprop.curve)
+                            mprop.curve.segments = newValue;
+                    }
                 }
             }
 
@@ -202,16 +238,18 @@ Rectangle {
                 PointInput {
                     pt: mprop && mprop.line ? mprop.line.lineStart : Qt.point(0, 0)
                     label: "Start:"
-                    func: function() {
-                        if (mprop && mprop.line) mprop.line.lineStart = pt2
+                    func: function () {
+                        if (mprop && mprop.line)
+                            mprop.line.lineStart = pt2;
                     }
                 }
 
                 PointInput {
                     pt: mprop && mprop.line ? mprop.line.lineEnd : Qt.point(0, 0)
                     label: "End:"
-                    func: function() {
-                        if (mprop && mprop.line) mprop.line.lineEnd = pt2
+                    func: function () {
+                        if (mprop && mprop.line)
+                            mprop.line.lineEnd = pt2;
                     }
                 }
             }
@@ -234,7 +272,8 @@ Rectangle {
                     placeholderText: "X Function (e.g., t * cos(t))"
                     text: mprop && mprop.curve ? mprop.curve.curveXFunc : ""
                     onEditingFinished: {
-                        if (mprop && mprop.curve) mprop.curve.curveXFunc = text
+                        if (mprop && mprop.curve)
+                            mprop.curve.curveXFunc = text;
                     }
                 }
 
@@ -243,15 +282,17 @@ Rectangle {
                     placeholderText: "Y Function (e.g., t * sin(t))"
                     text: mprop && mprop.curve ? mprop.curve.curveYFunc : ""
                     onEditingFinished: {
-                        if (mprop && mprop.curve) mprop.curve.curveYFunc = text
+                        if (mprop && mprop.curve)
+                            mprop.curve.curveYFunc = text;
                     }
                 }
 
                 PointInput {
                     pt: mprop && mprop.curve ? mprop.curve.tRange : Qt.point(0, 1)
                     label: "t Range:"
-                    func: function() {
-                        if (mprop && mprop.curve) mprop.curve.tRange = pt2
+                    func: function () {
+                        if (mprop && mprop.curve)
+                            mprop.curve.tRange = pt2;
                     }
                 }
             }

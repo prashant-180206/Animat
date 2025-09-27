@@ -1,10 +1,10 @@
 import QtQuick
 import Animat 1.0
-import QtQuick.Controls 2.15
+import QtQuick.Controls
 import "Components"
 
 Window {
-    id:globeroot
+    id: globeroot
     width: 1920
     height: 1080
     visible: true
@@ -18,7 +18,6 @@ Window {
     }
     Menubar {
         id: menu
-
     }
     ControlPanel {
         id: control
@@ -41,8 +40,6 @@ Window {
             anchors.left: parent.left
             anchors.right: parent.right
             color: Constants.darkBlack
-
-
 
             Scene {
                 id: canvas

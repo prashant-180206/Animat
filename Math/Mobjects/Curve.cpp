@@ -10,7 +10,7 @@ Curve::Curve(Scene *canvas, QQuickItem *parent)
     : Group(canvas, parent)
 {
 
-    properties->setCurve(new CurveProperties(this));
+    properties->setCurve(new CurveProperties(this->properties));
 
     properties->curve()->setCurveXFunc("t");
     properties->curve()->setCurveYFunc("-0.2*t^2");

@@ -6,7 +6,7 @@
 #include "Utils/Singleton.h"
 #include "Math/Mobjects/Mobject.h"
 #include "Utils/mobjectregistry.h"
-#include "Math/ValueTracker/valuetracker.h"
+#include "Math/ValueTracker/ValueTracker.h"
 #include "Math/ValueTracker/ptvaluetracker.h"
 #include "Math/ValueTracker/playbackslider.h"
 #include "trackermanager.h"

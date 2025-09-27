@@ -42,6 +42,7 @@ public:
             localTime = m_duration;
         }
         for (Animation* anim : std::as_const(m_animations)) {
+            if(anim==nullptr) continue;
             anim->setLtime(localTime);
             anim->apply();
         }

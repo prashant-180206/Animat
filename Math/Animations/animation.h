@@ -8,16 +8,26 @@
 class Animation
 {
 public:
-    Animation(qreal startOffset, qreal duration,QEasingCurve::Type easingtype=QEasingCurve::InBounce);
+    Animation(qreal startOffset, qreal duration, QEasingCurve::Type easingtype = QEasingCurve::InBounce);
 
     virtual ~Animation();
 
     // Set local time relative to this animation's startOffset
-    void setLtime(qreal sceneTime);
+    void setLtime(qreal sceneTime = 0)
+    {
+        qreal localTime = sceneTime - m_startOffset;
+        if (localTime < 0)
+            m_ltime = 0;
+        else if (localTime > m_duration)
+            m_ltime = 1;
+        else
+            m_ltime = localTime / m_duration;
+    }
 
     qreal progress() const;
 
-    qreal easedProgress() const {
+    qreal easedProgress() const
+    {
         return m_easing.valueForProgress(m_ltime);
     }
 
@@ -28,9 +38,9 @@ public:
     qreal getDuration() const;
 
 protected:
-    qreal m_ltime;           // Normalized local time (0 to 1)
-    qreal m_startOffset;     // Absolute start time of animation in scene
-    qreal m_duration;        // Duration of animation
+    qreal m_ltime = 0;   // Normalized local time (0 to 1)
+    qreal m_startOffset; // Absolute start time of animation in scene
+    qreal m_duration;    // Duration of animation
 
     QEasingCurve m_easing = QEasingCurve::InOutQuad;
 };
@@ -39,13 +49,13 @@ protected:
 class MoveAnimation : public Animation
 {
 public:
-    MoveAnimation(ClickableMobject* mobj, QPointF startPos, QPointF targetPos,
+    MoveAnimation(ClickableMobject *mobj, QPointF startPos, QPointF targetPos,
                   qreal startOffset, qreal duration);
 
     void apply() override;
 
 private:
-    ClickableMobject* m_mobj;
+    ClickableMobject *m_mobj;
     QPointF m_startPos;
     QPointF m_targetPos;
 };
@@ -54,38 +64,38 @@ private:
 class CreateAnimation : public Animation
 {
 public:
-    CreateAnimation(ClickableMobject* mobj, qreal startOffset, qreal duration);
+    CreateAnimation(ClickableMobject *mobj, qreal startOffset, qreal duration);
 
     void apply() override;
 
 private:
-    ClickableMobject* m_mobj;
+    ClickableMobject *m_mobj;
 };
 
 // Destroy Animation: fades out mobject by decreasing opacity from 1 to 0
 class DestroyAnimation : public Animation
 {
 public:
-    DestroyAnimation(ClickableMobject* mobj, qreal startOffset, qreal duration);
+    DestroyAnimation(ClickableMobject *mobj, qreal startOffset, qreal duration);
 
     void apply() override;
 
 private:
-    ClickableMobject* m_mobj;
+    ClickableMobject *m_mobj;
 };
 
 // Custom Animation for scalar properties
 class CustomScalarAnimation : public Animation
 {
 public:
-    CustomScalarAnimation(ClickableMobject* mobj, QString prop,
+    CustomScalarAnimation(ClickableMobject *mobj, QString prop,
                           qreal startVal, qreal targetVal,
                           qreal startOffset, qreal duration);
 
     void apply() override;
 
 private:
-    ClickableMobject* m_mobj;
+    ClickableMobject *m_mobj;
     QString m_prop;
     qreal m_startVal;
     qreal m_targetVal;
@@ -95,14 +105,14 @@ private:
 class CustomPointAnimation : public Animation
 {
 public:
-    CustomPointAnimation(ClickableMobject* mobj, QString prop,
+    CustomPointAnimation(ClickableMobject *mobj, QString prop,
                          QPointF startVal, QPointF targetVal,
                          qreal startOffset, qreal duration);
 
     void apply() override;
 
 private:
-    ClickableMobject* m_mobj;
+    ClickableMobject *m_mobj;
     QString m_prop;
     QPointF m_startVal;
     QPointF m_targetVal;
@@ -114,19 +124,19 @@ public:
     ValueAnimation(qreal startVal, qreal endVal, qreal startOffset, qreal duration);
 
     // Add mobject-property pairs to update on value change
-    void addTarget(ClickableMobject* mobj, QString prop);
+    void addTarget(ClickableMobject *mobj, QString prop);
 
     void apply() override;
 
 private:
-    struct Target {
-        ClickableMobject* mobj;
+    struct Target
+    {
+        ClickableMobject *mobj;
         QString prop;
     };
     qreal m_startVal;
     qreal m_endVal;
     QList<Target> m_targets;
 };
-
 
 #endif // ANIMATION_H

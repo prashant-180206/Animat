@@ -68,9 +68,6 @@ Rectangle {
                     }
 
                     width: (root.width - (rp.count - 1) * 10) / rp.count
-                    // 10 pixels spacing between tabs, divided evenly
-
-                    // Spacing between tabs: margin right except last item
                     anchors.rightMargin: 10
                 }
             }
@@ -89,7 +86,8 @@ Rectangle {
                 Layout.fillHeight: true
             }
             AnimInput {
-                packet: canvas.animator()
+                manager: canvas.animator()
+                scene: canvas
                 Layout.fillWidth: true
                 Layout.fillHeight: true
             }

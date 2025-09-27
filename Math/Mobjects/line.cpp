@@ -4,7 +4,7 @@
 
 Line::Line(Scene* canvas,QQuickItem* parent) :ClickableMobject(canvas,parent){
 
-    properties->setLine( new LineProperties(this));
+    properties->setLine( new LineProperties(this->properties));
 
 
     auto p1 =(QPointF(-1,-1));

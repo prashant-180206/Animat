@@ -1,8 +1,10 @@
 #include "baseproperties.h"
 
 BaseProperties::BaseProperties(QObject *parent)
-    : QObject{parent}
-{}
+    : QObject(parent)
+{
+    setParent(parent);
+}
 
 QString BaseProperties::name() const { return m_Name; }
 

@@ -6,7 +6,7 @@ Circle::Circle(Scene *canvas, QQuickItem *parent)
 {
     setFlag(ItemHasContents, true);
 
-    properties->setCircle(new CircleProperties(this));
+    properties->setCircle(new CircleProperties(this->properties));
 
     auto r = properties->circle()->radius();
     properties->base()->setSize({2*r,2*r});

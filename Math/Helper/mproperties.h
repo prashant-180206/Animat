@@ -24,44 +24,19 @@ public:
     explicit MProperties(QObject *parent = nullptr);
 
     BaseProperties* base() const { return m_base; }
-    void setBase(BaseProperties* base) {
-        if (m_base == base)
-            return;
-        m_base = base;
-        emit baseChanged();
-    }
+    void setBase(BaseProperties* base);
 
     CircleProperties* circle() const { return m_circle; }
-    void setCircle(CircleProperties* circle) {
-        if (m_circle == circle)
-            return;
-        m_circle = circle;
-        emit circleChanged();
-    }
+    void setCircle(CircleProperties* circle);
 
     CurveProperties* curve() const { return m_curve; }
-    void setCurve(CurveProperties* curve) {
-        if (m_curve == curve)
-            return;
-        m_curve = curve;
-        emit curveChanged();
-    }
+    void setCurve(CurveProperties* curve);
 
     LineProperties* line() const { return m_line; }
-    void setLine(LineProperties* line) {
-        if (m_line == line)
-            return;
-        m_line = line;
-        emit lineChanged();
-    }
+    void setLine(LineProperties* line);
 
     PolygonProperties* polygon() const { return m_polygon; }
-    void setPolygon(PolygonProperties* polygon) {
-        if (m_polygon == polygon)
-            return;
-        m_polygon = polygon;
-        emit polygonChanged();
-    }
+    void setPolygon(PolygonProperties* polygon);
 
 signals:
     void baseChanged();

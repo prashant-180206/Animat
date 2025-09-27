@@ -26,6 +26,7 @@ public:
             m_packetToAdd = new AnimPacket(this);
         }
         m_packets.append(m_packetToAdd);
+        m_packetToAdd->setParent(this);
 
         m_packetToAdd->setStartTime(progressTime);
         progressTime+=m_packetToAdd->duration();
@@ -40,6 +41,7 @@ public:
 
         // Create new packet for modification/editing
         m_packetToAdd = new AnimPacket(this);
+        m_packetToAdd->setParent(this);
         qInfo()<<m_packets;
         emit packetToAddChanged();
     }
