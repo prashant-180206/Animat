@@ -46,8 +46,6 @@ void CreateAnimation::apply()
     m_mobj->getProperties()->base()->setOpacity(newOpacity);
 }
 
-
-
 DestroyAnimation::DestroyAnimation(ClickableMobject *mobj, qreal startOffset, qreal duration)
     : Animation(startOffset, duration), m_mobj(mobj)
 {
@@ -129,4 +127,15 @@ void ValueAnimation::apply()
             func(target.mobj, currentVal);
         }
     }
+}
+
+WaitAnimation::WaitAnimation(qreal startOffset, qreal duration)
+    : Animation(startOffset, duration)
+{
+}
+
+void WaitAnimation::apply()
+{
+    // Wait animation does nothing - it just consumes time
+    // This creates a controllable gap/delay between other animations
 }

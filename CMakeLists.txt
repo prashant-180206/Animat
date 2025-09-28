@@ -58,7 +58,7 @@ qt_add_qml_module(appAnimat
         SOURCES Math/Mobjects/Polygon.h Math/Mobjects/Polygon.cpp
         SOURCES Math/Mobjects/MRectangle.h Math/Mobjects/MRectangle.cpp
         SOURCES Math/Mobjects/Circle.h Math/Mobjects/Circle.cpp
-        SOURCES Math/Helper/Text.h Math/Helper/Text.cpp
+        SOURCES Math/Mobjects/Text.h Math/Mobjects/Text.cpp
         SOURCES Math/Helper/ClickableMobject.h
         SOURCES Math/Mobjects/SimpleLine.h Math/Mobjects/SimpleLine.cpp
         SOURCES
@@ -70,6 +70,7 @@ qt_add_qml_module(appAnimat
         QML_FILES QML/Components/Elements/MButton.qml
         QML_FILES QML/Components/Elements/InputMap.qml
         QML_FILES QML/Components/Elements/TextButton.qml
+        QML_FILES QML/Components/Elements/ActiveAnimationsList.qml
         SOURCES
         SOURCES
         SOURCES Math/Helper/mproperties.h Math/Helper/mproperties.cpp
@@ -93,6 +94,12 @@ qt_add_qml_module(appAnimat
         SOURCES Math/Animations/animation.h Math/Animations/animation.cpp
         SOURCES Math/Animations/animpacket.h Math/Animations/animpacket.cpp
         QML_FILES QML/Components/Elements/Input/AnimInput.qml
+        QML_FILES QML/Components/Elements/Input/AnimationTypeSelector.qml
+        QML_FILES QML/Components/Elements/Input/AnimationFieldsPanel.qml
+        QML_FILES QML/Components/Elements/Input/AnimationButtons.qml
+        QML_FILES QML/Components/Elements/Input/AnimationListView.qml
+        QML_FILES QML/Components/Elements/Input/AnimationLog.qml
+        QML_FILES QML/Components/Elements/Input/AnimationNavigationControls.qml
         QML_FILES QML/Components/Elements/Input/PlaybackInput.qml
         QML_FILES QML/Components/Elements/Input/StyledTextField.qml
         QML_FILES QML/Components/Elements/Input/ColorPicker.qml

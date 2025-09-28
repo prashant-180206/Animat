@@ -23,7 +23,11 @@ Rectangle {
         Button {
             width: 32
             height: 32
-            background: Rectangle { anchors.fill: parent; color: "#202127"; radius: 8 }
+            background: Rectangle {
+                anchors.fill: parent
+                color: "#202127"
+                radius: 8
+            }
             contentItem: Text {
                 text: player && player.playing ? "\u23F8" : "\u25B6"   // ⏸ / ▶
                 font.pixelSize: 20
@@ -31,8 +35,9 @@ Rectangle {
                 anchors.centerIn: parent
             }
             onClicked: {
-                if (!player) return
-                player.playing ? player.pause() : player.play()
+                if (!player)
+                    return;
+                player.playing ? player.pause() : player.play();
             }
         }
 
@@ -40,14 +45,19 @@ Rectangle {
         Button {
             width: 32
             height: 32
-            background: Rectangle { anchors.fill: parent; color: "#202127"; radius: 8 }
+            background: Rectangle {
+                anchors.fill: parent
+                color: "#202127"
+                radius: 8
+            }
             contentItem: Text {
                 text: "\u21BA"   // ↺
                 font.pixelSize: 18
                 color: "#F5F6F7"
                 anchors.centerIn: parent
             }
-            onClicked: if (player) player.reset()
+            onClicked: if (player)
+                player.reset()
         }
     }
 
@@ -63,12 +73,16 @@ Rectangle {
         }
 
         from: 0
-        to: player ? player.maxDuration : 60000
+        to: player ? player.maxDuration : 5000
         value: player ? player.value : 0
         stepSize: 10
 
-        onPressedChanged: if (!pressed && player) player.value = value
-        onMoved: if (player) { player.pause(); player.value = value }
+        onPressedChanged: if (!pressed && player)
+            player.value = value
+        onMoved: if (player) {
+            player.pause();
+            player.value = value;
+        }
 
         // === Corrected Background (Qt Docs style) ===
         background: Rectangle {
@@ -113,12 +127,16 @@ Rectangle {
         color: "#ADADAD"
 
         text: {
-            function pad(n) { return n < 10 ? "0" + n : n }
-            let valueSec = player ? Math.floor(player.value / 1000) : 0
-            let maxSec   = player ? Math.floor(player.maxDuration / 1000) : 60
-            return pad(Math.floor(valueSec / 60)) + ":" + pad(valueSec % 60) +
-                   " / " +
-                   pad(Math.floor(maxSec / 60)) + ":" + pad(maxSec % 60)
+            function pad(n) {
+                return n < 10 ? "0" + n : n;
+            }
+            let valueSec = player ? Math.floor(player.value / 1000) : 0;
+            let maxSec = player ? Math.floor(player.maxDuration / 1000) : 5;
+
+            // Show if duration is based on animations or default
+            let durationLabel = (player && player.animationManager && player.animationManager.size() > 0) ? "" : " (no animations)";
+
+            return pad(Math.floor(valueSec / 60)) + ":" + pad(valueSec % 60) + " / " + pad(Math.floor(maxSec / 60)) + ":" + pad(maxSec % 60) + durationLabel;
         }
     }
 }

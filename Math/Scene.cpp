@@ -23,11 +23,15 @@ Scene::Scene()
             {
         if(w) update(); });
 
+    // Connect player to animator for time updates
     connect(m_player, &ValueTracker::valueChanged, m_animator, [this](qreal v)
             {
         if(animator()->activePacket()){
             animator()->setTime(v/1000);
         } });
+
+    // Connect the PlaybackSlider to the AnimationManager for dynamic duration
+    m_player->setAnimationManager(m_animator);
 }
 
 Scene::~Scene()
@@ -80,6 +84,16 @@ void Scene::removeMobject(QString mobjectId)
 }
 
 ClickableMobject *Scene::SelectedMobject() { return active_m_id != "" ? m_objects[active_m_id] : nullptr; }
+
+QStringList Scene::getAllMobjectIds()
+{
+    return m_objects.keys();
+}
+
+ClickableMobject *Scene::getMobject(QString id)
+{
+    return m_objects.value(id, nullptr);
+}
 
 TrackerManager *Scene::trackers()
 {

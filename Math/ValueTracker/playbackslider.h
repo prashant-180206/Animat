@@ -4,16 +4,18 @@
 #include <QTimer>
 #include "ValueTracker.h"
 
+class AnimationManager;
+
 class PlaybackSlider : public ValueTracker
 {
     Q_OBJECT
     Q_PROPERTY(bool playing READ isPlaying NOTIFY playingChanged FINAL)
-    Q_PROPERTY(qreal maxDuration READ maxDuration CONSTANT FINAL)
+    Q_PROPERTY(qreal maxDuration READ maxDuration NOTIFY maxDurationChanged FINAL)
+    Q_PROPERTY(AnimationManager *animationManager READ animationManager WRITE setAnimationManager NOTIFY animationManagerChanged FINAL)
 
 public:
     explicit PlaybackSlider(QQuickItem *parent = nullptr)
-        : ValueTracker()
-        , m_maxDuration(60000) // 1 minute max
+        : ValueTracker(), m_animationManager(nullptr), m_minDuration(5000) // 5 second minimum
     {
         m_updateTimer = new QTimer(this);
         m_updateTimer->setInterval(10); // ~33 FPS update
@@ -22,26 +24,34 @@ public:
         setValue(0);
     }
 
-    ~PlaybackSlider() {
+    ~PlaybackSlider()
+    {
         qDebug() << "PlaybackSlider destroyed";
     }
 
     bool isPlaying() const { return m_updateTimer->isActive(); }
-    qreal maxDuration() const { return m_maxDuration; }
+    qreal maxDuration() const { return calculateMaxDuration(); }
 
-    Q_INVOKABLE void play() {
-        if (value() >= m_maxDuration)
+    AnimationManager *animationManager() const { return m_animationManager; }
+    void setAnimationManager(AnimationManager *manager);
+
+    Q_INVOKABLE void play()
+    {
+        qreal maxDur = maxDuration();
+        if (value() >= maxDur)
             setValue(0);
         m_updateTimer->start();
         emit playingChanged();
     }
 
-    Q_INVOKABLE void pause() {
+    Q_INVOKABLE void pause()
+    {
         m_updateTimer->stop();
         emit playingChanged();
     }
 
-    Q_INVOKABLE void reset() {
+    Q_INVOKABLE void reset()
+    {
         m_updateTimer->stop();
         setValue(0);
         emit playingChanged();
@@ -49,22 +59,32 @@ public:
 
 signals:
     void playingChanged();
+    void maxDurationChanged();
+    void animationManagerChanged();
 
 private slots:
-    void onTimeout() {
-        if (value() < m_maxDuration) {
+    void onTimeout()
+    {
+        qreal maxDur = maxDuration();
+        if (value() < maxDur)
+        {
             // Increment value by timer interval
-            setValue(qMin(value() + m_updateTimer->interval(), m_maxDuration));
-
-        } else {
+            setValue(qMin(value() + m_updateTimer->interval(), maxDur));
+        }
+        else
+        {
             pause();
         }
     }
 
+    void onAnimationsChanged();
+
 private:
-    qreal m_maxDuration;
+    qreal calculateMaxDuration() const;
+
+    AnimationManager *m_animationManager;
+    qreal m_minDuration;
     QTimer *m_updateTimer;
 };
-
 
 #endif // PLAYBACKSLIDER_H

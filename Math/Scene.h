@@ -23,6 +23,7 @@ class Scene : public QQuickItem
     QML_ELEMENT
     Q_PROPERTY(ClickableMobject *SelectedMobject READ SelectedMobject NOTIFY SelectedMobjectChanged FINAL)
     Q_PROPERTY(QString activeId READ activeId WRITE setActiveId NOTIFY activeIdChanged FINAL)
+    Q_PROPERTY(QStringList mobjectIds READ getAllMobjectIds NOTIFY mobjectsChanged FINAL)
 
 public:
     Scene();
@@ -43,15 +44,9 @@ public:
     ;
     Q_INVOKABLE MProperties *getProperties() { return m_prop; };
 
-    Q_INVOKABLE ClickableMobject *getMobject(QString id)
-    {
-        return m_objects[id];
-    }
+    Q_INVOKABLE ClickableMobject *getMobject(QString id);
 
-    Q_INVOKABLE QStringList getAllMobjectIds()
-    {
-        return m_objects.keys();
-    }
+    Q_INVOKABLE QStringList getAllMobjectIds();
 
     void setbg(QColor c) { bgcol = c; }
     QColor getbg() { return bgcol; };

@@ -5,103 +5,102 @@
 #include <QObject>
 #include <QVector>
 
+// Doubly linked list node for AnimPacket
+struct AnimPacketNode
+{
+    AnimPacket *packet;
+    AnimPacketNode *next;
+    AnimPacketNode *prev;
+
+    explicit AnimPacketNode(AnimPacket *p) : packet(p), next(nullptr), prev(nullptr) {}
+
+    ~AnimPacketNode()
+    {
+        // Note: We don't delete the packet here as it should be managed by Qt's parent-child system
+        // The packet will be deleted by AnimationManager when appropriate
+        packet = nullptr; // Just clear the pointer for safety
+        next = prev = nullptr;
+    }
+};
 
 class AnimationManager : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(AnimPacket* activePacket READ activePacket NOTIFY activePacketChanged)
-    Q_PROPERTY(AnimPacket* packetToAdd READ packetToAdd WRITE setPacketToAdd NOTIFY packetToAddChanged)
+    Q_PROPERTY(AnimPacket *activePacket READ activePacket NOTIFY activePacketChanged)
+    Q_PROPERTY(AnimPacket *packetToAdd READ packetToAdd WRITE setPacketToAdd NOTIFY packetToAddChanged)
+    Q_PROPERTY(QVector<AnimPacket *> packets READ packets NOTIFY packetsChanged)
 
 public:
-    explicit AnimationManager(QObject *parent = nullptr)
-        : QObject(parent), m_activePacket(nullptr)
-    {
-        m_packetToAdd = new AnimPacket(this);
-    }
+    explicit AnimationManager(QObject *parent = nullptr);
+
+    ~AnimationManager();
 
     // Add the packetToAdd to list and reset it to new instance
-    Q_INVOKABLE void add()
-    {
-        if (!m_packetToAdd) {
-            m_packetToAdd = new AnimPacket(this);
-        }
-        m_packets.append(m_packetToAdd);
-        m_packetToAdd->setParent(this);
+    Q_INVOKABLE void add();
 
-        m_packetToAdd->setStartTime(progressTime);
-        progressTime+=m_packetToAdd->duration();
+    // Navigation methods for better animation control
+    Q_INVOKABLE bool playNext();
 
-        // Optional: sort by start time
-        std::sort(m_packets.begin(), m_packets.end(),
-                  [](AnimPacket* a, AnimPacket* b){
-                      return a->startTime() < b->startTime();
-                  });
+    Q_INVOKABLE bool playPrevious();
 
-        setActivePacket(m_packetToAdd);
+    Q_INVOKABLE void jumpToFirst();
 
-        // Create new packet for modification/editing
-        m_packetToAdd = new AnimPacket(this);
-        m_packetToAdd->setParent(this);
-        qInfo()<<m_packets;
-        emit packetToAddChanged();
-    }
+    Q_INVOKABLE void jumpToLast();
 
-    AnimPacket* activePacket() const {
-        return m_activePacket;
-    }
+    Q_INVOKABLE void jumpToIndex(int index);
 
-    void setTime(qreal v) {
-        AnimPacket* current = nullptr;
+    Q_INVOKABLE int getCurrentIndex() const;
 
-        for (AnimPacket* packet : std::as_const(m_packets)) {
-            qreal start = packet->startTime();
-            qreal end = start + packet->duration();
+    Q_INVOKABLE int size() const { return m_size; }
 
-            if (v >= start && v <= end) {
-                current = packet;
-                break;  // found the active one
-            }
-        }
+    // Safety and debugging methods
+    Q_INVOKABLE bool validateList() const;
 
-        // Update the active packet
-        if (current) {
-            if (m_activePacket != current) {
-                setActivePacket(current); // triggers signal
-            }
-            current->update(v);
-        }
-    }
+    Q_INVOKABLE void debugPrintList() const;
 
+    AnimPacket *activePacket() const;
 
-    AnimPacket* packetToAdd() const {
-        return m_packetToAdd;
-    }
+    void setTime(qreal v);
 
-    void setPacketToAdd(AnimPacket* packet) {
-        if (m_packetToAdd == packet)
-            return;
-        m_packetToAdd = packet;
-        emit packetToAddChanged();
-    }
+    AnimPacket *packetToAdd() const;
+
+    void setPacketToAdd(AnimPacket *packet);
+
+    QVector<AnimPacket *> packets() const;
+
+    Q_INVOKABLE void removePacket(AnimPacket *packet);
 
 signals:
     void activePacketChanged();
     void packetToAddChanged();
+    void packetsChanged();
 
 private:
-    QVector<AnimPacket*> m_packets;
-    AnimPacket* m_activePacket;
-    AnimPacket* m_packetToAdd;
+    // Doubly linked list pointers
+    AnimPacketNode *m_head;
+    AnimPacketNode *m_tail;
+    AnimPacketNode *m_activeNode;
+    int m_size;
 
-    qreal progressTime=0;
+    // Original members
+    AnimPacket *m_activePacket;
+    AnimPacket *m_packetToAdd;
+    qreal progressTime = 0;
 
-    void setActivePacket(AnimPacket* packet)
-    {
-        if (m_activePacket == packet)
-            return;
-        m_activePacket = packet;
-        emit activePacketChanged();
-    }
+    // Linked list operations
+    void insertSorted(AnimPacket *packet);
+
+    void removeNode(AnimPacketNode *node);
+
+    AnimPacketNode *findNode(AnimPacket *packet);
+
+    AnimPacketNode *getNodeAt(int index);
+
+    void clearList();
+
+    void setActivePacket(AnimPacket *packet);
+
+    void setActiveNode(AnimPacketNode *node);
 };
 
 #endif // ANIMATIONMANAGER_H
