@@ -9,36 +9,61 @@
 
 Text::Text(Scene *canvas, QQuickItem *parent)
     : ClickableMobject(canvas, parent),
-      m_text("Hello World"),
-      m_color(Qt::white),
-      m_fontSize(24),
       m_position(0, 0),
       m_textSize(0, 0)
 {
     setFlag(ItemHasContents, true);
     setAcceptedMouseButtons(Qt::AllButtons);
 
-    // Set up base properties like Line does
+    // Set up base properties
     properties->base()->setName("Text");
-    properties->base()->setColor(m_color);
+    properties->base()->setColor(Qt::white);
     properties->base()->setPos(QPointF(0, 0));
     properties->base()->setType("Text");
 
     // Initialize text properties
     properties->setText(new TextProperties(this));
-    properties->text()->setTextValue(m_text);
-    properties->text()->setFontSize(m_fontSize);
-    properties->text()->setTextColor(m_color);
+    properties->text()->setTextValue("Hello World");
+    properties->text()->setFontSize(24);
 
-    // Connect text properties signals to updates
+    // Connect property changes to updates - use base color instead of text color
     connect(properties->text(), &TextProperties::textValueChanged, this, [this]()
-            { setText(properties->text()->textValue()); });
+            {
+        updateTextMetrics();
+        update();
+        emit textChanged(); });
 
     connect(properties->text(), &TextProperties::fontSizeChanged, this, [this]()
-            { setFontSize(properties->text()->fontSize()); });
+            {
+        updateTextMetrics();
+        update();
+        emit fontSizeChanged(); });
 
-    connect(properties->text(), &TextProperties::textColorChanged, this, [this]()
-            { setColor(properties->text()->textColor()); });
+    // Connect font weight, bold, italic changes
+    connect(properties->text(), &TextProperties::fontWeightChanged, this, [this]()
+            {
+        updateTextMetrics();
+        update(); });
+
+    connect(properties->text(), &TextProperties::boldChanged, this, [this]()
+            {
+        updateTextMetrics();
+        update(); });
+
+    connect(properties->text(), &TextProperties::italicChanged, this, [this]()
+            {
+        updateTextMetrics();
+        update(); });
+
+    connect(properties->text(), &TextProperties::fontFamilyChanged, this, [this]()
+            {
+        updateTextMetrics();
+        update(); });
+
+    connect(properties->base(), &BaseProperties::colorChanged, this, [this]()
+            {
+        update();
+        emit colorChanged(); });
 
     // Connect to window changes for updates
     connect(this, &QQuickItem::windowChanged, this, [this](QQuickWindow *w)
@@ -59,44 +84,35 @@ Text::Text(Scene *canvas, QQuickItem *parent)
 
 void Text::setText(const QString &text)
 {
-    if (text == m_text)
+    if (properties->text() && properties->text()->textValue() == text)
         return;
-    m_text = text;
     if (properties->text())
     {
         properties->text()->setTextValue(text);
     }
-    updateTextMetrics();
-    emit textChanged();
-    update();
+    // Note: updateTextMetrics and signals are handled by property change connections
 }
 
 void Text::setColor(const QColor &color)
 {
-    if (color == m_color)
+    if (properties->base() && properties->base()->color() == color)
         return;
-    m_color = color;
-    properties->base()->setColor(color); // Keep properties in sync
-    if (properties->text())
+    if (properties->base())
     {
-        properties->text()->setTextColor(color);
+        properties->base()->setColor(color);
     }
-    emit colorChanged();
-    update();
+    // Note: update and signals are handled by property change connections
 }
 
 void Text::setFontSize(int size)
 {
-    if (size == m_fontSize)
+    if (properties->text() && properties->text()->fontSize() == size)
         return;
-    m_fontSize = size;
     if (properties->text())
     {
         properties->text()->setFontSize(size);
     }
-    updateTextMetrics();
-    emit fontSizeChanged();
-    update();
+    // Note: updateTextMetrics and signals are handled by property change connections
 }
 
 void Text::setCenter(qreal x, qreal y)
@@ -113,17 +129,64 @@ void Text::setCenter(qreal x, qreal y)
 
 void Text::mousePressEvent(QMouseEvent *event)
 {
-    m_position = properties->base()->pos();
+    // Don't update m_position here - let the base class handle dragging logic
+    // Just pass through to base class for proper drag initialization
     ClickableMobject::mousePressEvent(event);
+}
+
+void Text::mouseMoveEvent(QMouseEvent *event)
+{
+    // Let base class handle the dragging logic
+    ClickableMobject::mouseMoveEvent(event);
+
+    // Update our cached position after base class moves the object
+    if (properties->base())
+    {
+        m_position = properties->base()->pos() - properties->base()->size()/2;
+    }
+}
+
+void Text::mouseReleaseEvent(QMouseEvent *event)
+{
+    // Let base class handle the release logic
+    ClickableMobject::mouseReleaseEvent(event);
+
+    // Update our cached position after dragging is complete
+    if (properties->base())
+    {
+        m_position = properties->base()->pos();
+    }
 }
 
 void Text::updateTextMetrics()
 {
-    QFont font("Arial", m_fontSize);
+    if (!properties->text())
+        return;
+
+    QFont font(properties->text()->fontFamily().isEmpty() ? "Arial" : properties->text()->fontFamily(),
+               properties->text()->fontSize());
+
+    // Set font weight properly - use QFont::Weight enum values
+    int weight = properties->text()->fontWeight();
+    if (weight >= 0 && weight <= 900)
+    {
+        font.setWeight(QFont::Weight(weight));
+    }
+
+    // Override with bold if set
+    if (properties->text()->bold())
+    {
+        font.setBold(true);
+    }
+
+    font.setItalic(properties->text()->italic());
+
     QFontMetrics metrics(font);
-    m_textSize = QSizeF(metrics.horizontalAdvance(m_text), metrics.height());
+    m_textSize = QSizeF(metrics.horizontalAdvance(properties->text()->textValue()),
+                        metrics.height());
 
     // Update the item's implicit size
+    properties->base()->setSize({m_textSize.height(), m_textSize.width()});
     setImplicitWidth(m_textSize.width());
     setImplicitHeight(m_textSize.height());
 }
@@ -149,11 +212,32 @@ QSGNode *Text::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
         node = this->window()->createTextNode();
     }
 
-    // Configure font
-    QFont font("Arial", m_fontSize);
+    if (!properties->text() || !properties->base())
+    {
+        return node;
+    }
+
+    // Configure font using properties
+    QFont font(properties->text()->fontFamily().isEmpty() ? "Arial" : properties->text()->fontFamily(),
+               properties->text()->fontSize());
+
+    // Set font weight properly - use QFont::Weight enum values
+    int weight = properties->text()->fontWeight();
+    if (weight >= 0 && weight <= 900)
+    {
+        font.setWeight(QFont::Weight(weight));
+    }
+
+    // Override with bold if set
+    if (properties->text()->bold())
+    {
+        font.setBold(true);
+    }
+
+    font.setItalic(properties->text()->italic());
 
     // Create layout (ownership passed to node)
-    QTextLayout *layout = new QTextLayout(m_text, font);
+    QTextLayout *layout = new QTextLayout(properties->text()->textValue(), font);
 
     QTextOption option;
     option.setWrapMode(QTextOption::NoWrap);
@@ -164,7 +248,7 @@ QSGNode *Text::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
     layout->endLayout();
 
     node->clear();
-    node->setColor(m_color);
+    node->setColor(properties->base()->color()); // Use base color
 
     // Center the text at the origin (like Line does with its geometry)
     QPointF textOffset(-m_textSize.width() / 2, -m_textSize.height() / 2);

@@ -378,20 +378,6 @@ Rectangle {
                     rowSpacing: 12
                     columnSpacing: 16
 
-                    Text {
-                        text: "Text Color"
-                        color: "#bbbbbb"
-                        font.pixelSize: 13
-                    }
-
-                    ColorPicker {
-                        selectedColor: mprop && mprop.text ? mprop.text.textColor : "white"
-                        func: () => {
-                            if (mprop && mprop.text)
-                                mprop.text.textColor = newColor;
-                        }
-                    }
-
                     CheckBox {
                         text: "Bold"
                         checked: mprop && mprop.text ? mprop.text.bold : false

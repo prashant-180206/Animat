@@ -4,8 +4,7 @@ TextProperties::TextProperties(QObject *parent)
     : QObject(parent),
       m_textValue("Hello World"),
       m_fontSize(24),
-      m_textColor(Qt::white),
-      m_fontWeight(QFont::Normal),
+      m_fontWeight(QFont::Normal), // QFont::Normal = 50
       m_fontFamily("Arial"),
       m_bold(false),
       m_italic(false)
@@ -27,15 +26,6 @@ void TextProperties::setFontSize(int fontSize)
     {
         m_fontSize = fontSize;
         emit fontSizeChanged();
-    }
-}
-
-void TextProperties::setTextColor(const QColor &textColor)
-{
-    if (m_textColor != textColor)
-    {
-        m_textColor = textColor;
-        emit textColorChanged();
     }
 }
 
@@ -62,8 +52,8 @@ void TextProperties::setBold(bool bold)
     if (m_bold != bold)
     {
         m_bold = bold;
-        // Update font weight based on bold state
-        setFontWeight(bold ? QFont::Bold : QFont::Normal);
+        // Don't automatically change fontWeight - let them be independent
+        // This allows for more fine-grained control
         emit boldChanged();
     }
 }

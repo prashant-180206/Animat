@@ -17,9 +17,9 @@ class Text : public ClickableMobject
 public:
     explicit Text(Scene *canvas = nullptr, QQuickItem *parent = nullptr);
 
-    QString text() const { return m_text; }
-    QColor color() const { return m_color; }
-    int fontSize() const { return m_fontSize; }
+    QString text() const { return properties->text() ? properties->text()->textValue() : "Hello World"; }
+    QColor color() const { return properties->base() ? properties->base()->color() : Qt::white; }
+    int fontSize() const { return properties->text() ? properties->text()->fontSize() : 24; }
 
     void setText(const QString &text);
     void setColor(const QColor &color);
@@ -38,11 +38,10 @@ protected:
     bool contains(const QPointF &point) const override;
     QRectF boundingRect() const override;
     void mousePressEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
 
 private:
-    QString m_text;
-    QColor m_color;
-    int m_fontSize;
     QPointF m_position; // Store logical position
     QSizeF m_textSize;  // Cache text size for bounds calculation
 

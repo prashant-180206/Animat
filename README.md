@@ -112,12 +112,13 @@ Text-specific properties for font and content control:
 ```cpp
 Q_PROPERTY(QString textValue)    // Text content
 Q_PROPERTY(int fontSize)         // Font size in pixels
-Q_PROPERTY(QColor textColor)     // Text color (independent of base color)
 Q_PROPERTY(int fontWeight)       // Font weight (Normal=50, Bold=75)
 Q_PROPERTY(QString fontFamily)   // Font family name
 Q_PROPERTY(bool bold)           // Bold state (convenience property)
 Q_PROPERTY(bool italic)         // Italic state
 ```
+
+_Note: Text color is managed through the base properties `color` field for consistency across all mobject types._
 
 #### Line Properties (`LineProperties`)
 
