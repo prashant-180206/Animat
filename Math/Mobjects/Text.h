@@ -1,7 +1,6 @@
 #ifndef TEXT_H
 #define TEXT_H
 
-
 #include "Math/Helper/ClickableMobject.h"
 #include <QColor>
 #include <QString>
@@ -10,6 +9,7 @@
 class Text : public ClickableMobject
 {
     Q_OBJECT
+    QML_ELEMENT
     Q_PROPERTY(QString text READ text WRITE setText NOTIFY textChanged)
     Q_PROPERTY(QColor color READ color WRITE setColor NOTIFY colorChanged)
     Q_PROPERTY(int fontSize READ fontSize WRITE setFontSize NOTIFY fontSizeChanged)
@@ -25,6 +25,9 @@ public:
     void setColor(const QColor &color);
     void setFontSize(int size);
 
+    // Override essential methods for proper mobject behavior
+    virtual void setCenter(qreal x, qreal y) override;
+
 signals:
     void textChanged();
     void colorChanged();
@@ -32,11 +35,18 @@ signals:
 
 protected:
     QSGNode *updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *) override;
+    bool contains(const QPointF &point) const override;
+    QRectF boundingRect() const override;
+    void mousePressEvent(QMouseEvent *event) override;
 
 private:
     QString m_text;
     QColor m_color;
     int m_fontSize;
+    QPointF m_position; // Store logical position
+    QSizeF m_textSize;  // Cache text size for bounds calculation
+
+    void updateTextMetrics(); // Helper to calculate text bounds
 };
 
 #endif // TEXT_H

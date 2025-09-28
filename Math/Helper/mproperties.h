@@ -6,6 +6,7 @@
 #include "curveproperties.h"
 #include "lineproperties.h"
 #include "polygonproperties.h"
+#include "textproperties.h"
 #include <QObject>
 #include <qqmlintegration.h>
 
@@ -14,29 +15,33 @@ class MProperties : public QObject
     Q_OBJECT
     QML_ELEMENT
 
-    Q_PROPERTY(BaseProperties* base READ base WRITE setBase NOTIFY baseChanged)
-    Q_PROPERTY(CircleProperties* circle READ circle WRITE setCircle NOTIFY circleChanged)
-    Q_PROPERTY(CurveProperties* curve READ curve WRITE setCurve NOTIFY curveChanged)
-    Q_PROPERTY(LineProperties* line READ line WRITE setLine NOTIFY lineChanged)
-    Q_PROPERTY(PolygonProperties* polygon READ polygon WRITE setPolygon NOTIFY polygonChanged)
+    Q_PROPERTY(BaseProperties *base READ base WRITE setBase NOTIFY baseChanged)
+    Q_PROPERTY(CircleProperties *circle READ circle WRITE setCircle NOTIFY circleChanged)
+    Q_PROPERTY(CurveProperties *curve READ curve WRITE setCurve NOTIFY curveChanged)
+    Q_PROPERTY(LineProperties *line READ line WRITE setLine NOTIFY lineChanged)
+    Q_PROPERTY(PolygonProperties *polygon READ polygon WRITE setPolygon NOTIFY polygonChanged)
+    Q_PROPERTY(TextProperties *text READ text WRITE setText NOTIFY textChanged)
 
 public:
     explicit MProperties(QObject *parent = nullptr);
 
-    BaseProperties* base() const { return m_base; }
-    void setBase(BaseProperties* base);
+    BaseProperties *base() const { return m_base; }
+    void setBase(BaseProperties *base);
 
-    CircleProperties* circle() const { return m_circle; }
-    void setCircle(CircleProperties* circle);
+    CircleProperties *circle() const { return m_circle; }
+    void setCircle(CircleProperties *circle);
 
-    CurveProperties* curve() const { return m_curve; }
-    void setCurve(CurveProperties* curve);
+    CurveProperties *curve() const { return m_curve; }
+    void setCurve(CurveProperties *curve);
 
-    LineProperties* line() const { return m_line; }
-    void setLine(LineProperties* line);
+    LineProperties *line() const { return m_line; }
+    void setLine(LineProperties *line);
 
-    PolygonProperties* polygon() const { return m_polygon; }
-    void setPolygon(PolygonProperties* polygon);
+    PolygonProperties *polygon() const { return m_polygon; }
+    void setPolygon(PolygonProperties *polygon);
+
+    TextProperties *text() const { return m_text; }
+    void setText(TextProperties *text);
 
 signals:
     void baseChanged();
@@ -44,13 +49,15 @@ signals:
     void curveChanged();
     void lineChanged();
     void polygonChanged();
+    void textChanged();
 
 private:
-    BaseProperties* m_base = nullptr;
-    CircleProperties* m_circle = nullptr;
-    CurveProperties* m_curve = nullptr;
-    LineProperties* m_line = nullptr;
-    PolygonProperties* m_polygon = nullptr;
+    BaseProperties *m_base = nullptr;
+    CircleProperties *m_circle = nullptr;
+    CurveProperties *m_curve = nullptr;
+    LineProperties *m_line = nullptr;
+    PolygonProperties *m_polygon = nullptr;
+    TextProperties *m_text = nullptr;
 };
 
 #endif // MPROPERTIES_H

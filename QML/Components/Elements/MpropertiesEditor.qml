@@ -296,6 +296,169 @@ Rectangle {
                     }
                 }
             }
+
+            // Text Properties
+            ColumnLayout {
+                visible: mprop && mprop.text
+                Layout.fillWidth: true
+                spacing: 8
+
+                Text {
+                    text: "Text Properties"
+                    color: "#ffffff"
+                    font.pixelSize: 14
+                    font.bold: true
+                }
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 6
+
+                    Text {
+                        text: "Text Value"
+                        color: "#bbbbbb"
+                        font.pixelSize: 13
+                    }
+
+                    StyledTextField {
+                        Layout.fillWidth: true
+                        placeholderText: "Enter text content"
+                        text: mprop && mprop.text ? mprop.text.textValue : ""
+                        onEditingFinished: {
+                            if (mprop && mprop.text)
+                                mprop.text.textValue = text;
+                        }
+                    }
+                }
+
+                NumberInput {
+                    label: "Font Size:"
+                    value: mprop && mprop.text ? mprop.text.fontSize : 24
+                    integersOnly: true
+                    func: () => {
+                        if (mprop && mprop.text)
+                            mprop.text.fontSize = newValue;
+                    }
+                }
+
+                NumberInput {
+                    label: "Font Weight:"
+                    value: mprop && mprop.text ? mprop.text.fontWeight : 50
+                    integersOnly: true
+                    func: () => {
+                        if (mprop && mprop.text)
+                            mprop.text.fontWeight = newValue;
+                    }
+                }
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 6
+
+                    Text {
+                        text: "Font Family"
+                        color: "#bbbbbb"
+                        font.pixelSize: 13
+                    }
+
+                    StyledTextField {
+                        Layout.fillWidth: true
+                        placeholderText: "Enter font family"
+                        text: mprop && mprop.text ? mprop.text.fontFamily : ""
+                        onEditingFinished: {
+                            if (mprop && mprop.text)
+                                mprop.text.fontFamily = text;
+                        }
+                    }
+                }
+
+                GridLayout {
+                    Layout.fillWidth: true
+                    columns: 2
+                    rowSpacing: 12
+                    columnSpacing: 16
+
+                    Text {
+                        text: "Text Color"
+                        color: "#bbbbbb"
+                        font.pixelSize: 13
+                    }
+
+                    ColorPicker {
+                        selectedColor: mprop && mprop.text ? mprop.text.textColor : "white"
+                        func: () => {
+                            if (mprop && mprop.text)
+                                mprop.text.textColor = newColor;
+                        }
+                    }
+
+                    CheckBox {
+                        text: "Bold"
+                        checked: mprop && mprop.text ? mprop.text.bold : false
+                        onCheckedChanged: {
+                            if (mprop && mprop.text)
+                                mprop.text.bold = checked;
+                        }
+                        contentItem: Text {
+                            text: parent.text
+                            font.pixelSize: 13
+                            color: "#bbbbbb"
+                            leftPadding: parent.indicator.width + parent.spacing
+                        }
+                        indicator: Rectangle {
+                            implicitWidth: 16
+                            implicitHeight: 16
+                            x: parent.leftPadding
+                            y: parent.height / 2 - height / 2
+                            radius: 3
+                            border.color: "#555555"
+                            color: parent.checked ? "#4CAF50" : "transparent"
+
+                            Rectangle {
+                                width: 6
+                                height: 6
+                                anchors.centerIn: parent
+                                radius: 1
+                                color: "white"
+                                visible: parent.parent.checked
+                            }
+                        }
+                    }
+
+                    CheckBox {
+                        text: "Italic"
+                        checked: mprop && mprop.text ? mprop.text.italic : false
+                        onCheckedChanged: {
+                            if (mprop && mprop.text)
+                                mprop.text.italic = checked;
+                        }
+                        contentItem: Text {
+                            text: parent.text
+                            font.pixelSize: 13
+                            color: "#bbbbbb"
+                            leftPadding: parent.indicator.width + parent.spacing
+                        }
+                        indicator: Rectangle {
+                            implicitWidth: 16
+                            implicitHeight: 16
+                            x: parent.leftPadding
+                            y: parent.height / 2 - height / 2
+                            radius: 3
+                            border.color: "#555555"
+                            color: parent.checked ? "#4CAF50" : "transparent"
+
+                            Rectangle {
+                                width: 6
+                                height: 6
+                                anchors.centerIn: parent
+                                radius: 1
+                                color: "white"
+                                visible: parent.parent.checked
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

@@ -90,6 +90,7 @@ qt_add_qml_module(appAnimat
         SOURCES Math/Helper/Properties/curveproperties.h Math/Helper/Properties/curveproperties.cpp
         SOURCES Math/Helper/Properties/circleproperties.h Math/Helper/Properties/circleproperties.cpp
         SOURCES Math/Helper/Properties/polygonproperties.h Math/Helper/Properties/polygonproperties.cpp
+        SOURCES Math/Helper/Properties/textproperties.h Math/Helper/Properties/textproperties.cpp
         SOURCES Math/Managers/funcmap.h Math/Managers/funcmap.cpp
         SOURCES Math/Animations/animation.h Math/Animations/animation.cpp
         SOURCES Math/Animations/animpacket.h Math/Animations/animpacket.cpp

@@ -15,6 +15,295 @@ Animat provides a comprehensive animation system that allows you to create, sequ
 - **UI Components** (`QML/Components/`)
 - **Value Tracking** (`Math/ValueTracker/`)
 
+## Available Mobjects
+
+Animat supports several types of graphical objects (Mobjects) that can be animated:
+
+### **Text** 📝
+
+Interactive text objects that can be moved, selected, and dragged.
+
+- **Properties**: text content, font size, color
+- **Interactions**: Click to select, drag to move, animated positioning
+- **Usage**: Labels, titles, annotations
+
+### **Line** 📏
+
+Drawable line segments with customizable appearance.
+
+- **Properties**: start/end points, thickness, color
+- **Interactions**: Full drag-and-drop support, selection
+- **Usage**: Connectors, arrows, geometric shapes
+
+### **Circle** ⭕
+
+Circular shapes with radius and positioning control.
+
+- **Properties**: center position, radius, color, opacity
+- **Interactions**: Draggable, selectable, animatable
+
+### **Rectangle** ▭
+
+Rectangular shapes with size and position control.
+
+- **Properties**: size, position, color, corner radius
+- **Interactions**: Full transformation support
+
+### **Curve** 〰️
+
+Mathematical curves with parametric equations.
+
+- **Properties**: curve function, parameter range, thickness
+- **Usage**: Mathematical visualizations, smooth paths
+
+### **Polygon** ▲
+
+Multi-sided shapes with customizable vertices.
+
+- **Properties**: vertex positions, fill color, stroke
+- **Usage**: Custom shapes, geometric constructions
+
+All mobjects support:
+
+- **Selection and highlighting** when clicked
+- **Drag-and-drop movement** with mouse
+- **Property animation** through the animation system
+- **Coordinate transformation** between canvas and scene space
+- **Memory management** through Qt's parent-child system
+
+## Object and Properties System
+
+### Architecture Overview
+
+Animat uses a sophisticated property management system that separates visual objects (Mobjects) from their animatable properties. This allows for clean separation of concerns, easy UI binding, and flexible animation control.
+
+### Property Management Structure
+
+```
+ClickableMobject
+    └── MProperties (central property manager)
+        ├── BaseProperties (common to all mobjects)
+        ├── LineProperties (line-specific properties)
+        ├── CircleProperties (circle-specific properties)
+        ├── TextProperties (text-specific properties)
+        ├── PolygonProperties (polygon-specific properties)
+        └── CurveProperties (curve-specific properties)
+```
+
+### Base Properties
+
+Every mobject inherits these fundamental properties from `BaseProperties`:
+
+```cpp
+Q_PROPERTY(QString name)          // Mobject identifier
+Q_PROPERTY(QPointF pos)          // Position in scene coordinates
+Q_PROPERTY(QPointF size)         // Size dimensions
+Q_PROPERTY(QColor color)         // Primary color
+Q_PROPERTY(qreal opacity)        // Transparency (0.0-1.0)
+Q_PROPERTY(QString type)         // Mobject type identifier
+```
+
+### Specialized Properties
+
+#### Text Properties (`TextProperties`)
+
+Text-specific properties for font and content control:
+
+```cpp
+Q_PROPERTY(QString textValue)    // Text content
+Q_PROPERTY(int fontSize)         // Font size in pixels
+Q_PROPERTY(QColor textColor)     // Text color (independent of base color)
+Q_PROPERTY(int fontWeight)       // Font weight (Normal=50, Bold=75)
+Q_PROPERTY(QString fontFamily)   // Font family name
+Q_PROPERTY(bool bold)           // Bold state (convenience property)
+Q_PROPERTY(bool italic)         // Italic state
+```
+
+#### Line Properties (`LineProperties`)
+
+Line-specific properties for geometric control:
+
+```cpp
+Q_PROPERTY(QPointF startPoint)   // Line start position
+Q_PROPERTY(QPointF endPoint)     // Line end position
+Q_PROPERTY(qreal thickness)      // Line thickness
+```
+
+#### Circle Properties (`CircleProperties`)
+
+Circle-specific properties for radius and appearance:
+
+```cpp
+Q_PROPERTY(qreal radius)         // Circle radius
+Q_PROPERTY(QPointF center)       // Circle center (mirrors pos)
+```
+
+#### Polygon Properties (`PolygonProperties`)
+
+Polygon-specific properties for shape control:
+
+```cpp
+Q_PROPERTY(QColor borderColor)   // Border/stroke color
+Q_PROPERTY(qreal thickness)      // Border thickness
+```
+
+### Property System Workflow
+
+#### 1. **Property Initialization**
+
+When a mobject is created, it initializes its properties:
+
+```cpp
+Text::Text(Scene *canvas, QQuickItem *parent) {
+    // Initialize base properties
+    properties->base()->setName("Text");
+    properties->base()->setColor(m_color);
+    properties->base()->setType("Text");
+
+    // Initialize text-specific properties
+    properties->setText(new TextProperties(this));
+    properties->text()->setTextValue(m_text);
+    properties->text()->setFontSize(m_fontSize);
+}
+```
+
+#### 2. **Signal-Slot Connections**
+
+Properties automatically sync with mobject state using Qt's signal-slot system:
+
+```cpp
+// Property changes update mobject
+connect(properties->text(), &TextProperties::textValueChanged, this, [this]() {
+    setText(properties->text()->textValue());
+});
+
+// Mobject changes update properties
+void Text::setText(const QString &text) {
+    m_text = text;
+    properties->text()->setTextValue(text);  // Keep properties in sync
+    emit textChanged();
+}
+```
+
+#### 3. **QML Integration**
+
+Properties are exposed to QML through Q_PROPERTY declarations, enabling direct UI binding:
+
+```qml
+// In MPropertiesEditor.qml
+StyledTextField {
+    text: mprop && mprop.text ? mprop.text.textValue : ""
+    onEditingFinished: {
+        if (mprop && mprop.text)
+            mprop.text.textValue = text;  // Direct property binding
+    }
+}
+```
+
+### Property Access Patterns
+
+#### From C++ Code
+
+```cpp
+// Get mobject properties
+MProperties* props = mobject->getProperties();
+
+// Access base properties
+props->base()->setPos(QPointF(100, 50));
+QColor currentColor = props->base()->color();
+
+// Access specialized properties
+if (props->text()) {
+    props->text()->setFontSize(24);
+    props->text()->setTextColor(Qt::blue);
+}
+```
+
+#### From QML UI
+
+```qml
+property MProperties mprop: canvas.SelectedMobject ?
+    canvas.SelectedMobject.getProperties() : null
+
+// Direct property bindings
+NumberInput {
+    value: mprop && mprop.text ? mprop.text.fontSize : 24
+    onValueChanged: {
+        if (mprop && mprop.text)
+            mprop.text.fontSize = newValue;
+    }
+}
+```
+
+### Property Synchronization
+
+The system maintains **bidirectional synchronization**:
+
+1. **UI → Properties → Mobject**: User changes in the properties panel update the visual object
+2. **Mobject → Properties → UI**: Programmatic changes in the mobject update the UI
+3. **Animation → Properties**: Animations can target specific properties for smooth transitions
+
+### Animation Integration
+
+Properties can be directly animated using the animation system:
+
+```cpp
+// Animate text color
+CustomScalar* colorAnim = new CustomScalar(
+    "textColor",     // Property name
+    Qt::white,       // Start color
+    Qt::red,         // End color
+    2.0             // Duration
+);
+
+// Animate font size
+CustomScalar* sizeAnim = new CustomScalar(
+    "fontSize",      // Property name
+    12,             // Start size
+    48,             // End size
+    1.5             // Duration
+);
+```
+
+### Property Editor UI
+
+Each property type has dedicated UI controls in `MPropertiesEditor.qml`:
+
+- **Text Fields**: For strings (name, textValue, fontFamily)
+- **Number Inputs**: For numeric values (fontSize, fontWeight, opacity)
+- **Color Pickers**: For colors (color, textColor, borderColor)
+- **Point Inputs**: For 2D coordinates (pos, size, startPoint, endPoint)
+- **Checkboxes**: For boolean values (bold, italic)
+
+### Memory Management
+
+The property system follows Qt's parent-child memory management:
+
+```cpp
+// Properties are owned by the mobject
+MProperties* properties = new MProperties(this);  // 'this' = parent mobject
+
+// Specialized properties are owned by MProperties
+properties->setText(new TextProperties(this));    // 'this' = parent mobject
+
+// Automatic cleanup when mobject is destroyed
+```
+
+### Thread Safety
+
+All property operations occur on the main UI thread, ensuring:
+
+- Safe QML bindings
+- Consistent signal emission
+- No race conditions during UI updates
+
+### Performance Considerations
+
+- **Lazy Loading**: Specialized properties are only created when needed
+- **Change Detection**: Properties only emit signals when values actually change
+- **Batch Updates**: Multiple property changes can be batched to avoid excessive redraws
+- **Efficient Binding**: QML property bindings are optimized by Qt's binding system
+
 ## Animation Types
 
 ### 1. **Move Animation**
