@@ -21,8 +21,11 @@ TrackerManager::~TrackerManager()
 
 void TrackerManager::parseScript(const QString &script)
 {
+    qDebug() << "TrackerManager::parseScript() called with:" << script;
+
     // Parse the script into commands
     QVector<TrackerCommand> commands = m_scriptParser->parseScript(script);
+    qDebug() << "TrackerManager::parseScript() - Parsed" << commands.size() << "commands";
 
     // Clear existing data
     m_dependencyGraph->clear();
@@ -30,6 +33,7 @@ void TrackerManager::parseScript(const QString &script)
     // Execute all commands
     for (const TrackerCommand &command : commands)
     {
+        qDebug() << "TrackerManager::parseScript() - Executing command type:" << static_cast<int>(command.getType()) << "name:" << command.getName();
         executeCommand(command);
     }
 
@@ -81,13 +85,13 @@ void TrackerManager::createValueTracker(const TrackerCommand &command)
 
     // Create new tracker
     ValueTracker *tracker = new ValueTracker();
+    // qDebug() << "TrackerManager: Creating new VALUE tracker with name:" << name;
     m_valueTrackers[name] = tracker;
+    // qDebug() << "TrackerManager: VALUE tracker added. Hash size now:" << m_valueTrackers.size();
 
     // Connect to update signals
     connect(tracker, QOverload<double>::of(&ValueTracker::valueChanged),
-            this, &TrackerManager::onTrackerValueChanged);
-
-    // Set up based on command type
+            this, &TrackerManager::onTrackerValueChanged); // Set up based on command type
     switch (command.getType())
     {
     case TrackerCommand::VALUE_TRACKER:
@@ -101,19 +105,30 @@ void TrackerManager::createValueTracker(const TrackerCommand &command)
         break;
 
     case TrackerCommand::DYNAMIC_VALUE_TRACKER:
+        // qDebug() << "TrackerManager: Creating DYNAMIC_VALUE_TRACKER:" << name;
+        // qDebug() << "  - Expression:" << command.getExpression();
+        // qDebug() << "  - Dependencies:" << command.getDependencies();
+
         m_dynamicExpressions[name] = command.getExpression();
         m_dependencyGraph->addDependency(name, command.getDependencies());
         // Initial evaluation with current tracker values
         {
             QHash<QString, double> currentValues = getCurrentTrackerValues();
+            // qDebug() << "  - Current tracker values:" << currentValues;
+
             double value = m_parser->evaluateDynamic(command.getExpression(), currentValues);
+            // qDebug() << "  - Evaluated result:" << value;
+
             tracker->setValue(value);
+            // qDebug() << "  - Tracker value set to:" << tracker->value();
         }
         break;
-
     default:
         break;
     }
+
+    // Emit signal after all setup is complete (including dynamic calculations)
+    emit trackersListChanged();
 }
 
 void TrackerManager::createPointTracker(const TrackerCommand &command)
@@ -129,7 +144,10 @@ void TrackerManager::createPointTracker(const TrackerCommand &command)
 
     // Create new tracker
     PtValueTracker *tracker = new PtValueTracker();
+    qDebug() << "TrackerManager: Creating new POINT tracker with name:" << name;
     m_pointTrackers[name] = tracker;
+    qDebug() << "TrackerManager: POINT tracker added. Hash size now:" << m_pointTrackers.size();
+    emit trackersListChanged(); // Emit when new tracker added
 
     // Connect to update signals
     connect(tracker, &PtValueTracker::valueChanged,
@@ -503,4 +521,46 @@ void TrackerManager::updateConnectedObjects(const QString &trackerName)
             }
         }
     }
+}
+
+// Getter implementations
+ValueTracker *TrackerManager::getValueTracker(const QString &name) const
+{
+    return m_valueTrackers.value(name, nullptr);
+}
+
+PtValueTracker *TrackerManager::getPointTracker(const QString &name) const
+{
+    return m_pointTrackers.value(name, nullptr);
+}
+
+double TrackerManager::getTrackerValue(const QString &name) const
+{
+    ValueTracker *tracker = m_valueTrackers.value(name, nullptr);
+    return tracker ? tracker->value() : 0.0;
+}
+
+QPointF TrackerManager::getTrackerPoint(const QString &name) const
+{
+    PtValueTracker *tracker = m_pointTrackers.value(name, nullptr);
+    return tracker ? tracker->value() : QPointF(0, 0);
+}
+
+QStringList TrackerManager::getAllValueTrackerNames() const
+{
+    QStringList names = m_valueTrackers.keys();
+    // qDebug() << "TrackerManager::getAllValueTrackerNames() - Count:" << names.size() << "Names:" << names;
+    // qDebug() << "TrackerManager: m_valueTrackers hash size:" << m_valueTrackers.size();
+    // for (auto it = m_valueTrackers.begin(); it != m_valueTrackers.end(); ++it)
+    // {
+    //     qDebug() << "  - Key:" << it.key() << "Value ptr:" << it.value();
+    // }
+    return names;
+}
+
+QStringList TrackerManager::getAllPointTrackerNames() const
+{
+    QStringList names = m_pointTrackers.keys();
+    // qDebug() << "TrackerManager::getAllPointTrackerNames() - Count:" << names.size() << "Names:" << names;
+    return names;
 }

@@ -46,8 +46,10 @@ public:
     QVector<TrackerInfo> getTrackerInfo() const;
     ValueTracker *getValueTracker(const QString &name) const;
     PtValueTracker *getPointTracker(const QString &name) const;
-    double getTrackerValue(const QString &name) const;
-    QPointF getTrackerPoint(const QString &name) const;
+    Q_INVOKABLE double getTrackerValue(const QString &name) const;
+    Q_INVOKABLE QPointF getTrackerPoint(const QString &name) const;
+    Q_INVOKABLE QStringList getAllValueTrackerNames() const;
+    Q_INVOKABLE QStringList getAllPointTrackerNames() const;
 
     // Connection management
     void connectTracker(const QString &trackerName, ClickableMobject *object, const QString &property);
@@ -61,6 +63,7 @@ signals:
     void trackerInfoChanged();
     void trackerValueChanged(const QString &name, double value);
     void trackerPointChanged(const QString &name, QPointF point);
+    void trackersListChanged(); // Signal when trackers are added/removed
 
 private slots:
     void onTrackerValueChanged(double value);

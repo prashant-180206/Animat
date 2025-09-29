@@ -5,6 +5,7 @@
 
 #include <Math/Mobjects/line.h>
 #include "Utils/mobjectmap.h"
+#include "Parser/trackermanager.h"
 
 Scene::Scene()
 {
@@ -100,6 +101,11 @@ Parser *Scene::parser()
     return m_parser;
 }
 
+TrackerManager *Scene::trackers()
+{
+    return m_trackers;
+}
+
 PlaybackSlider *Scene::player()
 {
     return m_player;
@@ -113,6 +119,21 @@ AnimationManager *Scene::animator()
 double Scene::evaluate(const QString &expression)
 {
     return m_parser->evaluate(expression);
+}
+
+void Scene::setParserVariable(const QString &name, double value)
+{
+    m_parser->setVariable(name, value);
+}
+
+double Scene::getParserVariable(const QString &name)
+{
+    return m_parser->getVariable(name);
+}
+
+void Scene::clearParserVariables()
+{
+    m_parser->clearVariables();
 }
 
 QColor Scene::getBorderColor() { return TEXT_LIGHT; }
@@ -179,4 +200,31 @@ QSGNode *Scene::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
     rootNode->appendChildNode(borderNode);
 
     return rootNode;
+}
+
+// Tracker command execution methods
+void Scene::executeTrackerScript(const QString &script)
+{
+    m_trackers->parseScript(script);
+}
+
+QStringList Scene::getTrackerNames()
+{
+    QStringList names;
+    auto trackerInfo = m_trackers->getTrackerInfo();
+    for (const auto &info : std::as_const(trackerInfo))
+    {
+        names << info.name;
+    }
+    return names;
+}
+
+double Scene::getTrackerValue(const QString &name)
+{
+    return m_trackers->getTrackerValue(name);
+}
+
+QPointF Scene::getTrackerPoint(const QString &name)
+{
+    return m_trackers->getTrackerPoint(name);
 }

@@ -31,61 +31,95 @@ QVector<TrackerCommand> AnimationScriptParser::parseScript(const QString &script
 
 TrackerCommand AnimationScriptParser::parseLine(const QString &line)
 {
+    // qDebug() << "parseLine: Processing line:" << line;
+
     // Try each pattern in order
 
     // Try dynamic value tracker first (more specific)
+    // qDebug() << "parseLine: Trying parseDynamicValueTracker...";
     TrackerCommand cmd = parseDynamicValueTracker(line);
     if (cmd.isValid())
+    {
+        // qDebug() << "parseLine: SUCCESS with parseDynamicValueTracker, returning command with name:" << cmd.getName();
         return cmd;
+    }
 
     // Try dynamic point tracker
+    // qDebug() << "parseLine: Trying parseDynamicPointTracker...";
     cmd = parseDynamicPointTracker(line);
     if (cmd.isValid())
+    {
+        // qDebug() << "parseLine: SUCCESS with parseDynamicPointTracker, returning command with name:" << cmd.getName();
         return cmd;
+    }
 
     // Try regular value tracker
+    // qDebug() << "parseLine: Trying parseValueTracker...";
     cmd = parseValueTracker(line);
     if (cmd.isValid())
+    {
+        // qDebug() << "parseLine: SUCCESS with parseValueTracker, returning command with name:" << cmd.getName();
         return cmd;
+    }
 
     // Try point tracker
+    // qDebug() << "parseLine: Trying parsePointTracker...";
     cmd = parsePointTracker(line);
     if (cmd.isValid())
+    {
+        // qDebug() << "parseLine: SUCCESS with parsePointTracker, returning command with name:" << cmd.getName();
         return cmd;
+    }
 
     // Try connection
+    // qDebug() << "parseLine: Trying parseConnection...";
     cmd = parseConnection(line);
     if (cmd.isValid())
+    {
+        // qDebug() << "parseLine: SUCCESS with parseConnection, returning command with name:" << cmd.getName();
         return cmd;
+    }
 
     // If nothing matched, return invalid command
+    // qDebug() << "parseLine: NO MATCHES FOUND, returning invalid command";
     return TrackerCommand("", 0.0);
 }
-
 TrackerCommand AnimationScriptParser::parseValueTracker(const QString &line)
 {
+    // qDebug() << "parseValueTracker: Testing line:" << line;
     QRegularExpressionMatch match = m_reValExpr.match(line);
     if (match.hasMatch())
     {
         QString name = match.captured(1);
         QString expression = match.captured(2).trimmed();
 
+        // qDebug() << "parseValueTracker: MATCH FOUND!";
+        // qDebug() << "  - Full match:" << match.captured(0);
+        // qDebug() << "  - Captured name (group 1):" << name;
+        // qDebug() << "  - Captured expression (group 2):" << expression;
+
         if (isNumeric(expression))
         {
             // Simple numeric value
             double value = expression.toDouble();
+            // qDebug() << "  - Creating numeric tracker:" << name << "=" << value;
             return TrackerCommand(name, value);
         }
         else
         {
             // Expression-based
+            // qDebug() << "  - Creating expression tracker:" << name << "=" << expression;
             return TrackerCommand(name, expression, TrackerCommand::EXPRESSION_TRACKER);
         }
+    }
+    else
+    {
+        // qDebug() << "parseValueTracker: NO MATCH for line:" << line;
+        // qDebug() << "  - Regex pattern:" << m_reValExpr.pattern();
     }
 
     return TrackerCommand("", 0.0); // Invalid
 }
-
 TrackerCommand AnimationScriptParser::parsePointTracker(const QString &line)
 {
     QRegularExpressionMatch match = m_rePvalExpr.match(line);
@@ -113,16 +147,27 @@ TrackerCommand AnimationScriptParser::parsePointTracker(const QString &line)
 
 TrackerCommand AnimationScriptParser::parseDynamicValueTracker(const QString &line)
 {
+    // qDebug() << "parseDynamicValueTracker: Testing line:" << line;
     QRegularExpressionMatch match = m_reDval.match(line);
     if (match.hasMatch())
     {
         QString name = match.captured(1);
         QString expression = match.captured(2).trimmed();
 
+        // qDebug() << "parseDynamicValueTracker: MATCH FOUND!";
+        // qDebug() << "  - Full match:" << match.captured(0);
+        // qDebug() << "  - Captured name (group 1):" << name;
+        // qDebug() << "  - Captured expression (group 2):" << expression;
+
         TrackerCommand cmd(name, expression, TrackerCommand::DYNAMIC_VALUE_TRACKER);
         QStringList deps = extractDependencies(expression);
         cmd.setDependencies(deps);
         return cmd;
+    }
+    else
+    {
+        // qDebug() << "parseDynamicValueTracker: NO MATCH for line:" << line;
+        // qDebug() << "  - Regex pattern:" << m_reDval.pattern();
     }
 
     return TrackerCommand("", 0.0); // Invalid
@@ -199,17 +244,22 @@ bool AnimationScriptParser::isDynamicExpression(const QString &expression)
 void AnimationScriptParser::initializeRegexPatterns()
 {
     // Pattern for val name = expression; (catches both numeric and expression)
-    m_reValExpr = QRegularExpression(R"(val\s+(\w+)\s*=\s*([^;]+);)");
+    // More flexible whitespace: \s* allows zero or more spaces everywhere
+    m_reValExpr = QRegularExpression(R"(\s*val\s+(\w+)\s*=\s*([^;]+?)\s*;\s*)");
 
     // Pattern for pval name = (expr1, expr2); (catches both numeric and expression)
-    m_rePvalExpr = QRegularExpression(R"(pval\s+(\w+)\s*=\s*\(\s*([^,]+)\s*,\s*([^)]+)\s*\);)");
+    // More flexible whitespace and non-greedy matching for expressions
+    m_rePvalExpr = QRegularExpression(R"(\s*pval\s+(\w+)\s*=\s*\(\s*([^,]+?)\s*,\s*([^)]+?)\s*\)\s*;\s*)");
 
     // Pattern for dval name = [var1] + [var2] + expr;
-    m_reDval = QRegularExpression(R"(dval\s+(\w+)\s*=\s*([^;]+);)");
+    // More flexible whitespace
+    m_reDval = QRegularExpression(R"(\s*dval\s+(\w+)\s*=\s*([^;]+?)\s*;\s*)");
 
     // Pattern for dpval name = ([var1] + expr, [var2] + expr);
-    m_reDpval = QRegularExpression(R"(dpval\s+(\w+)\s*=\s*\(\s*([^,]+)\s*,\s*([^)]+)\s*\);)");
+    // More flexible whitespace
+    m_reDpval = QRegularExpression(R"(\s*dpval\s+(\w+)\s*=\s*\(\s*([^,]+?)\s*,\s*([^)]+?)\s*\)\s*;\s*)");
 
     // Pattern for connect(tracker, object.property);
-    m_reConnect = QRegularExpression(R"(connect\s*\(\s*(\w+)\s*,\s*(\w+)\.(\w+)\s*\);)");
+    // More flexible whitespace
+    m_reConnect = QRegularExpression(R"(\s*connect\s*\(\s*(\w+)\s*,\s*(\w+)\s*\.\s*(\w+)\s*\)\s*;\s*)");
 }

@@ -32,95 +32,81 @@ qt_add_qml_module(appAnimat
     URI Animat
     VERSION 1.0
     QML_FILES
-    QML/Main.qml
-        SOURCES
-        QML_FILES
-        QML_FILES
-        SOURCES
-        QML_FILES
-        QML_FILES
-        SOURCES Utils/Singleton.h
-        SOURCES Utils/Constants.h
-        QML_FILES QML/Components/TitleBar.qml
-        QML_FILES QML/Components/Taskbar.qml
-        QML_FILES QML/Components/Menubar.qml
-        QML_FILES QML/Components/ControlPanel.qml
-        QML_FILES QML/Components/SceneManager.qml
-        RESOURCES lib/muparser.pc.in
-        RESOURCES lib/muparserConfig.cmake.in
-        SOURCES
-        SOURCES Math/ValueTracker/valuetracker.h Math/ValueTracker/valuetracker.cpp
-        SOURCES Math/Mobjects/line.h Math/Mobjects/line.cpp
-        SOURCES Math/Mobjects/Mobject.h Math/Mobjects/Mobject.cpp
-        SOURCES Math/Mobjects/Group.h Math/Mobjects/Group.cpp
-        SOURCES
-        SOURCES Math/Mobjects/Curve.h Math/Mobjects/Curve.cpp
-        SOURCES Math/Mobjects/Polygon.h Math/Mobjects/Polygon.cpp
-        SOURCES Math/Mobjects/MRectangle.h Math/Mobjects/MRectangle.cpp
-        SOURCES Math/Mobjects/Circle.h Math/Mobjects/Circle.cpp
-        SOURCES Math/Mobjects/Text.h Math/Mobjects/Text.cpp
-        SOURCES Math/Helper/ClickableMobject.h
-        SOURCES Math/Mobjects/SimpleLine.h Math/Mobjects/SimpleLine.cpp
-        SOURCES
-        SOURCES Utils/mobjectmap.h Utils/mobjectmap.cpp
-        SOURCES Utils/mobjectregistry.h Utils/mobjectregistry.cpp
-        RESOURCES Resources.qrc
-        SOURCES Math/Helper/ClickableMobject.cpp
-        SOURCES
-        QML_FILES QML/Components/Elements/MButton.qml
-        QML_FILES QML/Components/Elements/InputMap.qml
-        QML_FILES QML/Components/Elements/TextButton.qml
-        QML_FILES QML/Components/Elements/ActiveAnimationsList.qml
-        SOURCES
-        SOURCES
-        SOURCES Math/Helper/mproperties.h Math/Helper/mproperties.cpp
-        SOURCES
-        QML_FILES QML/Components/Elements/MpropertiesEditor.qml
-        QML_FILES QML/Components/Elements/Input/PointInput.qml
-        SOURCES
-        SOURCES Math/ValueTracker/ptvaluetracker.h Math/ValueTracker/ptvaluetracker.cpp
-        SOURCES Math/ValueTracker/playbackslider.h Math/ValueTracker/playbackslider.cpp
-        SOURCES Math/Parser/trackermanager.h Math/Parser/trackermanager.cpp
-        SOURCES Math/Parser/parser.h Math/Parser/parser.cpp
-        SOURCES Math/Parser/trackercommand.h Math/Parser/trackercommand.cpp
-        SOURCES Math/Parser/animationscriptparser.h Math/Parser/animationscriptparser.cpp
-        SOURCES Math/Parser/dependencygraph.h Math/Parser/dependencygraph.cpp
-        SOURCES  Math/Animations/animation.cpp
-        SOURCES Math/Animations/animationmanager.h Math/Animations/animationmanager.cpp
-        SOURCES
-        SOURCES
-        SOURCES Math/Helper/Properties/baseproperties.h Math/Helper/Properties/baseproperties.cpp
-        SOURCES Math/Helper/Properties/lineproperties.h Math/Helper/Properties/lineproperties.cpp
-        SOURCES Math/Helper/Properties/curveproperties.h Math/Helper/Properties/curveproperties.cpp
-        SOURCES Math/Helper/Properties/circleproperties.h Math/Helper/Properties/circleproperties.cpp
-        SOURCES Math/Helper/Properties/polygonproperties.h Math/Helper/Properties/polygonproperties.cpp
-        SOURCES Math/Helper/Properties/textproperties.h Math/Helper/Properties/textproperties.cpp
-        SOURCES Math/Managers/funcmap.h Math/Managers/funcmap.cpp
-        SOURCES Math/Animations/animation.h Math/Animations/animation.cpp
-        SOURCES Math/Animations/animTypes/MoveAnimation.h Math/Animations/animTypes/MoveAnimation.cpp
-        SOURCES Math/Animations/animTypes/CreateAnimation.h Math/Animations/animTypes/CreateAnimation.cpp
-        SOURCES Math/Animations/animTypes/DestroyAnimation.h Math/Animations/animTypes/DestroyAnimation.cpp
-        SOURCES Math/Animations/animTypes/CustomScalarAnimation.h Math/Animations/animTypes/CustomScalarAnimation.cpp
-        SOURCES Math/Animations/animTypes/CustomPointAnimation.h Math/Animations/animTypes/CustomPointAnimation.cpp
-        SOURCES Math/Animations/animTypes/ValueAnimation.h Math/Animations/animTypes/ValueAnimation.cpp
-        SOURCES Math/Animations/animTypes/WaitAnimation.h Math/Animations/animTypes/WaitAnimation.cpp
-        SOURCES Math/Animations/animTypes/WaitAnimation.h Math/Animations/AllAnimations.h
-        SOURCES Math/Animations/animpacket.h Math/Animations/animpacket.cpp
-        QML_FILES QML/Components/Elements/Input/AnimInput.qml
-        QML_FILES QML/Components/Elements/Input/AnimInputComponents/AnimationFieldsPanel.qml
-        QML_FILES QML/Components/Elements/Input/AnimInputComponents/Fields/MobjectSelector.qml
-        QML_FILES QML/Components/Elements/Input/AnimInputComponents/Fields/PropertyField.qml
-        QML_FILES QML/Components/Elements/Input/AnimInputComponents/Fields/ValueFields.qml
-        QML_FILES QML/Components/Elements/Input/AnimInputComponents/Fields/TimingFields.qml
-        QML_FILES QML/Components/Elements/Input/AnimInputComponents/Controls/AnimationTypeSelector.qml
-        QML_FILES QML/Components/Elements/Input/AnimInputComponents/Controls/AnimationButtons.qml
-        QML_FILES QML/Components/Elements/Input/AnimInputComponents/Controls/AnimationNavigationControls.qml
-        QML_FILES QML/Components/Elements/Input/AnimInputComponents/Display/AnimationListView.qml
-        QML_FILES QML/Components/Elements/Input/AnimInputComponents/Display/AnimationLog.qml
-        QML_FILES QML/Components/Elements/Input/PlaybackInput.qml
-        QML_FILES QML/Components/Elements/Input/StyledTextField.qml
-        QML_FILES QML/Components/Elements/Input/ColorPicker.qml
-        QML_FILES QML/Components/Elements/Input/NumberInput.qml
+        QML/Main.qml
+        QML/Components/TitleBar.qml
+        QML/Components/Taskbar.qml
+        QML/Components/Menubar.qml
+        QML/Components/ControlPanel.qml
+        QML/Components/SceneManager.qml
+        QML/Components/Elements/MButton.qml
+        QML/Components/Elements/TextButton.qml
+        QML/Components/Elements/ActiveAnimationsList.qml
+        QML/Components/Elements/ValueManagement.qml
+        QML/Components/Elements/MpropertiesEditor.qml
+        QML/Components/Elements/Input/PointInput.qml
+        QML/Components/Elements/Input/AnimInput.qml
+        QML/Components/Elements/Input/AnimInputComponents/AnimationFieldsPanel.qml
+        QML/Components/Elements/Input/AnimInputComponents/Fields/MobjectSelector.qml
+        QML/Components/Elements/Input/AnimInputComponents/Fields/PropertyField.qml
+        QML/Components/Elements/Input/AnimInputComponents/Fields/ValueFields.qml
+        QML/Components/Elements/Input/AnimInputComponents/Fields/TimingFields.qml
+        QML/Components/Elements/Input/AnimInputComponents/Controls/AnimationTypeSelector.qml
+        QML/Components/Elements/Input/AnimInputComponents/Controls/AnimationButtons.qml
+        QML/Components/Elements/Input/AnimInputComponents/Controls/AnimationNavigationControls.qml
+        QML/Components/Elements/Input/AnimInputComponents/Display/AnimationListView.qml
+        QML/Components/Elements/Input/AnimInputComponents/Display/AnimationLog.qml
+        QML/Components/Elements/Input/PlaybackInput.qml
+        QML/Components/Elements/Input/StyledTextField.qml
+        QML/Components/Elements/Input/StyledTextArea.qml
+        QML/Components/Elements/Input/StyledButton.qml
+        QML/Components/Elements/Input/ColorPicker.qml
+        QML/Components/Elements/Input/NumberInput.qml
+    SOURCES
+        Utils/Singleton.h
+        Utils/Constants.h
+        Utils/mobjectmap.h Utils/mobjectmap.cpp
+        Utils/mobjectregistry.h Utils/mobjectregistry.cpp
+        Math/ValueTracker/valuetracker.h Math/ValueTracker/valuetracker.cpp
+        Math/ValueTracker/ptvaluetracker.h Math/ValueTracker/ptvaluetracker.cpp
+        Math/ValueTracker/playbackslider.h Math/ValueTracker/playbackslider.cpp
+        Math/Mobjects/line.h Math/Mobjects/line.cpp
+        Math/Mobjects/Mobject.h Math/Mobjects/Mobject.cpp
+        Math/Mobjects/Group.h Math/Mobjects/Group.cpp
+        Math/Mobjects/Curve.h Math/Mobjects/Curve.cpp
+        Math/Mobjects/Polygon.h Math/Mobjects/Polygon.cpp
+        Math/Mobjects/MRectangle.h Math/Mobjects/MRectangle.cpp
+        Math/Mobjects/Circle.h Math/Mobjects/Circle.cpp
+        Math/Mobjects/Text.h Math/Mobjects/Text.cpp
+        Math/Mobjects/SimpleLine.h Math/Mobjects/SimpleLine.cpp
+        Math/Helper/ClickableMobject.h Math/Helper/ClickableMobject.cpp
+        Math/Helper/mproperties.h Math/Helper/mproperties.cpp
+        Math/Helper/Properties/baseproperties.h Math/Helper/Properties/baseproperties.cpp
+        Math/Helper/Properties/lineproperties.h Math/Helper/Properties/lineproperties.cpp
+        Math/Helper/Properties/curveproperties.h Math/Helper/Properties/curveproperties.cpp
+        Math/Helper/Properties/circleproperties.h Math/Helper/Properties/circleproperties.cpp
+        Math/Helper/Properties/polygonproperties.h Math/Helper/Properties/polygonproperties.cpp
+        Math/Helper/Properties/textproperties.h Math/Helper/Properties/textproperties.cpp
+        Math/Parser/trackermanager.h Math/Parser/trackermanager.cpp
+        Math/Parser/parser.h Math/Parser/parser.cpp
+        Math/Parser/trackercommand.h Math/Parser/trackercommand.cpp
+        Math/Parser/animationscriptparser.h Math/Parser/animationscriptparser.cpp
+        Math/Parser/dependencygraph.h Math/Parser/dependencygraph.cpp
+        Math/Animations/animation.h Math/Animations/animation.cpp
+        Math/Animations/animationmanager.h Math/Animations/animationmanager.cpp
+        Math/Animations/animTypes/MoveAnimation.h Math/Animations/animTypes/MoveAnimation.cpp
+        Math/Animations/animTypes/CreateAnimation.h Math/Animations/animTypes/CreateAnimation.cpp
+        Math/Animations/animTypes/DestroyAnimation.h Math/Animations/animTypes/DestroyAnimation.cpp
+        Math/Animations/animTypes/CustomScalarAnimation.h Math/Animations/animTypes/CustomScalarAnimation.cpp
+        Math/Animations/animTypes/CustomPointAnimation.h Math/Animations/animTypes/CustomPointAnimation.cpp
+        Math/Animations/animTypes/ValueAnimation.h Math/Animations/animTypes/ValueAnimation.cpp
+        Math/Animations/animTypes/WaitAnimation.h Math/Animations/animTypes/WaitAnimation.cpp
+        Math/Animations/AllAnimations.h
+        Math/Animations/animpacket.h Math/Animations/animpacket.cpp
+        Math/Managers/funcmap.h Math/Managers/funcmap.cpp
+    RESOURCES
+        lib/muparser.pc.in
+        lib/muparserConfig.cmake.in
+        Resources.qrc
 )
 
 target_link_libraries(appAnimat
@@ -139,19 +125,6 @@ target_include_directories(appAnimat
     PRIVATE ${CMAKE_SOURCE_DIR}/Math/Parser
     PRIVATE ${CMAKE_SOURCE_DIR}/Utils
 )
-
-
-target_link_libraries(appAnimat
-    PRIVATE Qt6::Quick
-)
-target_link_libraries(appAnimat PRIVATE Qt6::Quick)
-target_link_libraries(appAnimat PRIVATE Qt6::Quick)
-target_link_libraries(appAnimat PRIVATE Qt6::Core Qt6::Quick)
-target_link_libraries(appAnimat PRIVATE Qt6::Core Qt6::Quick)
-target_link_libraries(appAnimat PRIVATE Qt6::Quick)
-target_link_libraries(appAnimat PRIVATE Qt6::Core)
-target_link_libraries(appAnimat PRIVATE Qt6::Core)
-
 
 include(GNUInstallDirs)
 install(TARGETS appAnimat

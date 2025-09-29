@@ -4,6 +4,11 @@
 TrackerCommand::TrackerCommand(const QString &name, double value)
     : m_type(VALUE_TRACKER), m_name(name), m_value(value)
 {
+    // Validate that name is not empty
+    if (name.isEmpty())
+    {
+        m_valid = false;
+    }
 }
 
 // Expression tracker constructor
@@ -14,12 +19,22 @@ TrackerCommand::TrackerCommand(const QString &name, const QString &expression, C
     {
         m_valid = false;
     }
+    // Validate that name is not empty
+    if (name.isEmpty())
+    {
+        m_valid = false;
+    }
 }
 
 // Point tracker constructor
 TrackerCommand::TrackerCommand(const QString &name, const QPointF &point)
     : m_type(POINT_TRACKER), m_name(name), m_point(point)
 {
+    // Validate that name is not empty
+    if (name.isEmpty())
+    {
+        m_valid = false;
+    }
 }
 
 // Point expression tracker constructor
@@ -30,12 +45,22 @@ TrackerCommand::TrackerCommand(const QString &name, const QString &exprX, const 
     {
         m_valid = false;
     }
+    // Validate that name is not empty
+    if (name.isEmpty())
+    {
+        m_valid = false;
+    }
 }
 
 // Connection constructor
 TrackerCommand::TrackerCommand(const QString &trackerName, const QString &objectName, const QString &propertyName)
     : m_type(CONNECTION), m_name(trackerName), m_objectName(objectName), m_propertyName(propertyName)
 {
+    // Validate that names are not empty
+    if (trackerName.isEmpty() || objectName.isEmpty() || propertyName.isEmpty())
+    {
+        m_valid = false;
+    }
 }
 
 QString TrackerCommand::toString() const

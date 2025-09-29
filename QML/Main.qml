@@ -32,6 +32,7 @@ Window {
 
         SceneManager {
             id: scenemanager
+            scene: canvas
         }
 
         Rectangle {

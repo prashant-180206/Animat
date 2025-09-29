@@ -57,6 +57,11 @@ Rectangle {
                             emoji: "▶️",
                             name: "Active"
                         },
+                        {
+                            text: "🧮 Values",
+                            emoji: "🧮",
+                            name: "Values"
+                        }
                     ]
                     Rectangle {
                         id: tabRect
@@ -128,6 +133,12 @@ Rectangle {
                 }
                 Elements.ActiveAnimationsList {
                     manager: canvas.animator()
+                    scene: canvas
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: implicitHeight
+                    Layout.minimumHeight: 400
+                }
+                Elements.ValueManagement {
                     scene: canvas
                     Layout.fillWidth: true
                     Layout.preferredHeight: implicitHeight
