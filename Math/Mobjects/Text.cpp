@@ -139,6 +139,17 @@ void Text::mouseMoveEvent(QMouseEvent *event)
     // Let base class handle the dragging logic
     ClickableMobject::mouseMoveEvent(event);
 
+    // auto scenePos = event->scenePosition();
+
+
+    // QPointF scenePos = event->scenePosition();
+    // QPointF canvasPos = m_canvas->mapFromScene(scenePos);
+    // QPointF newCanvasPos = canvasPos - m_dragItemOffset;
+    // QPointF logicalPos = m_canvas->c2p(newCanvasPos);
+    // properties->base()->setPos(logicalPos);
+    // // setCenter(logicalPos.x(), logicalPos.y());
+    // event->accept();
+
     // Update our cached position after base class moves the object
     if (properties->base())
     {

@@ -1,4 +1,11 @@
 #include "animpacket.h"
+#include "animTypes/MoveAnimation.h"
+#include "animTypes/CreateAnimation.h"
+#include "animTypes/DestroyAnimation.h"
+#include "animTypes/CustomScalarAnimation.h"
+#include "animTypes/CustomPointAnimation.h"
+#include "animTypes/ValueAnimation.h"
+#include "animTypes/WaitAnimation.h"
 
 AnimPacket::AnimPacket(QObject *parent, qreal startTime)
     : QObject(parent), m_startTime(startTime), m_duration(0)

@@ -93,14 +93,26 @@ qt_add_qml_module(appAnimat
         SOURCES Math/Helper/Properties/textproperties.h Math/Helper/Properties/textproperties.cpp
         SOURCES Math/Managers/funcmap.h Math/Managers/funcmap.cpp
         SOURCES Math/Animations/animation.h Math/Animations/animation.cpp
+        SOURCES Math/Animations/animTypes/MoveAnimation.h Math/Animations/animTypes/MoveAnimation.cpp
+        SOURCES Math/Animations/animTypes/CreateAnimation.h Math/Animations/animTypes/CreateAnimation.cpp
+        SOURCES Math/Animations/animTypes/DestroyAnimation.h Math/Animations/animTypes/DestroyAnimation.cpp
+        SOURCES Math/Animations/animTypes/CustomScalarAnimation.h Math/Animations/animTypes/CustomScalarAnimation.cpp
+        SOURCES Math/Animations/animTypes/CustomPointAnimation.h Math/Animations/animTypes/CustomPointAnimation.cpp
+        SOURCES Math/Animations/animTypes/ValueAnimation.h Math/Animations/animTypes/ValueAnimation.cpp
+        SOURCES Math/Animations/animTypes/WaitAnimation.h Math/Animations/animTypes/WaitAnimation.cpp
+        SOURCES Math/Animations/animTypes/WaitAnimation.h Math/Animations/AllAnimations.h
         SOURCES Math/Animations/animpacket.h Math/Animations/animpacket.cpp
         QML_FILES QML/Components/Elements/Input/AnimInput.qml
-        QML_FILES QML/Components/Elements/Input/AnimationTypeSelector.qml
-        QML_FILES QML/Components/Elements/Input/AnimationFieldsPanel.qml
-        QML_FILES QML/Components/Elements/Input/AnimationButtons.qml
-        QML_FILES QML/Components/Elements/Input/AnimationListView.qml
-        QML_FILES QML/Components/Elements/Input/AnimationLog.qml
-        QML_FILES QML/Components/Elements/Input/AnimationNavigationControls.qml
+        QML_FILES QML/Components/Elements/Input/AnimInputComponents/AnimationFieldsPanel.qml
+        QML_FILES QML/Components/Elements/Input/AnimInputComponents/Fields/MobjectSelector.qml
+        QML_FILES QML/Components/Elements/Input/AnimInputComponents/Fields/PropertyField.qml
+        QML_FILES QML/Components/Elements/Input/AnimInputComponents/Fields/ValueFields.qml
+        QML_FILES QML/Components/Elements/Input/AnimInputComponents/Fields/TimingFields.qml
+        QML_FILES QML/Components/Elements/Input/AnimInputComponents/Controls/AnimationTypeSelector.qml
+        QML_FILES QML/Components/Elements/Input/AnimInputComponents/Controls/AnimationButtons.qml
+        QML_FILES QML/Components/Elements/Input/AnimInputComponents/Controls/AnimationNavigationControls.qml
+        QML_FILES QML/Components/Elements/Input/AnimInputComponents/Display/AnimationListView.qml
+        QML_FILES QML/Components/Elements/Input/AnimInputComponents/Display/AnimationLog.qml
         QML_FILES QML/Components/Elements/Input/PlaybackInput.qml
         QML_FILES QML/Components/Elements/Input/StyledTextField.qml
         QML_FILES QML/Components/Elements/Input/ColorPicker.qml

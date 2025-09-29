@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include <QVector>
-#include "Animation.h"
+#include "animation.h"
 
 class AnimPacket : public QObject
 {

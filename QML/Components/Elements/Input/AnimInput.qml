@@ -2,6 +2,9 @@ import QtQuick 2.15
 import QtQuick.Controls.Basic
 import QtQuick.Layouts
 import Animat 1.0
+import "AnimInputComponents/Controls"
+import "AnimInputComponents/Display"
+import "AnimInputComponents"
 
 Item {
     id: root
@@ -14,7 +17,7 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        color: backgroundColor
+        color: root.backgroundColor
         radius: 6
     }
 
@@ -44,9 +47,9 @@ Item {
             animationCount: listView.count
             manager: root.manager
 
-            onAddAnimationClicked: addAnimation()
-            onAddPacketClicked: addPacket()
-            onClearAllClicked: clearAll()
+            onAddAnimationClicked: root.addAnimation()
+            onAddPacketClicked: root.addPacket()
+            onClearAllClicked: root.clearAll()
         }
 
         AnimationListView {
