@@ -1,10 +1,23 @@
 #include "MoveAnimation.h"
 #include "ClickableMobject.h"
 
-MoveAnimation::MoveAnimation(ClickableMobject *mobj, QPointF startPos, QPointF targetPos, qreal startOffset, qreal duration)
+MoveAnimation::MoveAnimation(ClickableMobject *mobj, QPointF targetPos, qreal startOffset, qreal duration)
     : Animation(startOffset, duration), m_mobj(mobj),
-      m_startPos(startPos), m_targetPos(targetPos)
+      m_startPos(QPointF(0, 0)), m_targetPos(targetPos), m_startCaptured(false)
 {
+}
+
+void MoveAnimation::onStart()
+{
+    if (!m_startCaptured && m_mobj && m_mobj->getProperties() && m_mobj->getProperties()->base())
+    {
+        // Capture the current position as the starting position
+        m_startPos = m_mobj->getProperties()->base()->pos();
+        m_startCaptured = true;
+    }
+
+    // Call parent implementation
+    Animation::onStart();
 }
 
 void MoveAnimation::apply()

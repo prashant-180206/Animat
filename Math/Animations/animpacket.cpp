@@ -33,7 +33,6 @@ void AnimPacket::addAnimation(const QString &type,
     {
         anim = new MoveAnimation(
             mobj,
-            startVal.toPointF(),
             targetVal.toPointF(),
             startOffset, duration);
     }
@@ -51,7 +50,6 @@ void AnimPacket::addAnimation(const QString &type,
         anim = new CustomScalarAnimation(
             mobj,
             prop,
-            startVal.toReal(),
             targetVal.toReal(),
             startOffset, duration);
     }
@@ -60,7 +58,6 @@ void AnimPacket::addAnimation(const QString &type,
         anim = new CustomPointAnimation(
             mobj,
             prop,
-            startVal.toPointF(),
             targetVal.toPointF(),
             startOffset, duration);
     }

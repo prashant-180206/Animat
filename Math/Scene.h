@@ -12,7 +12,7 @@
 #include "animationmanager.h"
 #include "mproperties.h"
 #include "playbackslider.h"
-#include "trackermanager.h"
+#include "Parser/parser.h"
 #include <QHash>
 
 class ClickableMobject;
@@ -37,16 +37,17 @@ public:
 
     ClickableMobject *SelectedMobject();
 
-    Q_INVOKABLE TrackerManager *trackers();
-
     Q_INVOKABLE PlaybackSlider *player();
     Q_INVOKABLE AnimationManager *animator();
-    ;
+    Q_INVOKABLE Parser *parser();
     Q_INVOKABLE MProperties *getProperties() { return m_prop; };
 
     Q_INVOKABLE ClickableMobject *getMobject(QString id);
 
     Q_INVOKABLE QStringList getAllMobjectIds();
+
+    // Simple parser evaluation
+    Q_INVOKABLE double evaluate(const QString &expression);
 
     void setbg(QColor c) { bgcol = c; }
     QColor getbg() { return bgcol; };
@@ -78,7 +79,7 @@ private:
     QHash<QString, ClickableMobject *> m_objects;
     MProperties *m_prop = new MProperties(this);
 
-    TrackerManager *m_trackers = new TrackerManager(this, this);
+    Parser *m_parser = new Parser();
     PlaybackSlider *m_player = new PlaybackSlider(this);
     AnimationManager *m_animator = new AnimationManager(this);
 

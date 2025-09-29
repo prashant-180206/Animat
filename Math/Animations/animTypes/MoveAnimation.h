@@ -6,19 +6,25 @@
 
 class ClickableMobject;
 
-// Move Animation: moves a mobject from start to target position
+// Move Animation: moves a mobject from current position to target position
 class MoveAnimation : public Animation
 {
 public:
-    MoveAnimation(ClickableMobject *mobj, QPointF startPos, QPointF targetPos,
+    // Only requires target position - start position is captured automatically
+    MoveAnimation(ClickableMobject *mobj, QPointF targetPos,
                   qreal startOffset, qreal duration);
 
     void apply() override;
 
+protected:
+    // Called when animation starts to capture current position
+    void onStart() override;
+
 private:
     ClickableMobject *m_mobj;
-    QPointF m_startPos;
-    QPointF m_targetPos;
+    QPointF m_startPos;   // Captured automatically when animation starts
+    QPointF m_targetPos;  // User-specified target position
+    bool m_startCaptured; // Flag to ensure we capture start position only once
 };
 
 #endif // MOVEANIMATION_H

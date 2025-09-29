@@ -95,9 +95,9 @@ ClickableMobject *Scene::getMobject(QString id)
     return m_objects.value(id, nullptr);
 }
 
-TrackerManager *Scene::trackers()
+Parser *Scene::parser()
 {
-    return m_trackers;
+    return m_parser;
 }
 
 PlaybackSlider *Scene::player()
@@ -108,6 +108,11 @@ PlaybackSlider *Scene::player()
 AnimationManager *Scene::animator()
 {
     return m_animator;
+}
+
+double Scene::evaluate(const QString &expression)
+{
+    return m_parser->evaluate(expression);
 }
 
 QColor Scene::getBorderColor() { return TEXT_LIGHT; }

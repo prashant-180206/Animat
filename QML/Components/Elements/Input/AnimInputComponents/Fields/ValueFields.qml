@@ -14,12 +14,12 @@ Column {
     property alias startValue: startValField.text
     property alias targetValue: targetValField.text
 
-    // Start Position/Value field
+    // Start Position/Value field - only show for Value animations (others auto-capture)
     Column {
         id: startValSection
         width: parent.width
         spacing: 4
-        visible: animationType === "Move" || animationType === "CustomScalar" || animationType === "CustomPoint" || animationType === "Value"
+        visible: animationType === "Value"
 
         Text {
             text: getStartFieldLabel()
@@ -75,33 +75,18 @@ Column {
     }
 
     function getStartFieldLabel() {
-        switch (animationType) {
-        case "Move":
-            return "Start Position *";
-        case "CustomScalar":
+        // Only Value animations need start values now
+        if (animationType === "Value") {
             return "Start Value *";
-        case "CustomPoint":
-            return "Start Point *";
-        case "Value":
-            return "Start Value *";
-        default:
-            return "Start Value";
         }
+        return "Start Value (Auto-captured)";
     }
 
     function getStartFieldPlaceholder() {
-        switch (animationType) {
-        case "Move":
-            return "x,y (e.g., 100,200)";
-        case "CustomScalar":
+        if (animationType === "Value") {
             return "Number (e.g., 0.5)";
-        case "CustomPoint":
-            return "x,y (e.g., 10,20)";
-        case "Value":
-            return "Number (e.g., 0)";
-        default:
-            return "Start value";
         }
+        return "Auto-captured from current state";
     }
 
     function getTargetFieldLabel() {

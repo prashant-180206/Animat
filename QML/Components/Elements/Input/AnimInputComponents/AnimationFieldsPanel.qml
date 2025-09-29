@@ -54,6 +54,21 @@ Column {
         borderColor: root.borderColor
     }
 
+    // // Info text about auto-capture feature
+    // Text {
+    //     width: parent.width
+    //     text: {
+    //         if (root.animationType === "Move" || root.animationType === "CustomScalar" || root.animationType === "CustomPoint") {
+    //             return "ℹ️ Start value is automatically captured from object's current state";
+    //         }
+    //         return "";
+    //     }
+    //     color: "#888888"
+    //     font.pixelSize: 11
+    //     wrapMode: Text.WordWrap
+    //     visible: text !== ""
+    // }
+
     TimingFields {
         id: timingFields
         width: parent.width

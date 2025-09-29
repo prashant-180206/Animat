@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+  <!-- LaTeX symbol background -->
+  <rect x="2" y="4" width="20" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.3"/>
+  
+  <!-- LaTeX-style mathematical notation -->
+  <!-- Large L -->
+  <path fill="currentColor" d="M5 6h1.5v10H5v1.5h4v-1.5H7.5V6H5z"/>
+  
+  <!-- Superscript A -->
+  <path fill="currentColor" d="M9.5 6l1.5 4h-0.8l-0.3-0.8h-1.6l-0.3 0.8H7.2L8.7 6h0.8zm0.8 2.4l-0.5-1.3-0.5 1.3h1z" transform="scale(0.8) translate(3, -1)"/>
+  
+  <!-- T -->
+  <path fill="currentColor" d="M12 7.5h3.5V9H14v7h-1V9h-1v-1.5z"/>
+  
+  <!-- E -->
+  <path fill="currentColor" d="M16.5 7.5H20V9h-2v2.5h1.5v1h-1.5V15H20v1.5h-3.5V7.5z"/>
+  
+  <!-- Mathematical symbols -->
+  <text x="6" y="18" font-family="serif" font-size="8" fill="currentColor" opacity="0.7">∫dx</text>
+  <text x="14" y="18" font-family="serif" font-size="8" fill="currentColor" opacity="0.7">Σ</text>
+</svg>

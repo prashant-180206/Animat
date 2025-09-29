@@ -10,17 +10,23 @@ class ClickableMobject;
 class CustomScalarAnimation : public Animation
 {
 public:
+    // Only requires target value - start value is captured automatically
     CustomScalarAnimation(ClickableMobject *mobj, QString prop,
-                          qreal startVal, qreal targetVal,
+                          qreal targetVal,
                           qreal startOffset, qreal duration);
 
     void apply() override;
 
+protected:
+    // Called when animation starts to capture current value
+    void onStart() override;
+
 private:
     ClickableMobject *m_mobj;
     QString m_prop;
-    qreal m_startVal;
-    qreal m_targetVal;
+    qreal m_startVal;     // Captured automatically when animation starts
+    qreal m_targetVal;    // User-specified target value
+    bool m_startCaptured; // Flag to ensure we capture start value only once
 };
 
 #endif // CUSTOMSCALARANIMATION_H

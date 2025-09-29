@@ -80,7 +80,11 @@ qt_add_qml_module(appAnimat
         SOURCES
         SOURCES Math/ValueTracker/ptvaluetracker.h Math/ValueTracker/ptvaluetracker.cpp
         SOURCES Math/ValueTracker/playbackslider.h Math/ValueTracker/playbackslider.cpp
-        SOURCES Math/Managers/trackermanager.h Math/Managers/trackermanager.cpp
+        SOURCES Math/Parser/trackermanager.h Math/Parser/trackermanager.cpp
+        SOURCES Math/Parser/parser.h Math/Parser/parser.cpp
+        SOURCES Math/Parser/trackercommand.h Math/Parser/trackercommand.cpp
+        SOURCES Math/Parser/animationscriptparser.h Math/Parser/animationscriptparser.cpp
+        SOURCES Math/Parser/dependencygraph.h Math/Parser/dependencygraph.cpp
         SOURCES  Math/Animations/animation.cpp
         SOURCES Math/Animations/animationmanager.h Math/Animations/animationmanager.cpp
         SOURCES
@@ -132,6 +136,7 @@ target_include_directories(appAnimat
     PRIVATE ${CMAKE_SOURCE_DIR}/Math/ValueTracker
     PRIVATE ${CMAKE_SOURCE_DIR}/Math/Managers
     PRIVATE ${CMAKE_SOURCE_DIR}/Math/Animations
+    PRIVATE ${CMAKE_SOURCE_DIR}/Math/Parser
     PRIVATE ${CMAKE_SOURCE_DIR}/Utils
 )
 

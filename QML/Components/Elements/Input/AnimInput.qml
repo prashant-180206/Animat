@@ -89,11 +89,17 @@ Item {
             errors.push("Property name is required for custom animations");
         }
 
-        // Check values for animations that need them (exclude Wait)
-        if ((type === "Move" || type === "CustomScalar" || type === "CustomPoint" || type === "Value")) {
+        // Check values for animations that need them (exclude Wait and animations that auto-capture start values)
+        if (type === "Value") {
+            // Value animations still need both start and target
             if (!fieldsPanel.startValue.trim()) {
                 errors.push("Start value is required");
             }
+            if (!fieldsPanel.targetValue.trim()) {
+                errors.push("Target value is required");
+            }
+        } else if (type === "Move" || type === "CustomScalar" || type === "CustomPoint") {
+            // These animations only need target value (start value auto-captured)
             if (!fieldsPanel.targetValue.trim()) {
                 errors.push("Target value is required");
             }
@@ -126,7 +132,7 @@ Item {
         let mobjId = fieldsPanel.mobjectId.trim();
         let startOffset = parseFloat(fieldsPanel.startOffset) || 0;
         let duration = parseFloat(fieldsPanel.duration) || 1;
-        let startVal = fieldsPanel.startValue.trim() !== "" ? parseVal(fieldsPanel.startValue) : undefined;
+        let startVal = (type === "Value" && fieldsPanel.startValue.trim() !== "") ? parseVal(fieldsPanel.startValue) : undefined;
         let targetVal = fieldsPanel.targetValue.trim() !== "" ? parseVal(fieldsPanel.targetValue) : undefined;
 
         logPanel.appendLog(`Type: ${type}`);
@@ -148,8 +154,12 @@ Item {
 
         if (type === "Wait") {
             animationData.values = "Wait/Delay";
-        } else if (startVal !== undefined && targetVal !== undefined) {
+        } else if (type === "Value") {
+            // Value animations still show start → target
             animationData.values = startVal.toString() + " → " + targetVal.toString();
+        } else if (targetVal !== undefined) {
+            // Move, CustomScalar, CustomPoint show: current → target
+            animationData.values = "current → " + targetVal.toString();
         }
 
         listView.addAnimation(animationData);
@@ -171,7 +181,17 @@ Item {
                     }
                 }
 
-                root.manager.packetToAdd.addAnimation(type, mobj, startVal, targetVal, prop, startOffset, duration);
+                // Call addAnimation with appropriate parameters based on animation type
+                if (type === "Value") {
+                    // Value animations still need both start and target values
+                    root.manager.packetToAdd.addAnimation(type, mobj, startVal, targetVal, prop, startOffset, duration);
+                } else if (type === "Move" || type === "CustomScalar" || type === "CustomPoint") {
+                    // These animations only need target value (start auto-captured)
+                    root.manager.packetToAdd.addAnimation(type, mobj, undefined, targetVal, prop, startOffset, duration);
+                } else {
+                    // Other animations (Create, Destroy, Wait) don't need values
+                    root.manager.packetToAdd.addAnimation(type, mobj, startVal, targetVal, prop, startOffset, duration);
+                }
                 logPanel.appendLog("✓ Animation added to packet");
                 logPanel.appendLog("✓ Packet processed");
             } catch (error) {
