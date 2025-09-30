@@ -13,24 +13,16 @@ Rectangle {
     anchors.right: parent.right
     anchors.left: parent.left
     anchors.margins: 40
-    height: 150
+    height: 80
 
     Row {
         anchors.fill: parent
         anchors.margins: 10
         spacing: 15
 
-        // Playback controls - restore original size
-        PlaybackInput {
-            player: canvas.player()
-            z: 100
-            width: parent.width * 0.4  // Restored to 40% width
-            height: parent.height * 0.8
-        }
-
-        // All Trackers Display (Combined)
+        // All Trackers Display (takes full width now)
         Rectangle {
-            width: parent.width * 0.55  // Use remaining space
+            width: parent.width * 0.95  // Use most of the space
             height: parent.height
             color: Constants.darkGrayB
             radius: 5

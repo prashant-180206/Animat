@@ -176,28 +176,29 @@ QSGNode *Scene::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
     QSGSimpleRectNode *bgNode = new QSGSimpleRectNode(rect, getbg());
     rootNode->appendChildNode(bgNode);
 
-    // Draw border
-    QSGGeometryNode *borderNode = new QSGGeometryNode();
-    QSGGeometry *geometry = new QSGGeometry(QSGGeometry::defaultAttributes_Point2D(), 5);
-    geometry->setDrawingMode(GL_LINE_STRIP);
-    borderNode->setGeometry(geometry);
-    borderNode->setFlag(QSGNode::OwnsGeometry);
+    // Draw border only if showBorders is true
+    if (m_showBorders)
+    {
+        QSGGeometryNode *borderNode = new QSGGeometryNode();
+        QSGGeometry *geometry = new QSGGeometry(QSGGeometry::defaultAttributes_Point2D(), 5);
+        geometry->setDrawingMode(GL_LINE_STRIP);
+        borderNode->setGeometry(geometry);
+        borderNode->setFlag(QSGNode::OwnsGeometry);
 
-    QSGGeometry::Point2D *vertices = geometry->vertexDataAsPoint2D();
-    vertices[0].set(rect.left(), rect.top());
-    vertices[1].set(rect.right(), rect.top());
-    vertices[2].set(rect.right(), rect.bottom());
-    vertices[3].set(rect.left(), rect.bottom());
-    vertices[4].set(rect.left(), rect.top()); // Close loop
+        QSGGeometry::Point2D *vertices = geometry->vertexDataAsPoint2D();
+        vertices[0].set(rect.left(), rect.top());
+        vertices[1].set(rect.right(), rect.top());
+        vertices[2].set(rect.right(), rect.bottom());
+        vertices[3].set(rect.left(), rect.bottom());
+        vertices[4].set(rect.left(), rect.top()); // Close loop
 
-    auto *material = new QSGFlatColorMaterial();
-    material->setColor(getBorderColor());
-    borderNode->setMaterial(material);
-    borderNode->setFlag(QSGNode::OwnsMaterial);
+        auto *material = new QSGFlatColorMaterial();
+        material->setColor(getBorderColor());
+        borderNode->setMaterial(material);
+        borderNode->setFlag(QSGNode::OwnsMaterial);
 
-    borderNode->setFlag(QSGNode::OwnsMaterial);
-
-    rootNode->appendChildNode(borderNode);
+        rootNode->appendChildNode(borderNode);
+    }
 
     return rootNode;
 }

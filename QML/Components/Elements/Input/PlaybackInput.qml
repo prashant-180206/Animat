@@ -6,10 +6,10 @@ import Animat 1.0
 Rectangle {
     id: root
     property var player
-    width: 600
-    height: 50
+    width: 800
+    height: 35
     color: "#17181A"
-    radius: 10
+    radius: 6
 
     // --- Playback Controls (Play/Pause + Reset) ---
     Row {
@@ -21,12 +21,12 @@ Rectangle {
 
         // Play / Pause
         Button {
-            width: 32
-            height: 32
+            width: 28
+            height: 28
             background: Rectangle {
                 anchors.fill: parent
                 color: "#202127"
-                radius: 8
+                radius: 6
             }
             contentItem: Text {
                 text: player && player.playing ? "\u23F8" : "\u25B6"   // ⏸ / ▶
@@ -43,16 +43,16 @@ Rectangle {
 
         // Reset
         Button {
-            width: 32
-            height: 32
+            width: 28
+            height: 28
             background: Rectangle {
                 anchors.fill: parent
                 color: "#202127"
-                radius: 8
+                radius: 6
             }
             contentItem: Text {
                 text: "\u21BA"   // ↺
-                font.pixelSize: 18
+                font.pixelSize: 16
                 color: "#F5F6F7"
                 anchors.centerIn: parent
             }
@@ -107,9 +107,9 @@ Rectangle {
         handle: Rectangle {
             x: slider.leftPadding + slider.visualPosition * (slider.availableWidth - width)
             y: slider.topPadding + slider.availableHeight / 2 - height / 2
-            implicitWidth: 16
-            implicitHeight: 16
-            radius: 8
+            implicitWidth: 14
+            implicitHeight: 14
+            radius: 7
             color: slider.pressed ? "#FF615A" : "#E25555"
             border.color: "#17181A"
             border.width: 2
@@ -122,7 +122,7 @@ Rectangle {
         anchors.right: parent.right
         anchors.rightMargin: 18
         anchors.verticalCenter: parent.verticalCenter
-        font.pointSize: 13
+        font.pointSize: 11
         font.family: "Monospace"
         color: "#ADADAD"
 

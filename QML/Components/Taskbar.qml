@@ -14,6 +14,9 @@ Rectangle {
     // Property to receive scene from parent
     property var scene: null
 
+    // Property to receive main window reference
+    property var mainWindow: null
+
     // FileHandler instance
     FileHandler {
         id: fileHandler
@@ -112,7 +115,15 @@ Rectangle {
                         saveDialog.open();
                         break;
                     case "Play":
-                        // Add play functionality here
+                        // Enter fullscreen presentation mode
+                        console.log("Taskbar.qml: Play button clicked");
+                        console.log("Taskbar.qml: mainWindow exists:", mainWindow ? "yes" : "no");
+                        if (mainWindow) {
+                            console.log("Taskbar.qml: Calling mainWindow.enterPresentationMode()");
+                            mainWindow.enterPresentationMode();
+                        } else {
+                            console.log("Taskbar.qml: ERROR - mainWindow is null or undefined");
+                        }
                         break;
                     }
                 }

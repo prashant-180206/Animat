@@ -25,6 +25,7 @@ class Scene : public QQuickItem
     Q_PROPERTY(ClickableMobject *SelectedMobject READ SelectedMobject NOTIFY SelectedMobjectChanged FINAL)
     Q_PROPERTY(QString activeId READ activeId WRITE setActiveId NOTIFY activeIdChanged FINAL)
     Q_PROPERTY(QStringList mobjectIds READ getAllMobjectIds NOTIFY mobjectsChanged FINAL)
+    Q_PROPERTY(bool showBorders READ showBorders WRITE setShowBorders NOTIFY showBordersChanged FINAL)
 
 public:
     Scene();
@@ -64,6 +65,18 @@ public:
     QColor getbg() { return bgcol; };
     QColor getBorderColor();
 
+    // Border visibility control
+    bool showBorders() const { return m_showBorders; }
+    void setShowBorders(bool show)
+    {
+        if (m_showBorders != show)
+        {
+            m_showBorders = show;
+            update(); // Trigger repaint
+            emit showBordersChanged();
+        }
+    }
+
     int scalefactor();
 
     QPointF p2c(QPointF p);
@@ -94,11 +107,13 @@ private:
     TrackerManager *m_trackers = new TrackerManager(this, this);
     PlaybackSlider *m_player = new PlaybackSlider(this);
     AnimationManager *m_animator = new AnimationManager(this);
+    bool m_showBorders = true; // Default to showing borders
 
 signals:
     void SelectedMobjectChanged();
     void activeIdChanged();
     void mobjectsChanged();
+    void showBordersChanged();
 };
 
 #endif // SCENE_H
