@@ -12,7 +12,7 @@ class MoveAnimation : public Animation
 public:
     // Only requires target position - start position is captured automatically
     MoveAnimation(ClickableMobject *mobj, QPointF targetPos,
-                  qreal startOffset, qreal duration);
+                  qreal duration, QEasingCurve::Type easingType = QEasingCurve::InOutQuad);
 
     void apply() override;
 

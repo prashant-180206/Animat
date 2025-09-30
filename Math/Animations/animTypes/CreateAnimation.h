@@ -9,7 +9,7 @@ class ClickableMobject;
 class CreateAnimation : public Animation
 {
 public:
-    CreateAnimation(ClickableMobject *mobj, qreal startOffset, qreal duration);
+    CreateAnimation(ClickableMobject *mobj, qreal duration, QEasingCurve::Type easingType = QEasingCurve::InOutQuad);
 
     void apply() override;
 

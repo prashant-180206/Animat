@@ -77,8 +77,8 @@ public:
                                   QVariant startVal,
                                   QVariant targetVal,
                                   const QString &prop,
-                                  qreal startOffset,
-                                  qreal duration);
+                                  qreal duration,
+                                  const QString &easingType = "InOutQuad");
 
     // Update animations with current scene time
     void update(qreal sceneTime)

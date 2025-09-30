@@ -7,7 +7,7 @@
 class WaitAnimation : public Animation
 {
 public:
-    WaitAnimation(qreal startOffset, qreal duration);
+    WaitAnimation(qreal duration, QEasingCurve::Type easingType = QEasingCurve::InOutQuad);
 
     void apply() override;
 

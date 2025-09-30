@@ -130,8 +130,8 @@ Item {
         let type = typeSelector.currentText;
         let prop = fieldsPanel.propertyName.trim();
         let mobjId = fieldsPanel.mobjectId.trim();
-        let startOffset = parseFloat(fieldsPanel.startOffset) || 0;
         let duration = parseFloat(fieldsPanel.duration) || 1;
+        let easingCurve = fieldsPanel.easingCurve || "InOutQuad";
         let startVal = (type === "Value" && fieldsPanel.startValue.trim() !== "") ? parseVal(fieldsPanel.startValue) : undefined;
         let targetVal = fieldsPanel.targetValue.trim() !== "" ? parseVal(fieldsPanel.targetValue) : undefined;
 
@@ -140,15 +140,15 @@ Item {
             logPanel.appendLog(`Mobject: ${mobjId}`);
         if (prop)
             logPanel.appendLog(`Property: ${prop}`);
-        logPanel.appendLog(`Start Offset: ${startOffset}s, Duration: ${duration}s`);
+        logPanel.appendLog(`Duration: ${duration}s, Easing: ${easingCurve}`);
 
         // Add to animation list
         let animationData = {
             type: type,
             mobject: type === "Wait" ? "N/A" : mobjId,
             property: prop,
-            startOffset: startOffset,
             duration: duration,
+            easingCurve: easingCurve,
             values: ""
         };
 
@@ -184,13 +184,13 @@ Item {
                 // Call addAnimation with appropriate parameters based on animation type
                 if (type === "Value") {
                     // Value animations still need both start and target values
-                    root.manager.packetToAdd.addAnimation(type, mobj, startVal, targetVal, prop, startOffset, duration);
+                    root.manager.packetToAdd.addAnimation(type, mobj, startVal, targetVal, prop, duration, easingCurve);
                 } else if (type === "Move" || type === "CustomScalar" || type === "CustomPoint") {
                     // These animations only need target value (start auto-captured)
-                    root.manager.packetToAdd.addAnimation(type, mobj, undefined, targetVal, prop, startOffset, duration);
+                    root.manager.packetToAdd.addAnimation(type, mobj, undefined, targetVal, prop, duration, easingCurve);
                 } else {
                     // Other animations (Create, Destroy, Wait) don't need values
-                    root.manager.packetToAdd.addAnimation(type, mobj, startVal, targetVal, prop, startOffset, duration);
+                    root.manager.packetToAdd.addAnimation(type, mobj, startVal, targetVal, prop, duration, easingCurve);
                 }
                 logPanel.appendLog("✓ Animation added to packet");
                 logPanel.appendLog("✓ Packet processed");

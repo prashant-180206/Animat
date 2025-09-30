@@ -110,6 +110,13 @@ Rectangle {
                 Layout.fillWidth: true
                 mprop: root.mprop
             }
+
+            // Plane Properties Panel
+            PlanePanel {
+                visible: root.mprop && root.mprop.geometric && root.mprop.geometric.plane
+                Layout.fillWidth: true
+                mprop: root.mprop
+            }
         }
     }
 }

@@ -9,12 +9,17 @@ class ClickableMobject;
 class DestroyAnimation : public Animation
 {
 public:
-    DestroyAnimation(ClickableMobject *mobj, qreal startOffset, qreal duration);
+    DestroyAnimation(ClickableMobject *mobj, qreal duration, QEasingCurve::Type easingType = QEasingCurve::InOutQuad);
 
     void apply() override;
 
+protected:
+    // Called when animation starts to capture original z-index
+    void onStart() override;
+
 private:
     ClickableMobject *m_mobj;
+    qreal m_originalZIndex; // Store the original z-index to restore later
 };
 
 #endif // DESTROYANIMATION_H

@@ -10,7 +10,7 @@ class ClickableMobject;
 class ValueAnimation : public Animation
 {
 public:
-    ValueAnimation(qreal startVal, qreal endVal, qreal startOffset, qreal duration);
+    ValueAnimation(qreal startVal, qreal endVal, qreal duration, QEasingCurve::Type easingType = QEasingCurve::InOutQuad);
 
     // Add mobject-property pairs to update on value change
     void addTarget(ClickableMobject *mobj, QString prop);

@@ -60,7 +60,7 @@ Column {
                         }
 
                         Text {
-                            text: "Offset: " + model.startOffset + "s, Duration: " + model.duration + "s"
+                            text: "Duration: " + model.duration + "s, Easing: " + (model.easingCurve || "InOutQuad")
                             color: root.labelColor
                             font.pixelSize: 10
                         }

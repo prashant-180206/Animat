@@ -1,8 +1,8 @@
 #include "CreateAnimation.h"
 #include "Math/Mobjects/Base/ClickableMobject.h"
 
-CreateAnimation::CreateAnimation(ClickableMobject *mobj, qreal startOffset, qreal duration)
-    : Animation(startOffset, duration), m_mobj(mobj)
+CreateAnimation::CreateAnimation(ClickableMobject *mobj, qreal duration, QEasingCurve::Type easingType)
+    : Animation(duration, easingType), m_mobj(mobj)
 {
 }
 

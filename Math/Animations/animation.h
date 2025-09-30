@@ -8,14 +8,14 @@
 class Animation
 {
 public:
-    Animation(qreal startOffset, qreal duration, QEasingCurve::Type easingtype = QEasingCurve::InBounce);
+    Animation(qreal duration, QEasingCurve::Type easingtype = QEasingCurve::InBounce);
 
     virtual ~Animation();
 
-    // Set local time relative to this animation's startOffset
+    // Set local time relative to animation start
     void setLtime(qreal sceneTime = 0)
     {
-        qreal localTime = sceneTime - m_startOffset;
+        qreal localTime = sceneTime;
         if (localTime < 0)
         {
             m_ltime = 0;
@@ -47,7 +47,6 @@ public:
     // Each animation must implement how to apply progress to its target(s)
     virtual void apply() = 0;
 
-    qreal getStartOffset() const;
     qreal getDuration() const;
 
 protected:
@@ -55,7 +54,6 @@ protected:
     virtual void onStart() {}
 
     qreal m_ltime = 0;      // Normalized local time (0 to 1)
-    qreal m_startOffset;    // Absolute start time of animation in scene
     qreal m_duration;       // Duration of animation
     bool m_started = false; // Flag to track if animation has started
 

@@ -1,8 +1,8 @@
 #include "MoveAnimation.h"
 #include "Math/Mobjects/Base/ClickableMobject.h"
 
-MoveAnimation::MoveAnimation(ClickableMobject *mobj, QPointF targetPos, qreal startOffset, qreal duration)
-    : Animation(startOffset, duration), m_mobj(mobj),
+MoveAnimation::MoveAnimation(ClickableMobject *mobj, QPointF targetPos, qreal duration, QEasingCurve::Type easingType)
+    : Animation(duration, easingType), m_mobj(mobj),
       m_startPos(QPointF(0, 0)), m_targetPos(targetPos), m_startCaptured(false)
 {
 }

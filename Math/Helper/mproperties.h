@@ -7,6 +7,7 @@
 #include "lineproperties.h"
 #include "polygonproperties.h"
 #include "textproperties.h"
+#include "geometricproperties.h"
 #include <QObject>
 #include <qqmlintegration.h>
 
@@ -21,6 +22,7 @@ class MProperties : public QObject
     Q_PROPERTY(LineProperties *line READ line WRITE setLine NOTIFY lineChanged)
     Q_PROPERTY(PolygonProperties *polygon READ polygon WRITE setPolygon NOTIFY polygonChanged)
     Q_PROPERTY(TextProperties *text READ text WRITE setText NOTIFY textChanged)
+    Q_PROPERTY(GeometricProperties *geometric READ geometric WRITE setGeometric NOTIFY geometricChanged)
 
 public:
     explicit MProperties(QObject *parent = nullptr);
@@ -43,6 +45,9 @@ public:
     TextProperties *text() const { return m_text; }
     void setText(TextProperties *text);
 
+    GeometricProperties *geometric() const { return m_geometric; }
+    void setGeometric(GeometricProperties *geometric);
+
 signals:
     void baseChanged();
     void circleChanged();
@@ -50,6 +55,7 @@ signals:
     void lineChanged();
     void polygonChanged();
     void textChanged();
+    void geometricChanged();
 
 private:
     BaseProperties *m_base = nullptr;
@@ -58,6 +64,7 @@ private:
     LineProperties *m_line = nullptr;
     PolygonProperties *m_polygon = nullptr;
     TextProperties *m_text = nullptr;
+    GeometricProperties *m_geometric = nullptr;
 };
 
 #endif // MPROPERTIES_H

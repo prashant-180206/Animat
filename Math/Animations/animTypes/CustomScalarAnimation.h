@@ -13,7 +13,7 @@ public:
     // Only requires target value - start value is captured automatically
     CustomScalarAnimation(ClickableMobject *mobj, QString prop,
                           qreal targetVal,
-                          qreal startOffset, qreal duration);
+                          qreal duration, QEasingCurve::Type easingType = QEasingCurve::InOutQuad);
 
     void apply() override;
 

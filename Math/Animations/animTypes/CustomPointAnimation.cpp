@@ -2,8 +2,8 @@
 #include "Math/Mobjects/Base/ClickableMobject.h"
 #include "Managers/funcmap.h"
 
-CustomPointAnimation::CustomPointAnimation(ClickableMobject *mobj, QString prop, QPointF targetVal, qreal startOffset, qreal duration)
-    : Animation(startOffset, duration), m_mobj(mobj), m_prop(prop),
+CustomPointAnimation::CustomPointAnimation(ClickableMobject *mobj, QString prop, QPointF targetVal, qreal duration, QEasingCurve::Type easingType)
+    : Animation(duration, easingType), m_mobj(mobj), m_prop(prop),
       m_startVal(QPointF(0, 0)), m_targetVal(targetVal), m_startCaptured(false)
 {
 }

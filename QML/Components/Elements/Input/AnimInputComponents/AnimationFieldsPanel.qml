@@ -20,8 +20,8 @@ Column {
     property alias propertyName: propertyField.text
     property alias startValue: valueFields.startValue
     property alias targetValue: valueFields.targetValue
-    property alias startOffset: timingFields.startOffset
     property alias duration: timingFields.duration
+    property alias easingCurve: timingFields.easingCurve
 
     MobjectSelector {
         id: mobjectSelector

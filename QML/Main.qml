@@ -72,19 +72,17 @@ Window {
                 anchors.top: canvas.bottom
                 anchors.topMargin: 15
                 width: Math.min(parent.width - 80, 800) // Use most available width, max 800
+                opacity: playbackarea.containsMouse || !presentationMode ? 1: 0
                 height: 40
                 z: 100
+            }
 
-                opacity: playbackarea.containsMouse || !presentationMode ? 1 : 0
-
-                MouseArea{
-                    id: playbackarea
-                    anchors.fill: parent
-                    hoverEnabled: true
-                }
+            MouseArea{
+                id:playbackarea
+                hoverEnabled: true
+                anchors.fill: playbackControls
             }
         }
-
     }
 
     // Functions for presentation mode

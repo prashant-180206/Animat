@@ -21,11 +21,26 @@ void AnimPacket::addAnimation(const QString &type,
                               QVariant startVal,
                               QVariant targetVal,
                               const QString &prop,
-                              qreal startOffset,
-                              qreal duration)
+                              qreal duration,
+                              const QString &easingType)
 {
     Animation *anim = nullptr;
     QString t = type.toLower(); // normalize for safety
+
+    // Convert easing type string to QEasingCurve::Type
+    QEasingCurve::Type easingCurve = QEasingCurve::InOutQuad; // default
+    if (easingType == "Linear")
+        easingCurve = QEasingCurve::Linear;
+    else if (easingType == "InQuad")
+        easingCurve = QEasingCurve::InQuad;
+    else if (easingType == "OutQuad")
+        easingCurve = QEasingCurve::OutQuad;
+    else if (easingType == "InOutQuad")
+        easingCurve = QEasingCurve::InOutQuad;
+    else if (easingType == "InBounce")
+        easingCurve = QEasingCurve::InBounce;
+    else if (easingType == "OutBounce")
+        easingCurve = QEasingCurve::OutBounce;
 
     qInfo() << "ADD ANIM CALLED";
 
@@ -34,15 +49,15 @@ void AnimPacket::addAnimation(const QString &type,
         anim = new MoveAnimation(
             mobj,
             targetVal.toPointF(),
-            startOffset, duration);
+            duration, easingCurve);
     }
     else if (t == "create")
     {
-        anim = new CreateAnimation(mobj, startOffset, duration);
+        anim = new CreateAnimation(mobj, duration, easingCurve);
     }
     else if (t == "destroy")
     {
-        anim = new DestroyAnimation(mobj, startOffset, duration);
+        anim = new DestroyAnimation(mobj, duration, easingCurve);
     }
     else if (t == "customscalar")
     {
@@ -51,7 +66,7 @@ void AnimPacket::addAnimation(const QString &type,
             mobj,
             prop,
             targetVal.toReal(),
-            startOffset, duration);
+            duration, easingCurve);
     }
     else if (t == "custompoint")
     {
@@ -59,14 +74,14 @@ void AnimPacket::addAnimation(const QString &type,
             mobj,
             prop,
             targetVal.toPointF(),
-            startOffset, duration);
+            duration, easingCurve);
     }
     else if (t == "value")
     {
         anim = new ValueAnimation(
             startVal.toReal(),
             targetVal.toReal(),
-            startOffset, duration);
+            duration, easingCurve);
         if (mobj && !prop.isEmpty())
         {
             static_cast<ValueAnimation *>(anim)->addTarget(mobj, prop);
@@ -74,7 +89,7 @@ void AnimPacket::addAnimation(const QString &type,
     }
     else if (t == "wait")
     {
-        anim = new WaitAnimation(startOffset, duration);
+        anim = new WaitAnimation(duration, easingCurve);
     }
     else
     {
@@ -85,7 +100,7 @@ void AnimPacket::addAnimation(const QString &type,
     if (anim)
     {
         m_animations.append(anim);
-        qreal endTime = anim->getStartOffset() + anim->getDuration();
+        qreal endTime = anim->getDuration();
         if (endTime > m_duration)
         {
             m_duration = endTime;

@@ -1,7 +1,7 @@
 #include "WaitAnimation.h"
 
-WaitAnimation::WaitAnimation(qreal startOffset, qreal duration)
-    : Animation(startOffset, duration)
+WaitAnimation::WaitAnimation(qreal duration, QEasingCurve::Type easingType)
+    : Animation(duration, easingType)
 {
 }
 

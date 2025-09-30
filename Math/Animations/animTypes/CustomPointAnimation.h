@@ -14,7 +14,7 @@ public:
     // Only requires target value - start value is captured automatically
     CustomPointAnimation(ClickableMobject *mobj, QString prop,
                          QPointF targetVal,
-                         qreal startOffset, qreal duration);
+                         qreal duration, QEasingCurve::Type easingType = QEasingCurve::InOutQuad);
 
     void apply() override;
 

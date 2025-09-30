@@ -2,8 +2,8 @@
 #include "Math/Mobjects/Base/ClickableMobject.h"
 #include "Managers/funcmap.h"
 
-ValueAnimation::ValueAnimation(qreal startVal, qreal endVal, qreal startOffset, qreal duration)
-    : Animation(startOffset, duration), m_startVal(startVal), m_endVal(endVal) {}
+ValueAnimation::ValueAnimation(qreal startVal, qreal endVal, qreal duration, QEasingCurve::Type easingType)
+    : Animation(duration, easingType), m_startVal(startVal), m_endVal(endVal) {}
 
 void ValueAnimation::addTarget(ClickableMobject *mobj, QString prop)
 {

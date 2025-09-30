@@ -12,6 +12,7 @@ MobjectRegistry::MobjectRegistry(QObject *parent)
         {"Rectangle", "qrc:assets/icons/rect.svg"},
         {"Polygon", "qrc:assets/icons/polygon.svg"},
         {"Dot", "qrc:assets/icons/circle.svg"},
+        {"Plane", "qrc:assets/icons/circle.svg"},
     };
 }
 

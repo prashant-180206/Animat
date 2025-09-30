@@ -58,3 +58,11 @@ void MProperties::setText(TextProperties *text)
     m_text = text;
     emit textChanged();
 }
+
+void MProperties::setGeometric(GeometricProperties *geometric)
+{
+    if (m_geometric == geometric)
+        return;
+    m_geometric = geometric;
+    emit geometricChanged();
+}

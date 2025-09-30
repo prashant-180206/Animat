@@ -70,6 +70,7 @@ qt_add_qml_module(appAnimat
         QML/Components/Elements/PropertyPanels/TextPanel.qml
         QML/Components/Elements/PropertyPanels/LinePanel.qml
         QML/Components/Elements/PropertyPanels/CurvePanel.qml
+        QML/Components/Elements/PropertyPanels/PlanePanel.qml
     SOURCES
         Utils/Singleton.h
         Utils/Constants.h
@@ -91,6 +92,7 @@ qt_add_qml_module(appAnimat
         Math/Mobjects/Text/Text.h Math/Mobjects/Text/Text.cpp
         Math/Mobjects/Simple/SimpleLine.h Math/Mobjects/Simple/SimpleLine.cpp
         Math/Mobjects/Simple/SimpleDot.h Math/Mobjects/Simple/SimpleDot.cpp
+        Math/Mobjects/Simple/SimpleText.h Math/Mobjects/Simple/SimpleText.cpp
         Math/Mobjects/Basic/Dot.h Math/Mobjects/Basic/Dot.cpp
         Math/Mobjects/Base/ClickableMobject.h Math/Mobjects/Base/ClickableMobject.cpp
         Math/Helper/mproperties.h Math/Helper/mproperties.cpp
@@ -100,6 +102,9 @@ qt_add_qml_module(appAnimat
         Math/Helper/Properties/circleproperties.h Math/Helper/Properties/circleproperties.cpp
         Math/Helper/Properties/polygonproperties.h Math/Helper/Properties/polygonproperties.cpp
         Math/Helper/Properties/textproperties.h Math/Helper/Properties/textproperties.cpp
+        Math/Helper/Properties/geometricproperties.h Math/Helper/Properties/geometricproperties.cpp
+        Math/Helper/Properties/planeproperties.h Math/Helper/Properties/planeproperties.cpp
+        Math/Mobjects/Complex/plane.h Math/Mobjects/Complex/plane.cpp
         Math/Parser/trackermanager.h Math/Parser/trackermanager.cpp
         Math/Parser/parser.h Math/Parser/parser.cpp
         Math/Parser/trackercommand.h Math/Parser/trackercommand.cpp

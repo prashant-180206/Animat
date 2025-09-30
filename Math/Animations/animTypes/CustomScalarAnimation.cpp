@@ -2,8 +2,8 @@
 #include "Math/Mobjects/Base/ClickableMobject.h"
 #include "Managers/funcmap.h"
 
-CustomScalarAnimation::CustomScalarAnimation(ClickableMobject *mobj, QString prop, qreal targetVal, qreal startOffset, qreal duration)
-    : Animation(startOffset, duration), m_mobj(mobj), m_prop(prop),
+CustomScalarAnimation::CustomScalarAnimation(ClickableMobject *mobj, QString prop, qreal targetVal, qreal duration, QEasingCurve::Type easingType)
+    : Animation(duration, easingType), m_mobj(mobj), m_prop(prop),
       m_startVal(0.0), m_targetVal(targetVal), m_startCaptured(false)
 {
 }

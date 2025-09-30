@@ -7,6 +7,7 @@
 #include "Math/Mobjects/Basic/line.h"
 #include "Math/Mobjects/Basic/Dot.h"
 #include "Math/Mobjects/Complex/MPolygon.h"
+#include "Math/Mobjects/Complex/plane.h"
 
 QHash<QString, MobjectMap::Factory> MobjectMap::map;
 
@@ -28,4 +29,6 @@ void MobjectMap::init(Scene *canvas)
     { return new Circle(canvas, canvas); };
     map["Dot"] = [canvas]()
     { return new Dot(canvas, canvas); };
+    map["Plane"] = [canvas]()
+    { return new Plane(canvas, canvas); };
 }
