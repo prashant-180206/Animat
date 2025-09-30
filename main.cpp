@@ -9,6 +9,7 @@
 #include "Math/ValueTracker/ValueTracker.h"
 #include "Math/ValueTracker/ptvaluetracker.h"
 #include "Math/ValueTracker/playbackslider.h"
+#include "filehandler.h"
 #include "trackermanager.h"
 #include <QQmlContext>
 
@@ -29,6 +30,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<AnimationManager>("Animat", 1, 0, "AnimManager");
     qmlRegisterType<AnimPacket>("Animat", 1, 0, "AnimPacket");
     qmlRegisterType<TrackerManager>("Animat", 1, 0, "TrackerManager");
+    qmlRegisterType<FileHandler>("Animat", 1, 0, "FileHandler");
 
 
     qmlRegisterSingletonType<ConstantsSingleton>("Animat", 1, 0, "Constants", [](QQmlEngine*, QJSEngine*) -> QObject* {

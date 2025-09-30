@@ -12,6 +12,15 @@ void DestroyAnimation::apply()
     {
         return; // Safety check
     }
+    if (easedProgress() > 0.9)
+    {
+        m_mobj->getProperties()->base()->setZindex(-1);
+    }
+    else
+    {
+        m_mobj->getProperties()->base()->setZindex(1);
+    }
+
     qreal newOpacity = 1.0 - easedProgress(); // from 1 to 0 with easing
     m_mobj->getProperties()->base()->setOpacity(newOpacity);
 }

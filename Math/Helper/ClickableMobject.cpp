@@ -24,10 +24,28 @@ ClickableMobject::ClickableMobject(Scene *canvas, QQuickItem *parent)
                 this->setOpacity(op);
                 update(); });
 
+    connect(properties->base(), &BaseProperties::scaleChanged, this, [this](qreal scale)
+            {
+                this->setScale(scale);
+                update(); });
+
+    connect(properties->base(), &BaseProperties::rotationChanged, this, [this](qreal rotation)
+            {
+                this->setRotation(rotation);
+                update(); });
+
+    connect(properties->base(), &BaseProperties::zindexChanged, this, [this](qreal zindex)
+            {
+                this->setZ(zindex);
+                update(); });
+
     properties->base()->setColor(m_color);
     properties->base()->setPos(QPoint(0, 0));
     properties->base()->setSize({0, 0});
     properties->base()->setName("Mobject");
+    properties->base()->setScale(1.0);
+    properties->base()->setRotation(0.0);
+    properties->base()->setZindex(0.0);
     properties->base()->setParent(this);
 }
 

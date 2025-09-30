@@ -1,8 +1,8 @@
 #include "mobjectregistry.h"
 
-
 MobjectRegistry::MobjectRegistry(QObject *parent)
-    : QAbstractListModel(parent) {
+    : QAbstractListModel(parent)
+{
 
     m_items = {
         {"Circle", "qrc:assets/icons/circle.svg"},
@@ -10,22 +10,25 @@ MobjectRegistry::MobjectRegistry(QObject *parent)
         {"Text", "qrc:assets/icons/text.svg"},
         {"Curve", "qrc:assets/icons/matrix.svg"},
         {"Rectangle", "qrc:assets/icons/rect.svg"},
-        {"Polygon", "qrc:assets/icons/polygon"},
-        {"Circle", "qrc:assets/icons/circle"},
+        {"Polygon", "qrc:assets/icons/polygon.svg"},
+        {"Dot", "qrc:assets/icons/circle.svg"},
     };
 }
 
-int MobjectRegistry::rowCount(const QModelIndex &parent) const {
+int MobjectRegistry::rowCount(const QModelIndex &parent) const
+{
     Q_UNUSED(parent)
     return m_items.count();
 }
 
-QVariant MobjectRegistry::data(const QModelIndex &index, int role) const {
+QVariant MobjectRegistry::data(const QModelIndex &index, int role) const
+{
     if (!index.isValid() || index.row() < 0 || index.row() >= m_items.count())
         return QVariant();
 
     const Item &item = m_items.at(index.row());
-    switch(role) {
+    switch (role)
+    {
     case NameRole:
         return item.name;
     case IconRole:
@@ -35,9 +38,10 @@ QVariant MobjectRegistry::data(const QModelIndex &index, int role) const {
     }
 }
 
-QHash<int, QByteArray> MobjectRegistry::roleNames() const {
+QHash<int, QByteArray> MobjectRegistry::roleNames() const
+{
     QHash<int, QByteArray> roles;
     roles[NameRole] = "name";
-    roles[IconRole]= "iconpath";
+    roles[IconRole] = "iconpath";
     return roles;
 }

@@ -66,6 +66,7 @@ qt_add_qml_module(appAnimat
         Utils/Constants.h
         Utils/mobjectmap.h Utils/mobjectmap.cpp
         Utils/mobjectregistry.h Utils/mobjectregistry.cpp
+        Utils/filehandler.h Utils/filehandler.cpp
         Math/ValueTracker/valuetracker.h Math/ValueTracker/valuetracker.cpp
         Math/ValueTracker/ptvaluetracker.h Math/ValueTracker/ptvaluetracker.cpp
         Math/ValueTracker/playbackslider.h Math/ValueTracker/playbackslider.cpp
@@ -78,6 +79,7 @@ qt_add_qml_module(appAnimat
         Math/Mobjects/Circle.h Math/Mobjects/Circle.cpp
         Math/Mobjects/Text.h Math/Mobjects/Text.cpp
         Math/Mobjects/SimpleLine.h Math/Mobjects/SimpleLine.cpp
+        Math/Mobjects/Dot.h Math/Mobjects/Dot.cpp
         Math/Helper/ClickableMobject.h Math/Helper/ClickableMobject.cpp
         Math/Helper/mproperties.h Math/Helper/mproperties.cpp
         Math/Helper/Properties/baseproperties.h Math/Helper/Properties/baseproperties.cpp

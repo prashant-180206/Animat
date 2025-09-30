@@ -15,6 +15,7 @@ Window {
     }
     Taskbar {
         id: taskbar
+        scene: canvas
     }
     Menubar {
         id: menu

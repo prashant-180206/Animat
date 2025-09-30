@@ -191,6 +191,36 @@ Rectangle {
                 }
 
                 NumberInput {
+                    visible: mprop && mprop.base
+                    label: "Scale:"
+                    value: mprop && mprop.base ? mprop.base.scale : 1.0
+                    func: () => {
+                        if (mprop && mprop.base)
+                            mprop.base.scale = newValue;
+                    }
+                }
+
+                NumberInput {
+                    visible: mprop && mprop.base
+                    label: "Rotation:"
+                    value: mprop && mprop.base ? mprop.base.rotation : 0.0
+                    func: () => {
+                        if (mprop && mprop.base)
+                            mprop.base.rotation = newValue;
+                    }
+                }
+
+                NumberInput {
+                    visible: mprop && mprop.base
+                    label: "Z-Index:"
+                    value: mprop && mprop.base ? mprop.base.zindex : 0.0
+                    func: () => {
+                        if (mprop && mprop.base)
+                            mprop.base.zindex = newValue;
+                    }
+                }
+
+                NumberInput {
                     visible: mprop && mprop.polygon
                     label: "Thickness:"
                     value: mprop && mprop.polygon ? mprop.polygon.thickness : 0
