@@ -35,6 +35,7 @@ private:
     QRegularExpression m_reDval;     // dval name = [val1] + [val2];
     QRegularExpression m_reDpval;    // dpval name = ([val1], [val2]);
     QRegularExpression m_reConnect;  // connect(tracker, obj.prop);
+    QRegularExpression m_reLoop;     // loop (it_name:startnum->endnum){...}
 
     // Helper methods
     TrackerCommand parseValueTracker(const QString &line);
@@ -42,6 +43,7 @@ private:
     TrackerCommand parseDynamicValueTracker(const QString &line);
     TrackerCommand parseDynamicPointTracker(const QString &line);
     TrackerCommand parseConnection(const QString &line);
+    TrackerCommand parseLoop(const QString &line);
 
     void initializeRegexPatterns();
 };

@@ -1,7 +1,7 @@
 #ifndef TEXT_H
 #define TEXT_H
 
-#include "Math/Helper/ClickableMobject.h"
+#include "Math/Mobjects/Base/ClickableMobject.h"
 #include <QColor>
 #include <QString>
 // #include <Math/Mobjects/Mobject.h>

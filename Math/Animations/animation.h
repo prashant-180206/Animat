@@ -1,7 +1,7 @@
 #ifndef ANIMATION_H
 #define ANIMATION_H
 
-#include "ClickableMobject.h"
+#include "Math/Mobjects/Base/ClickableMobject.h"
 #include <qeasingcurve.h>
 
 // Base abstract Animation class

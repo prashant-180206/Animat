@@ -1,19 +1,19 @@
-#include "Math/Mobjects/Polygon.h"
-#include "Math/Mobjects/SimpleLine.h"
+#include "Polygon.h"
+#include "Math/Mobjects/Simple/SimpleLine.h"
 #include "Math/Scene.h"
 #include <QSGFlatColorMaterial>
 #include <QSGGeometry>
 #include <QSGGeometryNode>
 
 Polygon::Polygon(Scene *canvas, QQuickItem *parent)
-    : Group(canvas, parent),m_fillNode(nullptr)
+    : Group(canvas, parent), m_fillNode(nullptr)
 {
-    properties->setPolygon( new PolygonProperties(this));
+    properties->setPolygon(new PolygonProperties(this));
     setFlag(ItemHasContents, true);
     setPoints({
-        QPointF(0,0),
-        QPointF(2,0),
-        QPointF(0,3),
+        QPointF(0, 0),
+        QPointF(2, 0),
+        QPointF(0, 3),
     });
 
     buildPolygon();
@@ -24,10 +24,10 @@ Polygon::Polygon(Scene *canvas, QQuickItem *parent)
     properties->base()->setColor(Qt::blue);
 }
 
-
 void Polygon::buildPolygon()
 {
-    for (auto line :std::as_const(m_lines)){
+    for (auto line : std::as_const(m_lines))
+    {
         line->setParentItem(nullptr);
         line->deleteLater();
     }
@@ -45,17 +45,23 @@ void Polygon::buildPolygon()
     qreal maxY = minY;
 
     int n = pts.size();
-    for (int i = 0; i < n; ++i) {
-        const QPointF& p = pts[i];
-        if (p.x() < minX) minX = p.x();
-        if (p.x() > maxX) maxX = p.x();
-        if (p.y() < minY) minY = p.y();
-        if (p.y() > maxY) maxY = p.y();
+    for (int i = 0; i < n; ++i)
+    {
+        const QPointF &p = pts[i];
+        if (p.x() < minX)
+            minX = p.x();
+        if (p.x() > maxX)
+            maxX = p.x();
+        if (p.y() < minY)
+            minY = p.y();
+        if (p.y() > maxY)
+            maxY = p.y();
 
-        pts[i]=getcanvas()->p2c(pts[i]);
+        pts[i] = getcanvas()->p2c(pts[i]);
     }
 
-    for (int i = 0; i < n; ++i) {
+    for (int i = 0; i < n; ++i)
+    {
         auto *line = new SimpleLine(getcanvas(), this);
         line->setP1(pts[i]);
         line->setP2(pts[(i + 1) % n]);
@@ -71,13 +77,16 @@ void Polygon::updateLines()
 {
     auto pts = points();
     QVector<QPointF> convertedPts;
-    for (const QPointF &p : std::as_const(pts)) {
+    for (const QPointF &p : std::as_const(pts))
+    {
         convertedPts.append(getcanvas()->p2c(p));
     }
-    if (m_lines.size() != convertedPts.size()) {
+    if (m_lines.size() != convertedPts.size())
+    {
         return;
     }
-    for (int i = 0; i < m_lines.size(); ++i) {
+    for (int i = 0; i < m_lines.size(); ++i)
+    {
         m_lines[i]->setP1(convertedPts[i]);
         m_lines[i]->setP2(convertedPts[(i + 1) % convertedPts.size()]);
         m_lines[i]->setColor(properties->polygon()->borderColor());
@@ -90,19 +99,22 @@ QSGNode *Polygon::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 
     auto pts = points();
 
-    for (int i =0;i<pts.size();i++){
-        pts[i]=getcanvas()->p2c(pts[i]);
+    for (int i = 0; i < pts.size(); i++)
+    {
+        pts[i] = getcanvas()->p2c(pts[i]);
     }
 
-    if (m_points.size() < 3) {
+    if (m_points.size() < 3)
+    {
         delete m_fillNode;
         m_fillNode = nullptr;
         return nullptr;
     }
 
-    if (!m_fillNode) {
+    if (!m_fillNode)
+    {
         m_fillNode = new QSGGeometryNode();
-        QSGGeometry *geometry = new QSGGeometry(QSGGeometry::defaultAttributes_Point2D(),(m_points.size() - 2) * 3);
+        QSGGeometry *geometry = new QSGGeometry(QSGGeometry::defaultAttributes_Point2D(), (m_points.size() - 2) * 3);
 
         geometry->setDrawingMode(QSGGeometry::DrawTriangles);
         m_fillNode->setGeometry(geometry);
@@ -119,7 +131,8 @@ QSGNode *Polygon::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
     QSGGeometry::Point2D *vertices = geometry->vertexDataAsPoint2D();
 
     int idx = 0;
-    for (int i = 1; i < m_points.size() - 1; ++i) {
+    for (int i = 1; i < m_points.size() - 1; ++i)
+    {
         // Triangle: (0, i, i+1)
         vertices[idx++].set(pts[0].x(), pts[0].y());
         vertices[idx++].set(pts[i].x(), pts[i].y());
@@ -150,7 +163,8 @@ QRectF Polygon::boundingRect() const
     qreal minY = pts.first().y();
     qreal maxY = minY;
 
-    for (const QPointF& p : std::as_const(pts)) {
+    for (const QPointF &p : std::as_const(pts))
+    {
         auto pt = getcanvas()->p2c(p);
         minX = qMin(minX, pt.x());
         maxX = qMax(maxX, pt.x());
@@ -160,5 +174,3 @@ QRectF Polygon::boundingRect() const
 
     return QRectF(minX, minY, maxX - minX, maxY - minY);
 }
-
-

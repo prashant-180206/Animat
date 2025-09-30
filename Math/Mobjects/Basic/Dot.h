@@ -1,7 +1,7 @@
 #ifndef DOT_H
 #define DOT_H
 
-#include "Math/Helper/ClickableMobject.h"
+#include "Math/Mobjects/Base/ClickableMobject.h"
 #include <QColor>
 #include <QSGNode>
 #include <QSGSimpleRectNode>
@@ -33,7 +33,6 @@ protected:
     QSGNode *updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *) override;
     bool contains(const QPointF &point) const override;
     QRectF boundingRect() const override;
-
 
 private:
     qreal m_radius = 5.0; // Default radius of 5 pixels

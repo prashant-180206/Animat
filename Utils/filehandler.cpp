@@ -1,6 +1,6 @@
 #include "filehandler.h"
 #include "Math/Scene.h"
-#include "Math/Helper/ClickableMobject.h"
+#include "Math/Mobjects/Base/ClickableMobject.h"
 #include "Math/Helper/mproperties.h"
 #include "Math/Helper/Properties/baseproperties.h"
 #include "Math/Animations/animationmanager.h"

@@ -1,6 +1,6 @@
 #include "trackermanager.h"
 #include "Scene.h"
-#include "ClickableMobject.h"
+#include "Math/Mobjects/Base/ClickableMobject.h"
 #include "../Managers/funcmap.h"
 #include <QDebug>
 

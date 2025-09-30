@@ -1,5 +1,5 @@
 #include "CreateAnimation.h"
-#include "ClickableMobject.h"
+#include "Math/Mobjects/Base/ClickableMobject.h"
 
 CreateAnimation::CreateAnimation(ClickableMobject *mobj, qreal startOffset, qreal duration)
     : Animation(startOffset, duration), m_mobj(mobj)

@@ -1,5 +1,5 @@
 #include "CustomScalarAnimation.h"
-#include "ClickableMobject.h"
+#include "Math/Mobjects/Base/ClickableMobject.h"
 #include "Managers/funcmap.h"
 
 CustomScalarAnimation::CustomScalarAnimation(ClickableMobject *mobj, QString prop, qreal targetVal, qreal startOffset, qreal duration)

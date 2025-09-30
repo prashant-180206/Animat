@@ -1,15 +1,17 @@
-#include "Math/Mobjects/SimpleLine.h"
+#include "SimpleLine.h"
 
-
-SimpleLine::SimpleLine(Scene* canvas,QQuickItem* parent) :Mobject(parent){
-    if (parent) {
+SimpleLine::SimpleLine(Scene *canvas, QQuickItem *parent) : Mobject(parent)
+{
+    if (parent)
+    {
     }
     setFlag(ItemHasContents, true);
 }
 
 QPointF SimpleLine::p1() const { return m_p1; }
 
-void SimpleLine::setP1(const QPointF &pt) {
+void SimpleLine::setP1(const QPointF &pt)
+{
     m_p1 = pt;
     emit p1Changed();
     update();
@@ -17,7 +19,8 @@ void SimpleLine::setP1(const QPointF &pt) {
 
 QPointF SimpleLine::p2() const { return m_p2; }
 
-void SimpleLine::setP2(const QPointF &pt) {
+void SimpleLine::setP2(const QPointF &pt)
+{
     m_p2 = pt;
     emit p2Changed();
     update();
@@ -27,7 +30,8 @@ QSGNode *SimpleLine::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 {
     QSGGeometryNode *node = static_cast<QSGGeometryNode *>(oldNode);
 
-    if (!node) {
+    if (!node)
+    {
         node = new QSGGeometryNode;
 
         QSGGeometry *geometry = new QSGGeometry(QSGGeometry::defaultAttributes_Point2D(), 4);
@@ -42,11 +46,11 @@ QSGNode *SimpleLine::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
         node->setFlag(QSGNode::OwnsMaterial);
     }
     QSGFlatColorMaterial *material = static_cast<QSGFlatColorMaterial *>(node->material());
-    if (material) {
+    if (material)
+    {
         material->setColor(color());
         node->markDirty(QSGNode::DirtyMaterial);
     }
-
 
     QSGGeometry *geometry = node->geometry();
     geometry->allocate(4);
@@ -58,10 +62,10 @@ QSGNode *SimpleLine::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
     QVector2D p2_vec(m_p2);
     QVector2D dir = p2_vec - p1_vec;
 
-
     // qDebug()<<p1_vec<<p2_vec<<dir;
 
-    if (dir.lengthSquared() < 1e-6) {
+    if (dir.lengthSquared() < 1e-6)
+    {
         // Avoid drawing zero-length line
         return node;
     }
@@ -73,7 +77,7 @@ QSGNode *SimpleLine::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
     perp *= thickness / 2.0f;
 
     // Extend ends by thickness/2 along the line direction
-    QVector2D extension =dir* (thickness / 2.0f);
+    QVector2D extension = dir * (thickness / 2.0f);
     // extension*=0;
 
     vertices[0].set((p1_vec - extension).x() + perp.x(), (p1_vec - extension).y() + perp.y());
@@ -87,6 +91,3 @@ QSGNode *SimpleLine::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 
     return node;
 }
-
-
-

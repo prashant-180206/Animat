@@ -1,8 +1,8 @@
 #ifndef POLYGON_H
 #define POLYGON_H
 
-#include "Group.h"
-#include "SimpleLine.h"
+#include "Mobjects/Groups/group.h"
+#include "Mobjects/Simple/SimpleLine.h"
 #include <QColor>
 #include <QVector>
 #include <QPointF>

@@ -1,7 +1,7 @@
 #ifndef CURVE_H
 #define CURVE_H
 
-#include "Group.h"
+#include "Mobjects/Groups/Group.h"
 #include "Math/scene.h"
 #include <functional>
 #include <QRectF>

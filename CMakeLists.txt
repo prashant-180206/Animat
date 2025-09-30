@@ -61,6 +61,15 @@ qt_add_qml_module(appAnimat
         QML/Components/Elements/Input/StyledButton.qml
         QML/Components/Elements/Input/ColorPicker.qml
         QML/Components/Elements/Input/NumberInput.qml
+        QML/Components/Elements/PropertyPanels/MobjectIdPanel.qml
+        QML/Components/Elements/PropertyPanels/MobjectNamePanel.qml
+        QML/Components/Elements/PropertyPanels/TransformPanel.qml
+        QML/Components/Elements/PropertyPanels/AppearancePanel.qml
+        QML/Components/Elements/PropertyPanels/NumericPanel.qml
+        QML/Components/Elements/PropertyPanels/PolygonPanel.qml
+        QML/Components/Elements/PropertyPanels/TextPanel.qml
+        QML/Components/Elements/PropertyPanels/LinePanel.qml
+        QML/Components/Elements/PropertyPanels/CurvePanel.qml
     SOURCES
         Utils/Singleton.h
         Utils/Constants.h
@@ -70,17 +79,20 @@ qt_add_qml_module(appAnimat
         Math/ValueTracker/valuetracker.h Math/ValueTracker/valuetracker.cpp
         Math/ValueTracker/ptvaluetracker.h Math/ValueTracker/ptvaluetracker.cpp
         Math/ValueTracker/playbackslider.h Math/ValueTracker/playbackslider.cpp
-        Math/Mobjects/line.h Math/Mobjects/line.cpp
-        Math/Mobjects/Mobject.h Math/Mobjects/Mobject.cpp
-        Math/Mobjects/Group.h Math/Mobjects/Group.cpp
-        Math/Mobjects/Curve.h Math/Mobjects/Curve.cpp
-        Math/Mobjects/Polygon.h Math/Mobjects/Polygon.cpp
-        Math/Mobjects/MRectangle.h Math/Mobjects/MRectangle.cpp
-        Math/Mobjects/Circle.h Math/Mobjects/Circle.cpp
-        Math/Mobjects/Text.h Math/Mobjects/Text.cpp
-        Math/Mobjects/SimpleLine.h Math/Mobjects/SimpleLine.cpp
-        Math/Mobjects/Dot.h Math/Mobjects/Dot.cpp
-        Math/Helper/ClickableMobject.h Math/Helper/ClickableMobject.cpp
+        Math/Mobjects/Basic/line.h Math/Mobjects/Basic/line.cpp
+        Math/Mobjects/Base/Mobject.h Math/Mobjects/Base/Mobject.cpp
+        Math/Mobjects/Groups/Group.h Math/Mobjects/Groups/Group.cpp
+        Math/Mobjects/Groups/VGroup.h Math/Mobjects/Groups/VGroup.cpp
+        Math/Mobjects/Complex/Curve.h Math/Mobjects/Complex/Curve.cpp
+        Math/Mobjects/Basic/Polygon.h Math/Mobjects/Basic/Polygon.cpp
+        Math/Mobjects/Complex/MPolygon.h Math/Mobjects/Complex/MPolygon.cpp
+        Math/Mobjects/Basic/MRectangle.h Math/Mobjects/Basic/MRectangle.cpp
+        Math/Mobjects/Basic/Circle.h Math/Mobjects/Basic/Circle.cpp
+        Math/Mobjects/Text/Text.h Math/Mobjects/Text/Text.cpp
+        Math/Mobjects/Simple/SimpleLine.h Math/Mobjects/Simple/SimpleLine.cpp
+        Math/Mobjects/Simple/SimpleDot.h Math/Mobjects/Simple/SimpleDot.cpp
+        Math/Mobjects/Basic/Dot.h Math/Mobjects/Basic/Dot.cpp
+        Math/Mobjects/Base/ClickableMobject.h Math/Mobjects/Base/ClickableMobject.cpp
         Math/Helper/mproperties.h Math/Helper/mproperties.cpp
         Math/Helper/Properties/baseproperties.h Math/Helper/Properties/baseproperties.cpp
         Math/Helper/Properties/lineproperties.h Math/Helper/Properties/lineproperties.cpp
@@ -120,7 +132,12 @@ target_include_directories(appAnimat
     PRIVATE ${CMAKE_SOURCE_DIR}/Math
     PRIVATE ${CMAKE_SOURCE_DIR}/Math/Helper
     PRIVATE ${CMAKE_SOURCE_DIR}/Math/Helper/Properties
-    PRIVATE ${CMAKE_SOURCE_DIR}/Math/Mobjects
+    PRIVATE ${CMAKE_SOURCE_DIR}/Math/Mobjects/Base
+    PRIVATE ${CMAKE_SOURCE_DIR}/Math/Mobjects/Basic
+    PRIVATE ${CMAKE_SOURCE_DIR}/Math/Mobjects/Complex
+    PRIVATE ${CMAKE_SOURCE_DIR}/Math/Mobjects/Groups
+    PRIVATE ${CMAKE_SOURCE_DIR}/Math/Mobjects/Simple
+    PRIVATE ${CMAKE_SOURCE_DIR}/Math/Mobjects/Text
     PRIVATE ${CMAKE_SOURCE_DIR}/Math/ValueTracker
     PRIVATE ${CMAKE_SOURCE_DIR}/Math/Managers
     PRIVATE ${CMAKE_SOURCE_DIR}/Math/Animations

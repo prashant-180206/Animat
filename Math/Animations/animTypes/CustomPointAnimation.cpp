@@ -1,5 +1,5 @@
 #include "CustomPointAnimation.h"
-#include "ClickableMobject.h"
+#include "Math/Mobjects/Base/ClickableMobject.h"
 #include "Managers/funcmap.h"
 
 CustomPointAnimation::CustomPointAnimation(ClickableMobject *mobj, QString prop, QPointF targetVal, qreal startOffset, qreal duration)

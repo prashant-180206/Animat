@@ -8,7 +8,7 @@
 #include <QSGSimpleRectNode>
 #include <QSGNode>
 #include <QColor>
-#include "Mobjects/Mobject.h"
+#include "Mobjects/Base/Mobject.h"
 #include "animationmanager.h"
 #include "mproperties.h"
 #include "playbackslider.h"

@@ -1,10 +1,9 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 
-
 #include "Math/scene.h"
 #include "Utils/Singleton.h"
-#include "Math/Mobjects/Mobject.h"
+#include "Math/Mobjects/Base/Mobject.h"
 #include "Utils/mobjectregistry.h"
 #include "Math/ValueTracker/ValueTracker.h"
 #include "Math/ValueTracker/ptvaluetracker.h"
@@ -15,13 +14,11 @@
 
 // #include "muParser.h"
 
-
-
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
 
-    qmlRegisterType<Scene>("Animat",1,0,"Scene");
+    qmlRegisterType<Scene>("Animat", 1, 0, "Scene");
     qmlRegisterType<MobjectRegistry>("Animat", 1, 0, "MobjectRegistry");
     qmlRegisterType<MProperties>("Animat", 1, 0, "MProperties");
     qmlRegisterType<ValueTracker>("Animat", 1, 0, "ValueTracker");
@@ -32,10 +29,8 @@ int main(int argc, char *argv[])
     qmlRegisterType<TrackerManager>("Animat", 1, 0, "TrackerManager");
     qmlRegisterType<FileHandler>("Animat", 1, 0, "FileHandler");
 
-
-    qmlRegisterSingletonType<ConstantsSingleton>("Animat", 1, 0, "Constants", [](QQmlEngine*, QJSEngine*) -> QObject* {
-        return new ConstantsSingleton();
-    });
+    qmlRegisterSingletonType<ConstantsSingleton>("Animat", 1, 0, "Constants", [](QQmlEngine *, QJSEngine *) -> QObject *
+                                                 { return new ConstantsSingleton(); });
 
     QQmlApplicationEngine engine;
 
@@ -44,13 +39,12 @@ int main(int argc, char *argv[])
 
     // engine.load(QUrl(QStringLiteral("Main.qml")));
 
-
-
     QObject::connect(
         &engine,
         &QQmlApplicationEngine::objectCreationFailed,
         &app,
-        []() { QCoreApplication::exit(-1); },
+        []()
+        { QCoreApplication::exit(-1); },
         Qt::QueuedConnection);
     engine.loadFromModule("Animat", "Main");
 

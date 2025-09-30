@@ -1,43 +1,39 @@
-#include "Math/Mobjects/line.h"
+#include "line.h"
 #include "Math/Scene.h"
 
+Line::Line(Scene *canvas, QQuickItem *parent) : ClickableMobject(canvas, parent)
+{
 
-Line::Line(Scene* canvas,QQuickItem* parent) :ClickableMobject(canvas,parent){
+    properties->setLine(new LineProperties(this->properties));
 
-    properties->setLine( new LineProperties(this->properties));
-
-
-    auto p1 =(QPointF(-1,-1));
-    auto p2 = (QPointF(1,1));
+    auto p1 = (QPointF(-1, -1));
+    auto p2 = (QPointF(1, 1));
 
     setFlag(ItemHasContents, true);
-    connect(this, &QQuickItem::windowChanged, this, [this](QQuickWindow* w){
+    connect(this, &QQuickItem::windowChanged, this, [this](QQuickWindow *w)
+            {
         if(w){
             update();
-        }
-    });
+        } });
 
     properties->base()->setName("Line");
     properties->line()->setLineStart(p1);
     properties->line()->setLineEnd(p2);
     properties->base()->setColor(Qt::yellow);
     properties->line()->setThickness(4);
-    properties->base()->setPos(canvas->c2p((p1+p2)/2));
+    properties->base()->setPos(canvas->c2p((p1 + p2) / 2));
     properties->base()->setType("Line");
 
-    connect(properties->line(), &LineProperties::lineStartChanged ,this, [this](auto p){
-        update();
-    });
-    connect(properties->line(), &LineProperties::lineEndChanged, this, [this](auto p){
-        update();
-    });
-    connect(properties->line(), &LineProperties::thicknessChanged, this, [this]{
-        update();
-    });
+    connect(properties->line(), &LineProperties::lineStartChanged, this, [this](auto p)
+            { update(); });
+    connect(properties->line(), &LineProperties::lineEndChanged, this, [this](auto p)
+            { update(); });
+    connect(properties->line(), &LineProperties::thicknessChanged, this, [this]
+            { update(); });
 
-    start_pos=properties->base()->pos();
-    m_p1=properties->line()->lineStart();
-    m_p2=properties->line()->lineEnd();
+    start_pos = properties->base()->pos();
+    m_p1 = properties->line()->lineStart();
+    m_p2 = properties->line()->lineEnd();
 }
 
 void Line::setCenter(qreal x, qreal y)
@@ -51,11 +47,7 @@ void Line::setCenter(qreal x, qreal y)
     setX(canvasCenter.x());
     setY(canvasCenter.y());
     setZ(50);
-
-
 }
-
-
 
 void Line::mousePressEvent(QMouseEvent *event)
 {
@@ -63,13 +55,12 @@ void Line::mousePressEvent(QMouseEvent *event)
     ClickableMobject::mousePressEvent(event);
 }
 
-
-
 QSGNode *Line::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 {
     QSGGeometryNode *node = static_cast<QSGGeometryNode *>(oldNode);
 
-    if (!node) {
+    if (!node)
+    {
         node = new QSGGeometryNode;
 
         QSGGeometry *geometry = new QSGGeometry(QSGGeometry::defaultAttributes_Point2D(), 4);
@@ -85,11 +76,11 @@ QSGNode *Line::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
     }
 
     QSGFlatColorMaterial *material = static_cast<QSGFlatColorMaterial *>(node->material());
-    if (material) {
+    if (material)
+    {
         material->setColor(properties->base()->color());
         node->markDirty(QSGNode::DirtyMaterial);
     }
-
 
     QSGGeometry *geometry = node->geometry();
     geometry->allocate(4);
@@ -101,7 +92,8 @@ QSGNode *Line::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 
     // qDebug()<<p1_vec<<p2_vec<<dir;
 
-    if (dir.lengthSquared() < 1e-6) {
+    if (dir.lengthSquared() < 1e-6)
+    {
         // Avoid drawing zero-length line
         return node;
     }
@@ -156,4 +148,3 @@ bool Line::contains(const QPointF &point) const
     QVector2D pb = p1 + b * v;
     return (p - pb).length() <= properties->line()->thickness() / 2.0f;
 }
-

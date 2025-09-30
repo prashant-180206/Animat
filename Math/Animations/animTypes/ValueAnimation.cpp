@@ -1,5 +1,5 @@
 #include "ValueAnimation.h"
-#include "ClickableMobject.h"
+#include "Math/Mobjects/Base/ClickableMobject.h"
 #include "Managers/funcmap.h"
 
 ValueAnimation::ValueAnimation(qreal startVal, qreal endVal, qreal startOffset, qreal duration)

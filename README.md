@@ -63,6 +63,56 @@ Multi-sided shapes with customizable vertices.
 - **Properties**: vertex positions, fill color, stroke
 - **Usage**: Custom shapes, geometric constructions
 
+### **VGroup** 🎯
+
+Virtual grouping container for SimpleLine and SimpleDot objects with shared properties.
+
+- **Purpose**: Efficiently manage multiple similar objects with shared visual properties
+- **Members**: Works specifically with SimpleLine and SimpleDot for optimal performance
+- **Shared Properties**: 
+  - `sharedColor` - Applied to all group members
+  - `sharedThickness` - Applied to all SimpleLine members
+  - `sharedSize` - Applied to all SimpleDot members
+- **Individual Properties**: Each member maintains its own position
+- **Automatic Sync**: Adding members automatically applies shared properties
+
+**Usage Examples:**
+
+```cpp
+// Create particle system with SimpleDot
+VGroup* particleGroup = new VGroup(parent);
+particleGroup->setSharedColor(Qt::red);
+particleGroup->setSharedSize(8.0);
+
+for (int i = 0; i < 20; ++i) {
+    SimpleDot* particle = new SimpleDot(parent);
+    particle->setPos(QPointF(i * 15, sin(i) * 20));
+    particleGroup->addMember(particle);  // Auto-applies color & size
+}
+
+// Create line segments with SimpleLine
+VGroup* gridGroup = new VGroup(parent);
+gridGroup->setSharedColor(Qt::blue);
+gridGroup->setSharedThickness(2.0);
+
+for (int i = 0; i < 10; ++i) {
+    SimpleLine* line = new SimpleLine(parent);
+    line->setP1(QPointF(i * 30, 0));
+    line->setP2(QPointF(i * 30, 300));
+    gridGroup->addMember(line);  // Auto-applies color & thickness
+}
+
+// Change all members at once
+particleGroup->setSharedColor(Qt::green);  // All particles turn green
+gridGroup->setSharedThickness(5.0);       // All lines become thicker
+```
+
+**Key Benefits:**
+- **Performance**: Lightweight property management for groups of similar objects
+- **Consistency**: Ensures all group members maintain visual coherence
+- **Convenience**: Single property change affects all members instantly
+- **Flexibility**: Individual positioning with shared visual properties
+
 All mobjects support:
 
 - **Selection and highlighting** when clicked
@@ -387,6 +437,314 @@ Creates a controllable delay/gap between animations.
 
 **Use case:** Add precise timing gaps in animation sequences.
 
+## Animation Script Parser 📝
+
+Animat includes a powerful script parser that allows you to create complex animations and value tracking using a custom scripting language. The parser supports various command types for creating dynamic, data-driven animations.
+
+### Parser Command Types
+
+#### 1. **Value Tracker (`val`)**
+
+Creates a scalar value tracker with either static values or mathematical expressions.
+
+**Syntax:**
+```
+val name = value;
+val name = expression;
+```
+
+**Examples:**
+```
+val radius = 25;
+val angle = sin(t * 2);
+val speed = cos(t) * 10 + 15;
+val growth = t * 0.5;
+```
+
+**Use Cases:**
+- Static configuration values
+- Time-dependent calculations
+- Mathematical function evaluation
+- Animation parameter control
+
+#### 2. **Point Value Tracker (`pval`)**
+
+Creates a 2D point tracker with x,y coordinates, supporting both static points and parametric expressions.
+
+**Syntax:**
+```
+pval name = (x, y);
+pval name = (x_expression, y_expression);
+```
+
+**Examples:**
+```
+pval center = (100, 50);
+pval orbit = (cos(t * 2) * 50, sin(t * 2) * 50);
+pval wave = (t * 10, sin(t * 0.5) * 30);
+pval spiral = (t * cos(t), t * sin(t));
+```
+
+**Use Cases:**
+- Object positioning
+- Parametric motion paths
+- Circular/orbital movement
+- Wave and spiral patterns
+
+#### 3. **Dynamic Value Tracker (`dval`)**
+
+Creates values that depend on other tracked values using bracket notation for references.
+
+**Syntax:**
+```
+dval name = expression_with_[references];
+```
+
+**Examples:**
+```
+dval combined = [radius] * 2 + [speed];
+dval scaled = [orbit_x] * [scale_factor];
+dval distance = sqrt([x1] * [x1] + [y1] * [y1]);
+dval interpolated = [start] + ([end] - [start]) * [progress];
+```
+
+**Use Cases:**
+- Value composition and combination
+- Calculated properties based on other values
+- Complex mathematical relationships
+- Multi-stage value processing
+
+#### 4. **Dynamic Point Tracker (`dpval`)**
+
+Creates 2D points that depend on other tracked values.
+
+**Syntax:**
+```
+dpval name = (x_expression_with_[refs], y_expression_with_[refs]);
+```
+
+**Examples:**
+```
+dpval adjusted_center = ([base_x] + [offset_x], [base_y] + [offset_y]);
+dpval scaled_position = ([pos_x] * [scale], [pos_y] * [scale]);
+dpval relative_point = ([anchor_x] + [radius] * cos([angle]), [anchor_y] + [radius] * sin([angle]));
+```
+
+**Use Cases:**
+- Dependent positioning
+- Coordinate transformations
+- Relative positioning systems
+- Complex motion combinations
+
+#### 5. **Connection Commands (`connect`)**
+
+Links tracked values to mobject properties for automatic updates.
+
+**Syntax:**
+```
+connect(tracker_name, object.property);
+```
+
+**Examples:**
+```
+connect(radius, circle.radius);
+connect(center, rectangle.pos);
+connect(rotation_angle, text.rotation);
+connect(wave_position, line.startPoint);
+```
+
+**Supported Properties:**
+- `pos` - Position (requires point tracker)
+- `size` - Size dimensions (requires point tracker)
+- `color` - Color (requires color tracker)
+- `opacity` - Transparency (0.0-1.0)
+- `scale` - Scale factor
+- `rotation` - Rotation angle
+- `radius` - Circle radius
+- `thickness` - Line thickness
+- Type-specific properties
+
+#### 6. **Loop Commands (`loop`)** 🆕
+
+Creates iterative command blocks for generating multiple similar trackers or connections.
+
+**Syntax:**
+```
+loop (iterator_name:start_number->end_number) {
+    // Commands using [iterator_name] as variable
+}
+```
+
+**Validation Rules:**
+- ✅ `start_number < end_number` (start must be less than end)
+- ✅ Maximum 50 iterations `(end - start) <= 50`
+- ✅ Iterator name must be valid identifier
+- ✅ Loop body cannot be empty
+
+**Examples:**
+```
+// Create multiple particles
+loop (i:0->10) {
+    val x_[i] = [i] * 20;
+    val y_[i] = sin([i] * 0.1) * 50;
+    pval pos_[i] = ([x_[i]], [y_[i]]);
+    connect(pos_[i], particle_[i].pos);
+}
+
+// Generate wave points
+loop (frame:1->30) {
+    val amplitude_[frame] = sin([frame] * 0.2) * 100;
+    pval wave_[frame] = ([frame] * 5, [amplitude_[frame]]);
+    connect(wave_[frame], point_[frame].pos);
+}
+
+// Create rotation sequence
+loop (step:0->12) {
+    val angle_[step] = [step] * 30; // 30 degree increments
+    val x_[step] = cos([angle_[step]]) * 50;
+    val y_[step] = sin([angle_[step]]) * 50;
+    dpval rotated_[step] = ([x_[step]], [y_[step]]);
+}
+```
+
+**Use Cases:**
+- Particle systems generation
+- Repetitive pattern creation
+- Array-like value management
+- Procedural animation sequences
+
+### Expression Syntax
+
+The parser supports mathematical expressions with standard operators and functions:
+
+#### **Operators:**
+- Arithmetic: `+`, `-`, `*`, `/`, `^` (power)
+- Comparison: `<`, `>`, `<=`, `>=`, `==`, `!=`
+- Logical: `&&`, `||`, `!`
+
+#### **Functions:**
+- Trigonometric: `sin()`, `cos()`, `tan()`, `asin()`, `acos()`, `atan()`
+- Mathematical: `sqrt()`, `log()`, `exp()`, `abs()`, `floor()`, `ceil()`
+- Constants: `pi`, `e`
+
+#### **Variables:**
+- `t` - Current time variable
+- `[tracker_name]` - Reference to other tracker values
+- Numbers: `123`, `3.14`, `-0.5`
+
+### Script Examples
+
+#### **Basic Animation Setup:**
+```
+// Static configuration
+val center_x = 200;
+val center_y = 150;
+val orbit_radius = 75;
+
+// Time-based movement
+val angle = t * 1.5;
+pval orbit_pos = ([center_x] + [orbit_radius] * cos([angle]), 
+                  [center_y] + [orbit_radius] * sin([angle]));
+
+// Connect to objects
+connect(orbit_pos, planet.pos);
+connect(angle, planet.rotation);
+```
+
+#### **Complex Wave System:**
+```
+// Wave parameters
+val frequency = 2.0;
+val amplitude = 50;
+val speed = 1.5;
+
+// Generate wave points
+loop (i:0->20) {
+    val x_[i] = [i] * 10;
+    val y_[i] = [amplitude] * sin([frequency] * [i] + t * [speed]);
+    pval wave_point_[i] = ([x_[i]], [y_[i]]);
+    connect(wave_point_[i], wave_segment_[i].pos);
+}
+```
+
+#### **Interactive Particle System:**
+```
+// Particle configuration
+val particle_count = 15;
+val explosion_force = 100;
+
+loop (p:0->15) {
+    // Individual particle parameters
+    val angle_[p] = [p] * 24; // Spread evenly in circle
+    val speed_[p] = [explosion_force] * (0.5 + [p] * 0.1);
+    
+    // Calculate positions
+    val x_[p] = [speed_[p]] * cos([angle_[p]]) * t;
+    val y_[p] = [speed_[p]] * sin([angle_[p]]) * t - 9.8 * t * t / 2; // Gravity
+    
+    dpval particle_pos_[p] = ([x_[p]], [y_[p]]);
+    connect(particle_pos_[p], particle_[p].pos);
+    
+    // Fade out over time
+    val opacity_[p] = 1.0 - t * 0.3;
+    connect(opacity_[p], particle_[p].opacity);
+}
+```
+
+### Parser Features
+
+#### **Dependency Resolution:**
+The parser automatically detects dependencies between trackers and ensures proper evaluation order.
+
+#### **Error Handling:**
+- Syntax validation with detailed error reporting
+- Circular dependency detection
+- Type checking for expressions
+- Range validation for loops
+
+#### **Performance Optimization:**
+- Efficient expression evaluation
+- Cached dependency graphs
+- Optimized update cycles
+- Memory-efficient storage
+
+#### **Integration:**
+- Seamless QML property binding
+- Real-time expression evaluation
+- Dynamic tracker creation/destruction
+- Animation timeline synchronization
+
+### Comments and Formatting
+
+The parser supports:
+- **Line comments:** `// This is a comment`
+- **Flexible whitespace:** Commands can span multiple lines
+- **Case sensitivity:** All keywords and names are case-sensitive
+- **Statement termination:** Most commands end with semicolon `;`
+
+### Parser Usage in Code
+
+```cpp
+// Parse animation script
+AnimationScriptParser parser;
+QVector<TrackerCommand> commands = parser.parseScript(scriptText);
+
+// Process commands
+for (const TrackerCommand& cmd : commands) {
+    switch (cmd.getType()) {
+        case TrackerCommand::VALUE_TRACKER:
+            // Create value tracker
+            break;
+        case TrackerCommand::LOOP:
+            // Process loop commands
+            break;
+        // ... handle other types
+    }
+}
+```
+
+The animation script parser provides a powerful, flexible way to create complex, data-driven animations with clean, readable syntax.
+
 ## Animation System Workflow
 
 ### 1. **Animation Creation**
@@ -478,22 +836,86 @@ Timeline: 0s────2s────4s────6s────8s
 Animat/
 ├── Math/
 │   ├── Animations/
-│   │   ├── animation.h          # Base Animation class & all animation types
-│   │   ├── animation.cpp        # Animation implementations
-│   │   ├── animpacket.h         # Animation packet container
-│   │   ├── animpacket.cpp       # Packet management
-│   │   ├── animationmanager.h   # Timeline management
-│   │   └── animationmanager.cpp # Manager implementation
+│   │   ├── animation.h               # Base Animation class & all animation types
+│   │   ├── animation.cpp             # Animation implementations
+│   │   ├── animpacket.h              # Animation packet container
+│   │   ├── animpacket.cpp            # Packet management
+│   │   ├── animationmanager.h        # Timeline management
+│   │   └── animationmanager.cpp      # Manager implementation
 │   ├── ValueTracker/
-│   │   ├── playbackslider.h     # Dynamic playback control
-│   │   └── playbackslider.cpp   # Playback implementation
-│   └── Scene.cpp                # Main scene coordination
-├── QML/Components/Elements/Input/
-│   ├── AnimationTypeSelector.qml    # Animation type dropdown
-│   ├── AnimationFieldsPanel.qml     # Parameter input fields
-│   ├── AnimInput.qml                # Main animation input UI
-│   └── PlaybackInput.qml            # Playback controls UI
-└── README.md                        # This documentation
+│   │   ├── playbackslider.h          # Dynamic playback control
+│   │   ├── playbackslider.cpp        # Playback implementation
+│   │   ├── valuetracker.h            # Value tracking system
+│   │   ├── valuetracker.cpp          # Value tracker implementation
+│   │   └── ptvaluetracker.h          # Point value tracker
+│   ├── Parser/                       # 🆕 Animation Script Parser
+│   │   ├── animationscriptparser.h   # Main parser class
+│   │   ├── animationscriptparser.cpp # Parser implementation
+│   │   ├── trackercommand.h          # Command definitions
+│   │   ├── trackercommand.cpp        # Command implementations
+│   │   ├── trackermanager.h          # Tracker management
+│   │   ├── trackermanager.cpp        # Manager implementation
+│   │   ├── parser.h                  # Expression parser
+│   │   ├── parser.cpp                # Expression evaluation
+│   │   └── dependencygraph.h         # Dependency resolution
+│   ├── Mobjects/                     # Graphical Objects
+│   │   ├── Mobject.h                 # Base mobject class
+│   │   ├── Group.h                   # Object grouping
+│   │   ├── VGroup.h                  # 🆕 Virtual grouping (shared properties)
+│   │   ├── Circle.h                  # Circle objects
+│   │   ├── Text.h                    # Text objects
+│   │   ├── Line.h                    # Line objects
+│   │   ├── SimpleLine.h              # 🆕 Optimized line with circular caps
+│   │   ├── Polygon.h                 # Polygon objects
+│   │   ├── MPolygon.h                # 🆕 Dynamic polygon with runtime editing
+│   │   ├── MRectangle.h              # Rectangle objects
+│   │   ├── Curve.h                   # Mathematical curves
+│   │   └── Dot.h                     # 🆕 Small circular markers
+│   ├── Helper/
+│   │   ├── ClickableMobject.h        # Interactive mobject base
+│   │   ├── mproperties.h             # Property management
+│   │   └── Properties/               # Specialized property types
+│   │       ├── baseproperties.h      # Common properties
+│   │       ├── textproperties.h      # Text-specific properties
+│   │       ├── lineproperties.h      # Line-specific properties
+│   │       ├── circleproperties.h    # Circle-specific properties
+│   │       ├── polygonproperties.h   # Polygon-specific properties
+│   │       └── curveproperties.h     # Curve-specific properties
+│   └── Scene.cpp                     # Main scene coordination
+├── QML/Components/
+│   ├── Elements/
+│   │   ├── Input/
+│   │   │   ├── AnimationTypeSelector.qml     # Animation type dropdown
+│   │   │   ├── AnimationFieldsPanel.qml      # Parameter input fields
+│   │   │   ├── AnimInput.qml                 # Main animation input UI
+│   │   │   ├── PlaybackInput.qml             # Playback controls UI
+│   │   │   ├── StyledTextField.qml           # 🆕 Consistent text input
+│   │   │   ├── StyledTextArea.qml            # 🆕 Multi-line text input
+│   │   │   ├── ColorPicker.qml               # Color selection
+│   │   │   ├── NumberInput.qml               # Numeric input with validation
+│   │   │   └── PointInput.qml                # 2D coordinate input
+│   │   ├── PropertyPanels/                   # 🆕 Modular property editors
+│   │   │   ├── MobjectIdPanel.qml           # ID display and delete
+│   │   │   ├── MobjectNamePanel.qml         # Name editing
+│   │   │   ├── TransformPanel.qml           # Position and size
+│   │   │   ├── AppearancePanel.qml          # Color properties
+│   │   │   ├── NumericPanel.qml             # Numeric properties
+│   │   │   └── PolygonPanel.qml             # 🆕 Polygon point management
+│   │   ├── MpropertiesEditor.qml             # 🆕 Modular property editor
+│   │   ├── ValueManagement.qml               # Value tracker management
+│   │   └── ActiveAnimationsList.qml          # Animation list display
+│   ├── TitleBar.qml                          # Application title bar
+│   ├── Taskbar.qml                           # Main toolbar
+│   ├── ControlPanel.qml                      # Control panel UI
+│   └── SceneManager.qml                      # Scene management UI
+├── Utils/                                    # Utility classes
+│   ├── mobjectmap.h                          # Object mapping utilities
+│   ├── mobjectregistry.h                     # Object registration system
+│   ├── filehandler.h                         # File I/O operations
+│   ├── Constants.h                           # Application constants
+│   └── Singleton.h                           # Singleton pattern utility
+├── CMakeLists.txt                            # Build configuration
+└── README.md                                 # This documentation
 ```
 
 ## Technical Details

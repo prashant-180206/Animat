@@ -1,11 +1,12 @@
 // mobjectmap.cpp
 #include "mobjectmap.h"
-#include "Math/Mobjects/Text.h"
-#include "Math/Mobjects/Circle.h"
-#include "Math/Mobjects/Curve.h"
-#include "Math/Mobjects/MRectangle.h"
-#include "Math/Mobjects/line.h"
-#include "Math/Mobjects/Dot.h"
+#include "Math/Mobjects/Text/Text.h"
+#include "Math/Mobjects/Basic/Circle.h"
+#include "Math/Mobjects/Complex/Curve.h"
+#include "Math/Mobjects/Basic/MRectangle.h"
+#include "Math/Mobjects/Basic/line.h"
+#include "Math/Mobjects/Basic/Dot.h"
+#include "Math/Mobjects/Complex/MPolygon.h"
 
 QHash<QString, MobjectMap::Factory> MobjectMap::map;
 
@@ -22,7 +23,7 @@ void MobjectMap::init(Scene *canvas)
     map["Rectangle"] = [canvas]()
     { return new MRectangle(canvas, canvas); };
     map["Polygon"] = [canvas]()
-    { return new Polygon(canvas, canvas); };
+    { return new MPolygon(canvas, canvas); };
     map["Circle"] = [canvas]()
     { return new Circle(canvas, canvas); };
     map["Dot"] = [canvas]()

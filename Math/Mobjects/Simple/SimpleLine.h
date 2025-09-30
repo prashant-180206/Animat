@@ -1,15 +1,14 @@
 #ifndef SIMPLE_LINE_H
 #define SIMPLE_LINE_H
 
-#include "Math/Mobjects/Mobject.h"
+#include "Math/Mobjects/Base/Mobject.h"
 #include <QPointF>
 #include <QSGGeometryNode>
 #include <QSGGeometry>
 #include <QSGFlatColorMaterial>
 #include <qqmlintegration.h>
 
-
-class SimpleLine : public Mobject  // Inherit from Mobject instead of QQuickItem
+class SimpleLine : public Mobject // Inherit from Mobject instead of QQuickItem
 {
     Q_OBJECT
     QML_ELEMENT
@@ -19,7 +18,7 @@ class SimpleLine : public Mobject  // Inherit from Mobject instead of QQuickItem
     Q_PROPERTY(qreal Thickness READ Thickness WRITE setThickness NOTIFY ThicknessChanged FINAL)
 
 public:
-    explicit SimpleLine(Scene* canvas,QQuickItem *parent = nullptr);
+    explicit SimpleLine(Scene *canvas, QQuickItem *parent = nullptr);
 
     QPointF p1() const;
     void setP1(const QPointF &pt);
@@ -27,19 +26,21 @@ public:
     QPointF p2() const;
     void setP2(const QPointF &pt);
 
-    QColor color(){return m_color;};
-    void setColor(QColor c){m_color=c;
+    QColor color() { return m_color; };
+    void setColor(QColor c)
+    {
+        m_color = c;
         emit colorChanged();
-
     }
 
-    qreal Thickness(){
+    qreal Thickness()
+    {
         return m_thickness;
     };
 
     void setThickness(qreal thickness)
     {
-        m_thickness= thickness;
+        m_thickness = thickness;
         emit ThicknessChanged();
     }
 signals:
@@ -50,11 +51,12 @@ signals:
 
 protected:
     QSGNode *updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *data) override;
-    QColor m_color=Qt::yellow;
+    QColor m_color = Qt::yellow;
+
 private:
-    Scene * m_canvas;
+    Scene *m_canvas;
     QPointF m_p1, m_p2;
-    qreal m_thickness=6;
+    qreal m_thickness = 6;
 };
 
 #endif // LINE_H

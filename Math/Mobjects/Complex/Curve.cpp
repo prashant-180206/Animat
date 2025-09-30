@@ -1,10 +1,8 @@
 #include "Curve.h"
-#include "Math/Mobjects/SimpleLine.h"
+#include "Math/Mobjects/Simple/SimpleLine.h"
 #include <QVector2D>
 #include <QDebug>
 #include <QtGlobal>
-
-
 
 Curve::Curve(Scene *canvas, QQuickItem *parent)
     : Group(canvas, parent)
@@ -32,28 +30,25 @@ Curve::Curve(Scene *canvas, QQuickItem *parent)
     setFlag(ItemHasContents, true);
     setAcceptedMouseButtons(Qt::AllButtons);
 
-    connect(properties->curve(), &CurveProperties::curveXFuncChanged, this, [this]{
+    connect(properties->curve(), &CurveProperties::curveXFuncChanged, this, [this]
+            {
         m_parserX.SetExpr(properties->curve()->curveXFunc().toStdWString());
         updateCurveFunction();
-        buildCurveSegments();
-    });
+        buildCurveSegments(); });
 
-    connect(properties->curve(), &CurveProperties::curveYFuncChanged, this, [this]{
+    connect(properties->curve(), &CurveProperties::curveYFuncChanged, this, [this]
+            {
         m_parserY.SetExpr(properties->curve()->curveYFunc().toStdWString());
         updateCurveFunction();
-        buildCurveSegments();
-    });
+        buildCurveSegments(); });
 
-    connect(properties->curve(), &CurveProperties::tRangeChanged, this, [this]{
-        buildCurveSegments();
-    });
+    connect(properties->curve(), &CurveProperties::tRangeChanged, this, [this]
+            { buildCurveSegments(); });
 
-    connect(properties->base(), &BaseProperties::colorChanged, this, [this]{
-        buildCurveSegments();
-    });
-    connect(properties->curve(), &CurveProperties::thicknessChanged, this, [this]{
-        buildCurveSegments();
-    });
+    connect(properties->base(), &BaseProperties::colorChanged, this, [this]
+            { buildCurveSegments(); });
+    connect(properties->curve(), &CurveProperties::thicknessChanged, this, [this]
+            { buildCurveSegments(); });
 
     buildCurveSegments();
 
@@ -62,19 +57,26 @@ Curve::Curve(Scene *canvas, QQuickItem *parent)
 
 void Curve::updateCurveFunction()
 {
-    m_curveFunction = [this](double t) -> QPointF {
+    m_curveFunction = [this](double t) -> QPointF
+    {
         m_tVal = t;
         double x = 0.0;
         double y = 0.0;
-        try {
+        try
+        {
             x = m_parserX.Eval();
-        } catch (mu::Parser::exception_type &e) {
+        }
+        catch (mu::Parser::exception_type &e)
+        {
             qWarning() << "[Curve] muParser Eval X error:" << e.GetMsg().c_str();
             x = t;
         }
-        try {
+        try
+        {
             y = m_parserY.Eval();
-        } catch (mu::Parser::exception_type &e) {
+        }
+        catch (mu::Parser::exception_type &e)
+        {
             qWarning() << "[Curve] muParser Eval Y error:" << e.GetMsg().c_str();
             y = t;
         }
@@ -98,8 +100,10 @@ void Curve::buildCurveSegments()
     {
         const auto childrenCopy = childItems();
         int removed = 0;
-        for (auto *childObj : childrenCopy) {
-            if (auto *line = qobject_cast<SimpleLine *>(childObj)) {
+        for (auto *childObj : childrenCopy)
+        {
+            if (auto *line = qobject_cast<SimpleLine *>(childObj))
+            {
                 line->setParentItem(nullptr);
                 line->deleteLater();
                 ++removed;
@@ -112,28 +116,35 @@ void Curve::buildCurveSegments()
     const double t1 = tr.y();
     int invalidPts = 0;
     points.reserve(m_segmentCount + 1);
-    for (int i = 0; i <= m_segmentCount; ++i) {
+    for (int i = 0; i <= m_segmentCount; ++i)
+    {
         const double t = t0 + ((t1 - t0) / static_cast<double>(m_segmentCount)) * i;
         QPointF pt = m_curveFunction(t);
-        if (!std::isfinite(pt.x()) || !std::isfinite(pt.y())) {
+        if (!std::isfinite(pt.x()) || !std::isfinite(pt.y()))
+        {
             ++invalidPts;
             continue;
         }
         QPointF cpt = getcanvas()->p2c(pt);
-        if (std::isfinite(cpt.x()) && std::isfinite(cpt.y())) {
+        if (std::isfinite(cpt.x()) && std::isfinite(cpt.y()))
+        {
             points.append(cpt);
-        } else {
+        }
+        else
+        {
             ++invalidPts;
         }
     }
-    if (points.size() < 2) {
+    if (points.size() < 2)
+    {
         m_cachedPoints.clear();
         update();
         return;
     }
     m_cachedPoints = points;
     int created = 0;
-    for (int i = 0; i < m_cachedPoints.size() - 1; ++i) {
+    for (int i = 0; i < m_cachedPoints.size() - 1; ++i)
+    {
         auto *segment = new SimpleLine(getcanvas(), this);
         segment->setP1(m_cachedPoints[i]);
         segment->setP2(m_cachedPoints[i + 1]);
@@ -147,7 +158,8 @@ void Curve::buildCurveSegments()
 
 QRectF Curve::boundingRect() const
 {
-    if (m_cachedPoints.isEmpty()) {
+    if (m_cachedPoints.isEmpty())
+    {
         return QRectF();
     }
     constexpr qreal penWidth = 8.0;
@@ -155,7 +167,8 @@ QRectF Curve::boundingRect() const
     qreal maxX = minX;
     qreal minY = m_cachedPoints[0].y();
     qreal maxY = minY;
-    for (const QPointF &pt : m_cachedPoints) {
+    for (const QPointF &pt : m_cachedPoints)
+    {
         minX = qMin(minX, pt.x());
         maxX = qMax(maxX, pt.x());
         minY = qMin(minY, pt.y());
@@ -167,31 +180,36 @@ QRectF Curve::boundingRect() const
     return r;
 }
 
-
 bool Curve::contains(const QPointF &point) const
 {
     constexpr qreal tolerance = 8.0;
     const QVector2D pt(point);
     if (m_cachedPoints.size() < 2)
         return false;
-    for (int i = 0; i < m_cachedPoints.size() - 1; ++i) {
+    for (int i = 0; i < m_cachedPoints.size() - 1; ++i)
+    {
         const QVector2D p1(m_cachedPoints[i]);
         const QVector2D p2(m_cachedPoints[i + 1]);
         const QVector2D v = p2 - p1;
         const QVector2D w = pt - p1;
         const float c1 = QVector2D::dotProduct(w, v);
-        if (c1 <= 0) {
-            if ((pt - p1).length() <= tolerance) return true;
+        if (c1 <= 0)
+        {
+            if ((pt - p1).length() <= tolerance)
+                return true;
             continue;
         }
         const float c2 = QVector2D::dotProduct(v, v);
-        if (c2 <= c1) {
-            if ((pt - p2).length() <= tolerance) return true;
+        if (c2 <= c1)
+        {
+            if ((pt - p2).length() <= tolerance)
+                return true;
             continue;
         }
         const float b = c1 / c2;
         const QVector2D pb = p1 + b * v;
-        if ((pt - pb).length() <= tolerance) return true;
+        if ((pt - pb).length() <= tolerance)
+            return true;
     }
     return false;
 }

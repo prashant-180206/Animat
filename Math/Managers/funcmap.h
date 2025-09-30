@@ -1,7 +1,7 @@
 #ifndef FUNCMAP_H
 #define FUNCMAP_H
 
-#include "ClickableMobject.h"
+#include "Math/Mobjects/Base/ClickableMobject.h"
 #include <QMap>
 #include <QString>
 #include <functional>

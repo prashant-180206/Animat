@@ -3,7 +3,7 @@
 #include <QtGui/qopenglfunctions.h>
 #include "Utils/Constants.h"
 
-#include <Math/Mobjects/line.h>
+#include <Math/Mobjects/Basic/line.h>
 #include "Utils/mobjectmap.h"
 #include "Parser/trackermanager.h"
 

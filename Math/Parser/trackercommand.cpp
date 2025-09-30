@@ -63,6 +63,35 @@ TrackerCommand::TrackerCommand(const QString &trackerName, const QString &object
     }
 }
 
+// Loop constructor
+TrackerCommand::TrackerCommand(const QString &iteratorName, int startValue, int endValue, const QString &loopBody)
+    : m_type(LOOP), m_name(iteratorName), m_startValue(startValue), m_endValue(endValue), m_loopBody(loopBody)
+{
+    // Validate iterator name
+    if (iteratorName.isEmpty())
+    {
+        m_valid = false;
+    }
+
+    // Validate start < end
+    if (startValue >= endValue)
+    {
+        m_valid = false;
+    }
+
+    // Validate loop doesn't run over 50 times
+    if ((endValue - startValue) > 50)
+    {
+        m_valid = false;
+    }
+
+    // Validate loop body is not empty
+    if (loopBody.trimmed().isEmpty())
+    {
+        m_valid = false;
+    }
+}
+
 QString TrackerCommand::toString() const
 {
     switch (m_type)
@@ -81,6 +110,8 @@ QString TrackerCommand::toString() const
         return QString("dpval %1 = (%2, %3);").arg(m_name, m_expressionX, m_expressionY);
     case CONNECTION:
         return QString("connect(%1, %2.%3);").arg(m_name, m_objectName, m_propertyName);
+    case LOOP:
+        return QString("loop (%1:%2->%3){%4}").arg(m_name).arg(m_startValue).arg(m_endValue).arg(m_loopBody.left(50) + (m_loopBody.length() > 50 ? "..." : ""));
     }
     return "Invalid Command";
 }

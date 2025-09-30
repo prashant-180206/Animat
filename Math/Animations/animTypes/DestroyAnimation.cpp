@@ -1,5 +1,5 @@
 #include "DestroyAnimation.h"
-#include "ClickableMobject.h"
+#include "Math/Mobjects/Base/ClickableMobject.h"
 
 DestroyAnimation::DestroyAnimation(ClickableMobject *mobj, qreal startOffset, qreal duration)
     : Animation(startOffset, duration), m_mobj(mobj)

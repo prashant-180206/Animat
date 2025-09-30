@@ -9,7 +9,43 @@ AnimationScriptParser::AnimationScriptParser()
 QVector<TrackerCommand> AnimationScriptParser::parseScript(const QString &script)
 {
     QVector<TrackerCommand> commands;
-    QStringList lines = script.split("\n", Qt::SkipEmptyParts);
+
+    // First, try to parse loops that might span multiple lines
+    QRegularExpression loopPattern(R"(\s*loop\s*\(\s*(\w+)\s*:\s*(-?\d+)\s*->\s*(-?\d+)\s*\)\s*\{(.*?)\}\s*)",
+                                   QRegularExpression::DotMatchesEverythingOption);
+
+    QString remainingScript = script;
+    QRegularExpressionMatchIterator loopIterator = loopPattern.globalMatch(script);
+
+    // Process all loops first
+    while (loopIterator.hasNext())
+    {
+        QRegularExpressionMatch loopMatch = loopIterator.next();
+        QString iteratorName = loopMatch.captured(1);
+        QString startStr = loopMatch.captured(2);
+        QString endStr = loopMatch.captured(3);
+        QString loopBody = loopMatch.captured(4);
+
+        // Convert start and end to integers
+        bool startOk, endOk;
+        int startValue = startStr.toInt(&startOk);
+        int endValue = endStr.toInt(&endOk);
+
+        if (startOk && endOk)
+        {
+            TrackerCommand loopCommand(iteratorName, startValue, endValue, loopBody);
+            if (loopCommand.isValid())
+            {
+                commands.append(loopCommand);
+            }
+        }
+
+        // Remove the loop from remaining script to avoid processing it again
+        remainingScript.replace(loopMatch.captured(0), "");
+    }
+
+    // Now process remaining lines normally
+    QStringList lines = remainingScript.split("\n", Qt::SkipEmptyParts);
 
     for (const QString &line : lines)
     {
@@ -77,6 +113,15 @@ TrackerCommand AnimationScriptParser::parseLine(const QString &line)
     if (cmd.isValid())
     {
         // qDebug() << "parseLine: SUCCESS with parseConnection, returning command with name:" << cmd.getName();
+        return cmd;
+    }
+
+    // Try loop
+    // qDebug() << "parseLine: Trying parseLoop...";
+    cmd = parseLoop(line);
+    if (cmd.isValid())
+    {
+        // qDebug() << "parseLine: SUCCESS with parseLoop, returning command with name:" << cmd.getName();
         return cmd;
     }
 
@@ -209,6 +254,39 @@ TrackerCommand AnimationScriptParser::parseConnection(const QString &line)
     return TrackerCommand("", 0.0); // Invalid
 }
 
+TrackerCommand AnimationScriptParser::parseLoop(const QString &line)
+{
+    QRegularExpressionMatch match = m_reLoop.match(line);
+    if (match.hasMatch())
+    {
+        QString iteratorName = match.captured(1);
+        QString startStr = match.captured(2);
+        QString endStr = match.captured(3);
+        QString loopBody = match.captured(4);
+
+        // Convert start and end to integers
+        bool startOk, endOk;
+        int startValue = startStr.toInt(&startOk);
+        int endValue = endStr.toInt(&endOk);
+
+        // Validate conversion success
+        if (!startOk || !endOk)
+        {
+            return TrackerCommand("", 0.0); // Invalid
+        }
+
+        // Additional validation is handled in TrackerCommand constructor:
+        // - startValue < endValue
+        // - (endValue - startValue) <= 50
+        // - iteratorName not empty
+        // - loopBody not empty
+
+        return TrackerCommand(iteratorName, startValue, endValue, loopBody);
+    }
+
+    return TrackerCommand("", 0.0); // Invalid
+}
+
 bool AnimationScriptParser::isNumeric(const QString &str)
 {
     bool ok;
@@ -262,4 +340,8 @@ void AnimationScriptParser::initializeRegexPatterns()
     // Pattern for connect(tracker, object.property);
     // More flexible whitespace
     m_reConnect = QRegularExpression(R"(\s*connect\s*\(\s*(\w+)\s*,\s*(\w+)\s*\.\s*(\w+)\s*\)\s*;\s*)");
+
+    // Pattern for loop (it_name:startnum->endnum){...}
+    // Captures: iterator name, start number, end number, loop body
+    m_reLoop = QRegularExpression(R"(\s*loop\s*\(\s*(\w+)\s*:\s*(-?\d+)\s*->\s*(-?\d+)\s*\)\s*\{\s*(.*?)\s*\}\s*)", QRegularExpression::DotMatchesEverythingOption);
 }

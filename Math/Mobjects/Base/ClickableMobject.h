@@ -1,29 +1,29 @@
 #pragma once
 #include "Math/Helper/mproperties.h"
-#include "Math/Mobjects/Mobject.h"
+#include "Mobject.h"
 #include <QQuickItem>
 #include <QSGSimpleRectNode>
 #include <QMouseEvent>
 #include <QDebug>
 #include <QVariantMap>
 
-
-class ClickableMobject : public Mobject {
+class ClickableMobject : public Mobject
+{
 
     Q_OBJECT
 
 public:
-    explicit ClickableMobject(Scene * canvas,QQuickItem *parent = nullptr);
+    explicit ClickableMobject(Scene *canvas, QQuickItem *parent = nullptr);
 
     QString getId() const { return m_id; }
     void setId(QString newid);
-    Scene* getcanvas() const;
+    Scene *getcanvas() const;
 
     virtual void setCenter(qreal xval, qreal yval);
-    void setSize( qreal height,qreal width);
+    void setSize(qreal height, qreal width);
 
-    Q_INVOKABLE MProperties* getProperties();;
-
+    Q_INVOKABLE MProperties *getProperties();
+    ;
 
     QPointF getCenter() const;
     QPointF top() const;
@@ -34,11 +34,10 @@ public:
     virtual ~ClickableMobject();
 
 private:
-
     QColor m_color = Qt::blue;
 
-    Scene* m_canvas = nullptr;
-    QPointF center = QPointF(0,0);
+    Scene *m_canvas = nullptr;
+    QPointF center = QPointF(0, 0);
 
     bool m_dragging = false;
     QPointF m_dragItemOffset;
@@ -47,11 +46,9 @@ private:
 
 protected:
     QString m_id = 0;
-    MProperties* properties = new MProperties(this);
-
+    MProperties *properties = new MProperties(this);
 
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
-
 };

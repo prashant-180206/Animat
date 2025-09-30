@@ -16,7 +16,8 @@ public:
         POINT_EXPRESSION_TRACKER, // pval name = (sin(t), cos(t));
         DYNAMIC_VALUE_TRACKER,    // dval name = [val1] + [val2];
         DYNAMIC_POINT_TRACKER,    // dpval name = ([val1], [val2]);
-        CONNECTION                // connect(tracker, object.property);
+        CONNECTION,               // connect(tracker, object.property);
+        LOOP                      // loop (it_name:startnum->endnum){ ... }
     };
 
     // Constructors for different command types
@@ -25,6 +26,8 @@ public:
     TrackerCommand(const QString &name, const QPointF &point);
     TrackerCommand(const QString &name, const QString &exprX, const QString &exprY, CommandType type);
     TrackerCommand(const QString &trackerName, const QString &objectName, const QString &propertyName);
+    // Loop constructor: loop(iteratorName:startValue->endValue)
+    TrackerCommand(const QString &iteratorName, int startValue, int endValue, const QString &loopBody);
 
     // Getters
     CommandType getType() const { return m_type; }
@@ -37,6 +40,11 @@ public:
     QString getObjectName() const { return m_objectName; }
     QString getPropertyName() const { return m_propertyName; }
     QStringList getDependencies() const { return m_dependencies; }
+
+    // Loop-specific getters
+    int getStartValue() const { return m_startValue; }
+    int getEndValue() const { return m_endValue; }
+    QString getLoopBody() const { return m_loopBody; }
 
     // For dynamic trackers
     void setDependencies(const QStringList &deps) { m_dependencies = deps; }
@@ -56,6 +64,10 @@ private:
     QString m_objectName;
     QString m_propertyName;
     QStringList m_dependencies;
+    // Loop-specific members
+    int m_startValue = 0;
+    int m_endValue = 0;
+    QString m_loopBody;
     bool m_valid = true;
 };
 

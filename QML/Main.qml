@@ -75,7 +75,7 @@ Window {
                 height: 40
                 z: 100
 
-                opacity: playbackarea.containsMouse || !presentationMode ?1:0
+                opacity: playbackarea.containsMouse || !presentationMode ? 1 : 0
 
                 MouseArea{
                     id: playbackarea
