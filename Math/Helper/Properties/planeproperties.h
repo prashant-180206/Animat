@@ -5,6 +5,8 @@
 #include <QQmlEngine>
 #include <qqmlintegration.h>
 #include <QColor>
+#include <qjsondocument.h>
+#include <QJsonObject>
 
 class PlaneProperties : public QObject
 {
@@ -24,7 +26,6 @@ class PlaneProperties : public QObject
 public:
     explicit PlaneProperties(QObject *parent = nullptr);
 
-    // Property getters
     QColor axisColor() const { return m_axisColor; }
     QColor lineColor() const { return m_lineColor; }
     QColor labelColor() const { return m_labelColor; }
@@ -35,6 +36,84 @@ public:
     qreal axisThickness() const { return m_axisThickness; }
     qreal gridThickness() const { return m_gridThickness; }
     int labelFontSize() const { return m_labelFontSize; }
+
+    struct PlanePropData
+    {
+        QColor axisColor;
+        QColor lineColor;
+        QColor labelColor;
+        qreal step = 0;
+        bool showLabels = false;
+        bool showGrid = false;
+        bool showAxes = false;
+        qreal axisThickness = 0;
+        qreal gridThickness = 0;
+        int labelFontSize = 0;
+        QJsonDocument toJson() const
+        {
+            QJsonObject o;
+            o["axisColor"] = QJsonObject{{"r", axisColor.red()}, {"g", axisColor.green()}, {"b", axisColor.blue()}, {"a", axisColor.alpha()}};
+            o["lineColor"] = QJsonObject{{"r", lineColor.red()}, {"g", lineColor.green()}, {"b", lineColor.blue()}, {"a", lineColor.alpha()}};
+            o["labelColor"] = QJsonObject{{"r", labelColor.red()}, {"g", labelColor.green()}, {"b", labelColor.blue()}, {"a", labelColor.alpha()}};
+            o["step"] = step;
+            o["showLabels"] = showLabels;
+            o["showGrid"] = showGrid;
+            o["showAxes"] = showAxes;
+            o["axisThickness"] = axisThickness;
+            o["gridThickness"] = gridThickness;
+            o["labelFontSize"] = labelFontSize;
+            return QJsonDocument(o);
+        }
+        static PlanePropData fromJSON(const QJsonObject &o)
+        {
+            PlanePropData d;
+            auto ac = o["axisColor"].toObject();
+            d.axisColor = QColor(ac["r"].toInt(), ac["g"].toInt(), ac["b"].toInt(), ac["a"].toInt());
+            auto lc = o["lineColor"].toObject();
+            d.lineColor = QColor(lc["r"].toInt(), lc["g"].toInt(), lc["b"].toInt(), lc["a"].toInt());
+            auto labc = o["labelColor"].toObject();
+            d.labelColor = QColor(labc["r"].toInt(), labc["g"].toInt(), labc["b"].toInt(), labc["a"].toInt());
+            d.step = o["step"].toDouble();
+            d.showLabels = o["showLabels"].toBool();
+            d.showGrid = o["showGrid"].toBool();
+            d.showAxes = o["showAxes"].toBool();
+            d.axisThickness = o["axisThickness"].toDouble();
+            d.gridThickness = o["gridThickness"].toDouble();
+            d.labelFontSize = o["labelFontSize"].toInt();
+            return d;
+        }
+    };
+
+    PlanePropData getData() const
+    {
+        PlanePropData d;
+        d.axisColor = m_axisColor;
+        d.lineColor = m_lineColor;
+        d.labelColor = m_labelColor;
+        d.step = m_step;
+        d.showLabels = m_showLabels;
+        d.showGrid = m_showGrid;
+        d.showAxes = m_showAxes;
+        d.axisThickness = m_axisThickness;
+        d.gridThickness = m_gridThickness;
+        d.labelFontSize = m_labelFontSize;
+        return d;
+    }
+
+    void setfromJSON(const QJsonObject &o)
+    {
+        PlanePropData d = PlanePropData::fromJSON(o);
+        setAxisColor(d.axisColor);
+        setLineColor(d.lineColor);
+        setLabelColor(d.labelColor);
+        setStep(d.step);
+        setShowLabels(d.showLabels);
+        setShowGrid(d.showGrid);
+        setShowAxes(d.showAxes);
+        setAxisThickness(d.axisThickness);
+        setGridThickness(d.gridThickness);
+        setLabelFontSize(d.labelFontSize);
+    }
 
     // Property setters
     void setAxisColor(const QColor &color);

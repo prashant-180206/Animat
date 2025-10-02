@@ -54,6 +54,8 @@ void ClickableMobject::setId(QString newid)
     m_id = newid;
 }
 
+
+
 Scene *ClickableMobject::getcanvas() const
 {
     return m_canvas;
@@ -81,7 +83,12 @@ void ClickableMobject::setSize(qreal height, qreal width)
     setWidth(w);
 }
 
-MProperties *ClickableMobject::getProperties() { return properties; }
+MProperties *ClickableMobject::getProperties() const
+{
+    return properties;
+}
+
+
 
 QPointF ClickableMobject::getCenter() const
 {
@@ -118,6 +125,8 @@ ClickableMobject::~ClickableMobject()
     // delete properties;
     // properties = nullptr;
 }
+
+
 
 void ClickableMobject::mousePressEvent(QMouseEvent *event)
 {

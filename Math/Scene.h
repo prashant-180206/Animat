@@ -9,12 +9,15 @@
 #include <QSGNode>
 #include <QColor>
 #include "Mobjects/Base/Mobject.h"
-#include "animationmanager.h"
-#include "mproperties.h"
-#include "playbackslider.h"
+#include "Animations/animationmanager.h"
+#include "Helper/mproperties.h"
+#include "ValueTracker/playbackslider.h"
 #include "Parser/parser.h"
 #include "Parser/trackermanager.h"
 #include <QHash>
+#include <QJsonObject>
+#include <QJsonDocument>
+#include <QJsonArray>
 
 class ClickableMobject;
 
@@ -33,7 +36,7 @@ public:
 
     QString activeId() { return active_m_id; };
 
-    Q_INVOKABLE void add_mobject(QString mobj);
+    Q_INVOKABLE void add_mobject(QString mobj, QString name = "");
 
     Q_INVOKABLE void removeMobject(QString mobjectId);
 
@@ -67,30 +70,61 @@ public:
 
     // Border visibility control
     bool showBorders() const { return m_showBorders; }
-    void setShowBorders(bool show)
+    void setShowBorders(bool show);
+
+    struct SceneData
     {
-        if (m_showBorders != show)
+        QString activeId;
+        int gridSize = 50;
+        QColor backgroundColor;
+        bool showBorders = true;
+        QJsonObject animatorData;
+        QJsonObject playerData;
+        QJsonObject parserData;
+        QJsonObject trackerData;
+        QJsonArray mobjectsData;
+
+        QJsonDocument toJson() const
         {
-            m_showBorders = show;
-            update(); // Trigger repaint
-            emit showBordersChanged();
+            QJsonObject o;
+            o["activeId"] = activeId;
+            o["gridSize"] = gridSize;
+            o["backgroundColor"] = QJsonObject{{"r", backgroundColor.red()}, {"g", backgroundColor.green()}, {"b", backgroundColor.blue()}, {"a", backgroundColor.alpha()}};
+            o["showBorders"] = showBorders;
+            o["animator"] = animatorData;
+            o["player"] = playerData;
+            o["parser"] = parserData;
+            o["tracker"] = trackerData;
+            o["mobjects"] = mobjectsData;
+            return QJsonDocument(o);
         }
-    }
+
+        static SceneData fromJSON(const QJsonObject &o)
+        {
+            SceneData d;
+            d.activeId = o["activeId"].toString();
+            d.gridSize = o["gridSize"].toInt();
+            auto bg = o["backgroundColor"].toObject();
+            d.backgroundColor = QColor(bg["r"].toInt(), bg["g"].toInt(), bg["b"].toInt(), bg["a"].toInt());
+            d.showBorders = o["showBorders"].toBool();
+            d.animatorData = o["animator"].toObject();
+            d.playerData = o["player"].toObject();
+            d.parserData = o["parser"].toObject();
+            d.trackerData = o["tracker"].toObject();
+            d.mobjectsData = o["mobjects"].toArray();
+            return d;
+        }
+    };
+
+    SceneData getData() const;
+    void setFromJSON(const QJsonObject &o);
 
     int scalefactor();
 
     QPointF p2c(QPointF p);
     QPointF c2p(QPointF c);
 
-    void setActiveId(QString val)
-    {
-        if (active_m_id != val)
-        {
-            active_m_id = val;
-        }
-        emit SelectedMobjectChanged();
-        emit activeIdChanged();
-    }
+    void setActiveId(QString val);
 
 protected:
     QSGNode *updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *) override;

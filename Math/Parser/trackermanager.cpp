@@ -564,3 +564,164 @@ QStringList TrackerManager::getAllPointTrackerNames() const
     // qDebug() << "TrackerManager::getAllPointTrackerNames() - Count:" << names.size() << "Names:" << names;
     return names;
 }
+
+TrackerManager::TrackerManagerData TrackerManager::getData() const
+{
+    TrackerManagerData data;
+
+    // Serialize value trackers
+    QJsonArray valueTrackersArray;
+    for (auto it = m_valueTrackers.begin(); it != m_valueTrackers.end(); ++it)
+    {
+        if (it.value())
+        {
+            QJsonObject trackerObj;
+            trackerObj["name"] = it.key();
+            trackerObj["value"] = it.value()->value();
+            valueTrackersArray.append(trackerObj);
+        }
+    }
+    data.valueTrackers = valueTrackersArray;
+
+    // Serialize point trackers
+    QJsonArray pointTrackersArray;
+    for (auto it = m_pointTrackers.begin(); it != m_pointTrackers.end(); ++it)
+    {
+        if (it.value())
+        {
+            QJsonObject trackerObj;
+            trackerObj["name"] = it.key();
+            QPointF point = it.value()->value();
+            trackerObj["point"] = QJsonObject{{"x", point.x()}, {"y", point.y()}};
+            pointTrackersArray.append(trackerObj);
+        }
+    }
+    data.pointTrackers = pointTrackersArray;
+
+    // Serialize expressions
+    QJsonObject dynamicExpObj;
+    for (auto it = m_dynamicExpressions.begin(); it != m_dynamicExpressions.end(); ++it)
+    {
+        dynamicExpObj[it.key()] = it.value();
+    }
+    data.dynamicExpressions = dynamicExpObj;
+
+    QJsonObject dynamicPointExpObj;
+    for (auto it = m_dynamicPointExpressions.begin(); it != m_dynamicPointExpressions.end(); ++it)
+    {
+        QJsonObject pointExp;
+        pointExp["x"] = it.value().first;
+        pointExp["y"] = it.value().second;
+        dynamicPointExpObj[it.key()] = pointExp;
+    }
+    data.dynamicPointExpressions = dynamicPointExpObj;
+
+    QJsonObject regularExpObj;
+    for (auto it = m_regularExpressions.begin(); it != m_regularExpressions.end(); ++it)
+    {
+        regularExpObj[it.key()] = it.value();
+    }
+    data.regularExpressions = regularExpObj;
+
+    QJsonObject regularPointExpObj;
+    for (auto it = m_regularPointExpressions.begin(); it != m_regularPointExpressions.end(); ++it)
+    {
+        QJsonObject pointExp;
+        pointExp["x"] = it.value().first;
+        pointExp["y"] = it.value().second;
+        regularPointExpObj[it.key()] = pointExp;
+    }
+    data.regularPointExpressions = regularPointExpObj;
+
+    // Serialize tracker info
+    QJsonArray trackerInfoArray;
+    for (const TrackerInfo &info : m_trackerInfo)
+    {
+        QJsonObject infoObj;
+        infoObj["name"] = info.name;
+        infoObj["displayValue"] = info.displayValue;
+        infoObj["expression"] = info.expression;
+        infoObj["isExpression"] = info.isExpression;
+        infoObj["isDynamic"] = info.isDynamic;
+        trackerInfoArray.append(infoObj);
+    }
+    data.trackerInfo = trackerInfoArray;
+
+    return data;
+}
+
+void TrackerManager::setFromJSON(const QJsonObject &o)
+{
+    TrackerManagerData data = TrackerManagerData::fromJSON(o);
+
+    // Clear existing trackers
+    clearAllTrackers();
+
+    // Restore dynamic expressions
+    for (auto it = data.dynamicExpressions.begin(); it != data.dynamicExpressions.end(); ++it)
+    {
+        m_dynamicExpressions[it.key()] = it.value().toString();
+    }
+
+    // Restore dynamic point expressions
+    for (auto it = data.dynamicPointExpressions.begin(); it != data.dynamicPointExpressions.end(); ++it)
+    {
+        QJsonObject pointExp = it.value().toObject();
+        m_dynamicPointExpressions[it.key()] = qMakePair(pointExp["x"].toString(), pointExp["y"].toString());
+    }
+
+    // Restore regular expressions
+    for (auto it = data.regularExpressions.begin(); it != data.regularExpressions.end(); ++it)
+    {
+        m_regularExpressions[it.key()] = it.value().toString();
+    }
+
+    // Restore regular point expressions
+    for (auto it = data.regularPointExpressions.begin(); it != data.regularPointExpressions.end(); ++it)
+    {
+        QJsonObject pointExp = it.value().toObject();
+        m_regularPointExpressions[it.key()] = qMakePair(pointExp["x"].toString(), pointExp["y"].toString());
+    }
+
+    // Restore value trackers
+    for (const QJsonValue &val : data.valueTrackers)
+    {
+        if (val.isObject())
+        {
+            QJsonObject trackerObj = val.toObject();
+            QString name = trackerObj["name"].toString();
+            double value = trackerObj["value"].toDouble();
+
+            ValueTracker *tracker = new ValueTracker();
+            tracker->setParent(this); // Set proper parent for memory management
+            tracker->setValue(value);
+            m_valueTrackers[name] = tracker;
+
+            connect(tracker, &ValueTracker::valueChanged, this, &TrackerManager::onTrackerValueChanged);
+        }
+    }
+
+    // Restore point trackers
+    for (const QJsonValue &val : data.pointTrackers)
+    {
+        if (val.isObject())
+        {
+            QJsonObject trackerObj = val.toObject();
+            QString name = trackerObj["name"].toString();
+            QJsonObject pointObj = trackerObj["point"].toObject();
+            QPointF point(pointObj["x"].toDouble(), pointObj["y"].toDouble());
+
+            PtValueTracker *tracker = new PtValueTracker();
+            tracker->setParent(this); // Set proper parent for memory management
+            tracker->setValue(point);
+            m_pointTrackers[name] = tracker;
+
+            connect(tracker, &PtValueTracker::valueChanged, this, &TrackerManager::onTrackerPointChanged);
+        }
+    }
+
+    // Update tracker info and connections
+    updateTrackerInfo();
+    emit trackerInfoChanged();
+    emit trackersListChanged();
+}

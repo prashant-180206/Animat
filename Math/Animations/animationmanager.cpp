@@ -1,4 +1,4 @@
-# include "animationmanager.h"
+#include "animationmanager.h"
 
 AnimationManager::AnimationManager(QObject *parent)
     : QObject(parent), m_activePacket(nullptr), m_head(nullptr), m_tail(nullptr), m_activeNode(nullptr), m_size(0)
@@ -218,6 +218,27 @@ void AnimationManager::removePacket(AnimPacket *packet)
     }
 }
 
+
+
+
+// AnimationManager::AnimManagerData AnimationManager::getData() const
+// {
+//     AnimManagerData d;
+//     d.size = m_size;
+//     d.progressTime = progressTime;
+//     d.activePacketName = m_activePacket ? m_activePacket->name() : "";
+//     AnimPacketNode *node = m_head;
+//     while (node)
+//     {
+//         if (node->packet)
+//         {
+//             d.packetJsons.append(node->packet->getData().toJSON());
+//         }
+//         node = node->next;
+//     }
+//     return d;
+// }
+
 void AnimationManager::insertSorted(AnimPacket *packet)
 {
     // Ensure packet has this manager as parent for proper memory management
@@ -363,3 +384,36 @@ void AnimationManager::setActiveNode(AnimPacketNode *node)
     AnimPacket *packet = node ? node->packet : nullptr;
     setActivePacket(packet);
 }
+
+// QJsonDocument AnimationManager::AnimManagerData::toJson() const
+// {
+//     QJsonObject o;
+//     o["size"] = size;
+//     o["progressTime"] = progressTime;
+//     o["activePacketName"] = activePacketName;
+//     QJsonArray packetArray;
+//     for (const QJsonObject &packetObj : packetJsons)
+//     {
+//         packetArray.append(packetObj);
+//     }
+//     o["packets"] = packetArray;
+//     return QJsonDocument(o);
+// }
+
+// AnimationManager::AnimManagerData AnimationManager::AnimManagerData::fromJSON(const QJsonObject &o)
+// {
+//     AnimManagerData d;
+//     d.size = o["size"].toInt();
+//     d.progressTime = o["progressTime"].toDouble();
+//     d.activePacketName = o["activePacketName"].toString();
+//     if (o.contains("packets") && o["packets"].isArray())
+//     {
+//         QJsonArray arr = o["packets"].toArray();
+//         for (const QJsonValue &val : arr)
+//         {
+//             if (val.isObject())
+//                 d.packetJsons.append(val.toObject());
+//         }
+//     }
+//     return d;
+// }

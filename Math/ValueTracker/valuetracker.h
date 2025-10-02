@@ -13,7 +13,7 @@ class ValueTracker : public QQuickItem
 public:
     ValueTracker();
 
-    qreal value() { return m_value; }
+    qreal value() const { return m_value; }
     void setValue(qreal v);
 
 private:

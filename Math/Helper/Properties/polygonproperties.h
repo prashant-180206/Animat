@@ -4,6 +4,8 @@
 #include <QObject>
 #include <QQmlEngine>
 #include <qcolor.h>
+#include <qjsondocument.h>
+#include <QJsonObject>
 
 class PolygonProperties : public QObject
 {
@@ -18,6 +20,43 @@ public:
 
     QColor borderColor() const { return m_bordercolor; }
     qreal thickness() const { return m_thickness; }
+
+    struct PolygonPropData
+    {
+        QColor borderColor = Qt::white;
+        qreal thickness = 0;
+        QJsonDocument toJson() const
+        {
+            QJsonObject o;
+            o["borderColor"] = QJsonObject{{"r", borderColor.red()}, {"g", borderColor.green()}, {"b", borderColor.blue()}, {"a", borderColor.alpha()}};
+            o["thickness"] = thickness;
+            return QJsonDocument(o);
+        }
+        static PolygonPropData fromJSON(const QJsonObject &o)
+        {
+            PolygonPropData d;
+            auto c = o["borderColor"].toObject();
+            d.borderColor = QColor(c["r"].toInt(), c["g"].toInt(), c["b"].toInt(), c["a"].toInt());
+            d.thickness = o["thickness"].toDouble();
+            return d;
+        }
+    };
+
+    PolygonPropData getData() const
+    {
+        PolygonPropData d;
+        d.borderColor = m_bordercolor;
+        d.thickness = m_thickness;
+        return d;
+    }
+
+    void setfromJSON(const QJsonObject &o)
+    {
+        PolygonPropData d = PolygonPropData::fromJSON(o);
+        setBorderColor(d.borderColor);
+        setThickness(d.thickness);
+    }
+
 public slots:
     void setBorderColor(const QColor &color)
     {
@@ -35,7 +74,6 @@ public slots:
             emit thicknessChanged();
         }
     }
-
 signals:
     void borderColorChanged();
     void thicknessChanged();

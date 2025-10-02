@@ -41,7 +41,7 @@ Scene::~Scene()
     m_objects.clear();
 }
 
-void Scene::add_mobject(QString mobj)
+void Scene::add_mobject(QString mobj, QString name)
 {
 
     auto *m = MobjectMap::map[mobj]();
@@ -50,6 +50,10 @@ void Scene::add_mobject(QString mobj)
         return;
 
     auto mbj_id = QString("%1%2").arg(m->getProperties()->base()->name()).arg(total_mobj);
+    if (name != "")
+    {
+        mbj_id = name;
+    }
 
     m->setParentItem(this);
     m->setId(mbj_id);
@@ -138,6 +142,16 @@ void Scene::clearParserVariables()
 
 QColor Scene::getBorderColor() { return TEXT_LIGHT; }
 
+void Scene::setShowBorders(bool show)
+{
+    if (m_showBorders != show)
+    {
+        m_showBorders = show;
+        update(); // Trigger repaint
+        emit showBordersChanged();
+    }
+}
+
 int Scene::scalefactor() { return gridsize; }
 
 QPointF Scene::p2c(QPointF p)
@@ -156,6 +170,16 @@ QPointF Scene::c2p(QPointF c)
     double y = (c.y()) / gridsize;
     auto res = QPointF(x, y);
     return res;
+}
+
+void Scene::setActiveId(QString val)
+{
+    if (active_m_id != val)
+    {
+        active_m_id = val;
+    }
+    emit SelectedMobjectChanged();
+    emit activeIdChanged();
 }
 
 QSGNode *Scene::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
@@ -228,4 +252,101 @@ double Scene::getTrackerValue(const QString &name)
 QPointF Scene::getTrackerPoint(const QString &name)
 {
     return m_trackers->getTrackerPoint(name);
+}
+
+Scene::SceneData Scene::getData() const
+{
+    SceneData data;
+    data.activeId = active_m_id;
+    data.gridSize = gridsize;
+    data.backgroundColor = bgcol;
+    data.showBorders = m_showBorders;
+
+    // Get data from all managers
+    if (m_animator)
+    {
+        data.animatorData = m_animator->getData().toJson().object();
+    }
+    if (m_player)
+    {
+        data.playerData = m_player->getData().toJson().object();
+    }
+    if (m_parser)
+    {
+        // Note: Parser getData() method needs to be implemented
+        data.parserData = QJsonObject(); // Placeholder
+    }
+    if (m_trackers)
+    {
+        data.trackerData = m_trackers->getData().toJson().object();
+    }
+
+    // Get all mobjects data
+    QJsonArray mobjectsArray;
+    for (auto m : m_objects)
+    {
+        qInfo() << "lOOPING OVER MOBJECTS";
+        mobjectsArray.append(m->getData().toJson().object());
+    }
+    // for (auto it = m_objects.begin(); it != m_objects.end(); ++it)
+    // {
+    //     if (it.value())
+    //     {
+    //         QJsonObject mobjectData;
+    //         mobjectData["id"] = it.key();
+    //         mobjectData["type"] = it.value()->metaObject()->className();
+    //         if (it.value()->getProperties())
+    //         {
+    //             // Note: Need to implement mobject properties serialization
+    //             mobjectData["properties"] = QJsonObject(); // Placeholder
+    //         }
+    //         mobjectsArray.append(mobjectData);
+    //     }
+    // }
+    data.mobjectsData = mobjectsArray;
+
+    return data;
+}
+
+void Scene::setFromJSON(const QJsonObject &o)
+{
+    SceneData data = SceneData::fromJSON(o);
+
+    // Set basic scene properties
+    setActiveId(data.activeId);
+    gridsize = data.gridSize;
+    setbg(data.backgroundColor);
+    setShowBorders(data.showBorders);
+
+    // Restore managers state
+    if (m_animator && !data.animatorData.isEmpty())
+    {
+        m_animator->setFromJSON(data.animatorData);
+    }
+    if (m_player && !data.playerData.isEmpty())
+    {
+        m_player->setFromJSON(data.playerData);
+    }
+    if (m_trackers && !data.trackerData.isEmpty())
+    {
+        m_trackers->setFromJSON(data.trackerData);
+    }
+
+    // Clear existing mobjects
+    qDeleteAll(m_objects);
+    m_objects.clear();
+
+    // Recreate mobjects from data
+    for (const QJsonValue &mobjectVal : std::as_const(data.mobjectsData))
+    {
+        if (mobjectVal.isObject())
+        {
+            QJsonObject mobjectData = mobjectVal.toObject();
+            QString id = mobjectData["id"].toString();
+            QString type = mobjectData["properties"].toObject()["base"].toObject()["type"].toString();
+
+            this->add_mobject(type, id);
+            getMobject(id)->setfromJSON(mobjectData);
+        }
+    }
 }

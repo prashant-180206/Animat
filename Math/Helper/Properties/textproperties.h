@@ -5,6 +5,8 @@
 #include <QColor>
 #include <QString>
 #include <QFont>
+#include <qjsondocument.h>
+#include <qjsonobject.h>
 #include <qqmlintegration.h>
 
 class TextProperties : public QObject
@@ -28,6 +30,61 @@ public:
     bool bold() const { return m_bold; }
     bool italic() const { return m_italic; }
 
+    struct TextPropData
+    {
+        QString textValue;
+        int fontSize = 0;
+        int fontWeight = 0;
+        QString fontFamily;
+        bool bold = false;
+        bool italic = false;
+        QJsonDocument toJson() const
+        {
+            QJsonObject o;
+            o["textValue"] = textValue;
+            o["fontSize"] = fontSize;
+            o["fontWeight"] = fontWeight;
+            o["fontFamily"] = fontFamily;
+            o["bold"] = bold;
+            o["italic"] = italic;
+            return QJsonDocument(o);
+        }
+        static TextPropData fromJSON(const QJsonObject &o)
+        {
+            TextPropData d;
+            d.textValue = o["textValue"].toString();
+            d.fontSize = o["fontSize"].toInt();
+            d.fontWeight = o["fontWeight"].toInt();
+            d.fontFamily = o["fontFamily"].toString();
+            d.bold = o["bold"].toBool();
+            d.italic = o["italic"].toBool();
+            return d;
+        }
+    };
+
+    TextPropData getData() const
+    {
+        TextPropData d;
+        d.textValue = m_textValue;
+        d.fontSize = m_fontSize;
+        d.fontWeight = m_fontWeight;
+        d.fontFamily = m_fontFamily;
+        d.bold = m_bold;
+        d.italic = m_italic;
+        return d;
+    }
+
+    void setfromJSON(const QJsonObject &o)
+    {
+        TextPropData d = TextPropData::fromJSON(o);
+        setTextValue(d.textValue);
+        setFontSize(d.fontSize);
+        setFontWeight(d.fontWeight);
+        setFontFamily(d.fontFamily);
+        setBold(d.bold);
+        setItalic(d.italic);
+    }
+
 public slots:
     void setTextValue(const QString &textValue);
     void setFontSize(int fontSize);
@@ -35,7 +92,6 @@ public slots:
     void setFontFamily(const QString &fontFamily);
     void setBold(bool bold);
     void setItalic(bool italic);
-
 signals:
     void textValueChanged();
     void fontSizeChanged();

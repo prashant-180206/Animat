@@ -5,6 +5,9 @@
 #include <QHash>
 #include <QVector>
 #include <QPointF>
+#include <QJsonObject>
+#include <QJsonDocument>
+#include <QJsonArray>
 
 #include "trackercommand.h"
 #include "animationscriptparser.h"
@@ -58,6 +61,46 @@ public:
     // Control
     void clearAllTrackers();
     void removeTracker(const QString &name);
+
+    struct TrackerManagerData
+    {
+        QJsonArray valueTrackers;
+        QJsonArray pointTrackers;
+        QJsonObject dynamicExpressions;
+        QJsonObject dynamicPointExpressions;
+        QJsonObject regularExpressions;
+        QJsonObject regularPointExpressions;
+        QJsonArray trackerInfo;
+
+        QJsonDocument toJson() const
+        {
+            QJsonObject o;
+            o["valueTrackers"] = valueTrackers;
+            o["pointTrackers"] = pointTrackers;
+            o["dynamicExpressions"] = dynamicExpressions;
+            o["dynamicPointExpressions"] = dynamicPointExpressions;
+            o["regularExpressions"] = regularExpressions;
+            o["regularPointExpressions"] = regularPointExpressions;
+            o["trackerInfo"] = trackerInfo;
+            return QJsonDocument(o);
+        }
+
+        static TrackerManagerData fromJSON(const QJsonObject &o)
+        {
+            TrackerManagerData d;
+            d.valueTrackers = o["valueTrackers"].toArray();
+            d.pointTrackers = o["pointTrackers"].toArray();
+            d.dynamicExpressions = o["dynamicExpressions"].toObject();
+            d.dynamicPointExpressions = o["dynamicPointExpressions"].toObject();
+            d.regularExpressions = o["regularExpressions"].toObject();
+            d.regularPointExpressions = o["regularPointExpressions"].toObject();
+            d.trackerInfo = o["trackerInfo"].toArray();
+            return d;
+        }
+    };
+
+    TrackerManagerData getData() const;
+    void setFromJSON(const QJsonObject &o);
 
 signals:
     void trackerInfoChanged();

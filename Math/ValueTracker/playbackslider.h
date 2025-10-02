@@ -3,6 +3,8 @@
 
 #include <QTimer>
 #include "ValueTracker.h"
+#include <QJsonObject>
+#include <QJsonDocument>
 
 class AnimationManager;
 
@@ -55,6 +57,60 @@ public:
         m_updateTimer->stop();
         setValue(0);
         emit playingChanged();
+    }
+
+    struct PlayerData
+    {
+        qreal currentValue = 0;
+        bool isPlaying = false;
+        qreal minDuration = 5000;
+        int updateInterval = 10;
+
+        QJsonDocument toJson() const
+        {
+            QJsonObject o;
+            o["currentValue"] = currentValue;
+            o["isPlaying"] = isPlaying;
+            o["minDuration"] = minDuration;
+            o["updateInterval"] = updateInterval;
+            return QJsonDocument(o);
+        }
+
+        static PlayerData fromJSON(const QJsonObject &o)
+        {
+            PlayerData d;
+            d.currentValue = o["currentValue"].toDouble();
+            d.isPlaying = o["isPlaying"].toBool();
+            d.minDuration = o["minDuration"].toDouble();
+            d.updateInterval = o["updateInterval"].toInt();
+            return d;
+        }
+    };
+
+    PlayerData getData() const
+    {
+        PlayerData d;
+        d.currentValue = value();
+        d.isPlaying = isPlaying();
+        d.minDuration = m_minDuration;
+        d.updateInterval = m_updateTimer->interval();
+        return d;
+    }
+
+    void setFromJSON(const QJsonObject &o)
+    {
+        PlayerData d = PlayerData::fromJSON(o);
+        setValue(d.currentValue);
+        m_minDuration = d.minDuration;
+        m_updateTimer->setInterval(d.updateInterval);
+        if (d.isPlaying)
+        {
+            play();
+        }
+        else
+        {
+            pause();
+        }
     }
 
 signals:

@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QVector>
 #include "animation.h"
+#include <QJsonArray>
 
 class AnimPacket : public QObject
 {
@@ -19,52 +20,18 @@ public:
     explicit AnimPacket(QObject *parent = nullptr, qreal startTime = 0);
 
     QString name() const { return m_name; }
-    void setName(const QString &name)
-    {
-        if (m_name != name)
-        {
-            m_name = name;
-            emit nameChanged();
-        }
-    }
+    void setName(const QString &name);
 
     QString description() const { return m_description; }
-    void setDescription(const QString &description)
-    {
-        if (m_description != description)
-        {
-            m_description = description;
-            emit descriptionChanged();
-        }
-    }
+    void setDescription(const QString &description);
 
-    QString animationType() const
-    {
-        if (m_animations.isEmpty())
-            return "Empty";
-        if (m_animations.size() == 1)
-        {
-            // Return single animation type based on the animation class
-            return getAnimationTypeName(m_animations.first());
-        }
-        return "Mixed"; // Multiple different types
-    }
+    QString animationType() const;
 
     int animationCount() const { return m_animations.size(); }
 
-    void setStartTime(qreal startTime)
-    {
-        if (m_startTime != startTime)
-        {
-            m_startTime = startTime;
-            emit startTimeChanged();
-        }
-    }
+    void setStartTime(qreal startTime);
 
-    qreal startTime() const
-    {
-        return m_startTime;
-    }
+    qreal startTime() const;
 
     qreal duration() const
     {
@@ -81,23 +48,76 @@ public:
                                   const QString &easingType = "InOutQuad");
 
     // Update animations with current scene time
-    void update(qreal sceneTime)
+    void update(qreal sceneTime);
+
+    struct AnimInfo
     {
-        qreal localTime = sceneTime - m_startTime;
-        if (localTime < 0)
+        QString type;
+        QString targetName;
+        QString property;
+        QVariant startValue;
+        QVariant targetValue;
+        qreal duration;
+        QString easingType;
+        QJsonObject toJSON() const
         {
-            localTime = 0;
+            QJsonObject obj;
+            obj["type"] = type;
+            obj["targetName"] = targetName;
+            obj["property"] = property;
+            obj["startValue"] = QJsonValue::fromVariant(startValue);
+            obj["targetValue"] = QJsonValue::fromVariant(targetValue);
+            obj["duration"] = duration;
+            obj["easingType"] = easingType;
+            return obj;
         }
-        else if (localTime > m_duration)
+
+        static AnimInfo fromJSON(const QJsonObject &obj)
         {
-            localTime = m_duration;
+            AnimInfo info;
+            info.type = obj.value("type").toString();
+            info.targetName = obj.value("targetName").toString();
+            info.property = obj.value("property").toString();
+            info.startValue = obj.value("startValue").toVariant();
+            info.targetValue = obj.value("targetValue").toVariant();
+            info.duration = obj.value("duration").toDouble();
+            info.easingType = obj.value("easingType").toString();
+            return info;
         }
-        for (Animation *anim : std::as_const(m_animations))
+    };
+
+    struct AnimpacketData
+    {
+        QString name;
+        QString description;
+        qreal startTime;
+        qreal duration;
+        QVector<AnimInfo> animations;
+        QJsonObject toJSON() const;
+
+        static AnimpacketData fromJSON(const QJsonObject &obj);
+    };
+
+    AnimpacketData getData() const;
+
+    void setFromJSON(const QJsonObject &obj)
+    {
+        AnimpacketData data = AnimpacketData::fromJSON(obj);
+        m_name = data.name;
+        m_description = data.description;
+        m_startTime = data.startTime;
+        m_duration = data.duration;
+        m_animations.clear();
+        m_animInfos.clear();
+        for (const AnimInfo &anim : std::as_const(data.animations))
         {
-            if (anim == nullptr)
-                continue;
-            anim->setLtime(localTime);
-            anim->apply();
+            // Note: You would need to find the ClickableMobject by name in your scene
+            ClickableMobject *mobj = nullptr; // Replace with actual lookup
+            if (!anim.targetName.isEmpty())
+            {
+                // TODO: Lookup mobj by name, if available
+            }
+            addAnimation(anim.type, mobj, anim.startValue, anim.targetValue, anim.property, anim.duration, anim.easingType);
         }
     }
 
@@ -115,6 +135,7 @@ private:
     qreal m_startTime;
     qreal m_duration;
     QVector<Animation *> m_animations;
+    QVector<AnimInfo> m_animInfos;
 
     QString getAnimationTypeName(Animation *anim) const;
 };
