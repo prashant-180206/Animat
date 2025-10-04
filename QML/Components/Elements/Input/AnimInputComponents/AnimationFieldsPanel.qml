@@ -82,27 +82,16 @@ Column {
     Connections {
         target: root.scene
         function onMobjectsChanged() {
-            console.log("AnimationFieldsPanel: mobjectsChanged signal received");
-            console.log("AnimationFieldsPanel: Updated mobject count:", root.scene ? root.scene.mobjectIds.length : 0);
             if (root.scene && root.scene.mobjectIds.length > 0) {
-                console.log("AnimationFieldsPanel: Updated mobject IDs:", JSON.stringify(root.scene.mobjectIds));
             }
         }
         ignoreUnknownSignals: true
     }
 
     Component.onCompleted: {
-        console.log("AnimationFieldsPanel: Component completed");
-        console.log("AnimationFieldsPanel: Scene object:", root.scene);
         if (root.scene) {
-            console.log("AnimationFieldsPanel: Scene getAllMobjectIds available:", typeof root.scene.getAllMobjectIds === "function");
-            console.log("AnimationFieldsPanel: Scene mobjectIds property available:", root.scene.mobjectIds !== undefined);
-            if (root.scene.getAllMobjectIds) {
-                console.log("AnimationFieldsPanel: Initial mobject IDs (function):", JSON.stringify(root.scene.getAllMobjectIds()));
-            }
-            if (root.scene.mobjectIds !== undefined) {
-                console.log("AnimationFieldsPanel: Initial mobject IDs (property):", JSON.stringify(root.scene.mobjectIds));
-            }
+            if (root.scene.getAllMobjectIds) {  }
+            if (root.scene.mobjectIds !== undefined) { }
         }
     }
 

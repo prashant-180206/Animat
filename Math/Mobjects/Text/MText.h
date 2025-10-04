@@ -1,5 +1,5 @@
-#ifndef TEXT_H
-#define TEXT_H
+#ifndef MTEXT_H
+#define MTEXT_H
 
 #include "Math/Mobjects/Base/ClickableMobject.h"
 #include <QColor>
@@ -48,4 +48,4 @@ private:
     void updateTextMetrics(); // Helper to calculate text bounds
 };
 
-#endif // TEXT_H
+#endif // MTEXT_H

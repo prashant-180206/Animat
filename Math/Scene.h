@@ -43,7 +43,7 @@ public:
     ClickableMobject *SelectedMobject();
 
     Q_INVOKABLE PlaybackSlider *player();
-    Q_INVOKABLE AnimationManager *animator();
+    Q_INVOKABLE AnimationManager *animator() const{ return m_animator;};
     Q_INVOKABLE Parser *parser();
     Q_INVOKABLE TrackerManager *trackers();
     Q_INVOKABLE MProperties *getProperties() { return m_prop; };
@@ -84,39 +84,13 @@ public:
         QJsonObject trackerData;
         QJsonArray mobjectsData;
 
-        QJsonDocument toJson() const
-        {
-            QJsonObject o;
-            o["activeId"] = activeId;
-            o["gridSize"] = gridSize;
-            o["backgroundColor"] = QJsonObject{{"r", backgroundColor.red()}, {"g", backgroundColor.green()}, {"b", backgroundColor.blue()}, {"a", backgroundColor.alpha()}};
-            o["showBorders"] = showBorders;
-            o["animator"] = animatorData;
-            o["player"] = playerData;
-            o["parser"] = parserData;
-            o["tracker"] = trackerData;
-            o["mobjects"] = mobjectsData;
-            return QJsonDocument(o);
-        }
+        QJsonDocument toJson() const;
 
-        static SceneData fromJSON(const QJsonObject &o)
-        {
-            SceneData d;
-            d.activeId = o["activeId"].toString();
-            d.gridSize = o["gridSize"].toInt();
-            auto bg = o["backgroundColor"].toObject();
-            d.backgroundColor = QColor(bg["r"].toInt(), bg["g"].toInt(), bg["b"].toInt(), bg["a"].toInt());
-            d.showBorders = o["showBorders"].toBool();
-            d.animatorData = o["animator"].toObject();
-            d.playerData = o["player"].toObject();
-            d.parserData = o["parser"].toObject();
-            d.trackerData = o["tracker"].toObject();
-            d.mobjectsData = o["mobjects"].toArray();
-            return d;
-        }
+        static SceneData fromJSON(const QJsonObject &o);;
     };
 
-    SceneData getData() const;
+    SceneData getData() const;;
+
     void setFromJSON(const QJsonObject &o);
 
     int scalefactor();

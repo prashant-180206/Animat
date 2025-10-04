@@ -2,12 +2,13 @@ import QtQuick 2.15
 import QtQuick.Controls.Basic
 import QtQuick.Layouts
 import "../Input"
+import Animat 1.0
 
 // Plane Properties Panel - Grid, axis and label controls
 ColumnLayout {
     id: root
 
-    property var mprop: null
+    property MProperties mprop
     spacing: 12
 
     Text {
@@ -35,11 +36,10 @@ ColumnLayout {
         }
         NumberInput {
             Layout.fillWidth: true
-            value: root.mprop && root.mprop.geometric && root.mprop.geometric.plane ? 10.0 : 10.0
-            onValueChanged:
-            // Note: Width property is on the Plane mobject itself, not PlaneProperties
-            // This would need to be connected to the actual Plane object
-            {}
+            value: root.mprop && root.mprop.geometric && root.mprop.geometric.plane ? root.mprop.geometric.plane.width : 10.0
+            func: ()=>{
+                      mprop.geometric.plane.width = newValue;
+                  }
         }
 
         Text {
@@ -49,11 +49,10 @@ ColumnLayout {
         }
         NumberInput {
             Layout.fillWidth: true
-            value: root.mprop && root.mprop.geometric && root.mprop.geometric.plane ? 10.0 : 10.0
-            onValueChanged:
-            // Note: Height property is on the Plane mobject itself, not PlaneProperties
-            // This would need to be connected to the actual Plane object
-            {}
+            value: root.mprop && root.mprop.geometric && root.mprop.geometric.plane ? root.mprop.geometric.plane.height : 10.0
+            func: ()=>{
+                      mprop.geometric.plane.height = newValue;
+                  }
         }
     }
 
@@ -67,11 +66,9 @@ ColumnLayout {
     NumberInput {
         Layout.fillWidth: true
         value: root.mprop && root.mprop.geometric && root.mprop.geometric.plane ? root.mprop.geometric.plane.step : 1.0
-        onValueChanged: {
-            if (root.mprop && root.mprop.geometric && root.mprop.geometric.plane) {
-                root.mprop.geometric.plane.step = value;
-            }
-        }
+        func: ()=>{
+                  mprop.geometric.plane.step = newValue;
+              }
     }
 
     // Grid Settings
@@ -102,12 +99,10 @@ ColumnLayout {
         }
         ColorPicker {
             Layout.fillWidth: true
-            color: root.mprop && root.mprop.geometric && root.mprop.geometric.plane ? root.mprop.geometric.plane.lineColor : "#444444"
-            onColorChanged: {
-                if (root.mprop && root.mprop.geometric && root.mprop.geometric.plane) {
-                    root.mprop.geometric.plane.lineColor = color;
-                }
-            }
+            selectedColor: root.mprop && root.mprop.geometric && root.mprop.geometric.plane ? root.mprop.geometric.plane.lineColor : "#444444"
+            func: ()=>{
+                      mprop.geometric.plane.lineColor = newColor;
+                  }
         }
     }
 
@@ -122,13 +117,11 @@ ColumnLayout {
         }
         NumberInput {
             Layout.fillWidth: true
-            value: root.mprop && root.mprop.geometric && root.mprop.geometric.plane ? root.mprop.geometric.plane.lineThickness : 1.0
+            value: root.mprop && root.mprop.geometric && root.mprop.geometric.plane ? root.mprop.geometric.plane.gridThickness : 1.0
             decimals: 1
-            onValueChanged: {
-                if (root.mprop && root.mprop.geometric && root.mprop.geometric.plane) {
-                    root.mprop.geometric.plane.lineThickness = value;
-                }
-            }
+            func: ()=>{
+                      mprop.geometric.plane.gridThickness = newValue;
+                  }
         }
     }
 
@@ -140,11 +133,12 @@ ColumnLayout {
     }
 
     CheckBox {
+
         text: "Show Axis"
-        checked: root.mprop && root.mprop.geometric && root.mprop.geometric.plane ? root.mprop.geometric.plane.showAxis : true
+        checked: root.mprop && root.mprop.geometric && root.mprop.geometric.plane ? root.mprop.geometric.plane.showAxes : true
         onCheckedChanged: {
             if (root.mprop && root.mprop.geometric && root.mprop.geometric.plane) {
-                root.mprop.geometric.plane.showAxis = checked;
+                root.mprop.geometric.plane.showAxes = checked;
             }
         }
     }
@@ -160,12 +154,10 @@ ColumnLayout {
         }
         ColorPicker {
             Layout.fillWidth: true
-            color: root.mprop && root.mprop.geometric && root.mprop.geometric.plane ? root.mprop.geometric.plane.axisColor : "#ffffff"
-            onColorChanged: {
-                if (root.mprop && root.mprop.geometric && root.mprop.geometric.plane) {
-                    root.mprop.geometric.plane.axisColor = color;
-                }
-            }
+            selectedColor:  root.mprop && root.mprop.geometric && root.mprop.geometric.plane ? root.mprop.geometric.plane.axisColor : "#ffffff"
+            func: ()=>{
+                      mprop.geometric.plane.axisColor = newColor;
+                  }
         }
     }
 
@@ -189,7 +181,7 @@ ColumnLayout {
                     root.mprop.geometric.plane.lineColor = "#444444";
                     root.mprop.geometric.plane.axisColor = "#ffffff";
                     root.mprop.geometric.plane.showGrid = true;
-                    root.mprop.geometric.plane.showAxis = true;
+                    root.mprop.geometric.plane.showAxes = true;
                 }
             }
         }
@@ -201,7 +193,7 @@ ColumnLayout {
                 if (root.mprop && root.mprop.geometric && root.mprop.geometric.plane) {
                     root.mprop.geometric.plane.step = 0.5;
                     root.mprop.geometric.plane.lineColor = "#333333";
-                    root.mprop.geometric.plane.lineThickness = 0.5;
+                    root.mprop.geometric.plane.gridThickness = 0.5;
                 }
             }
         }
@@ -212,7 +204,7 @@ ColumnLayout {
             onClicked: {
                 if (root.mprop && root.mprop.geometric && root.mprop.geometric.plane) {
                     root.mprop.geometric.plane.showGrid = false;
-                    root.mprop.geometric.plane.showAxis = true;
+                    root.mprop.geometric.plane.showAxes = true;
                     root.mprop.geometric.plane.axisThickness = 3.0;
                 }
             }

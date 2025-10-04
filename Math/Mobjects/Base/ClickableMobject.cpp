@@ -11,7 +11,7 @@ ClickableMobject::ClickableMobject(Scene *canvas, QQuickItem *parent)
     properties->setBase(new BaseProperties(this->properties)); // REMOVED - prevents double initialization
 
     connect(properties->base(), &BaseProperties::posChanged, this, [this](const QPointF &newPos)
-            { this->setCenter(newPos.x(), newPos.y()); });
+            { this->setCenter(newPos.x(), newPos.y());});
 
     connect(properties->base(), &BaseProperties::sizeChanged, this, [this](const QPointF &newSize)
             { this->setSize(newSize.x(), newSize.y()); });
@@ -68,7 +68,6 @@ void ClickableMobject::setCenter(qreal xval, qreal yval)
 
     pt = getcanvas()->p2c(pt);
     setX(pt.x());
-    setZ(50);
     setY(pt.y());
 
     center = pt;
@@ -95,27 +94,23 @@ QPointF ClickableMobject::getCenter() const
     return center;
 }
 
-QPointF ClickableMobject::top() const
+void ClickableMobject::setfromJSON(const QJsonObject &o)
 {
-    // Middle of the top edge (x center, y top)
-    return QPointF(x() + width() / 2, y());
+    MobjData d = MobjData::fromJSON(o, this);
+    setId(d.id);
+    if (properties)
+        properties->setfromJSON(d.properties.toJson().object());
 }
 
-QPointF ClickableMobject::bottom() const
+ClickableMobject::MobjData ClickableMobject::getData() const
 {
-    return QPointF(x() + width() / 2, y() + height());
-}
-
-QPointF ClickableMobject::left() const
-{
-    // Middle of the left edge (x left, y center)
-    return QPointF(x(), y() + height() / 2);
-}
-
-QPointF ClickableMobject::right() const
-{
-    // Middle of the right edge (x right, y center)
-    return QPointF(x() + width(), y() + height() / 2);
+    MobjData d;
+    d.id = getId();
+    if (this->getProperties()){
+        qInfo()<<"PROP AVAIL"<<getId();
+        d.properties = getProperties()->getData();
+    }
+    return d;
 }
 
 ClickableMobject::~ClickableMobject()
@@ -154,7 +149,6 @@ void ClickableMobject::mouseMoveEvent(QMouseEvent *event)
         QPointF newCanvasPos = canvasPos - m_dragItemOffset;
         QPointF logicalPos = m_canvas->c2p(newCanvasPos);
         properties->base()->setPos(logicalPos);
-        // setCenter(logicalPos.x(), logicalPos.y());
         event->accept();
     }
     else
@@ -174,4 +168,22 @@ void ClickableMobject::mouseReleaseEvent(QMouseEvent *event)
     {
         event->ignore();
     }
+}
+
+QJsonDocument ClickableMobject::MobjData::toJson() const
+{
+    QJsonObject o;
+    o["id"] = id;
+    o["properties"]= properties.toJson().object();
+
+    return QJsonDocument(o);
+}
+
+ClickableMobject::MobjData ClickableMobject::MobjData::fromJSON(const QJsonObject &o, const ClickableMobject *parent)
+{
+    MobjData d;
+    d.id = o["id"].toString();
+    if (parent && parent->getProperties() && o.contains("properties"))
+        d.properties = MProperties::MPropData::fromJSON(o["properties"].toObject(), parent->getProperties());
+    return d;
 }

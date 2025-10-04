@@ -116,6 +116,7 @@ bool FileHandler::loadScene(Scene *scene, const QString &filePath)
         }
         // Clear parser variables
         if (rootObject.contains("scene")){
+            qInfo()<<"SCENDATA SET CALING";
             scene->setFromJSON(rootObject["scene"].toObject());
             qInfo()<<"SCENDATA AVAILABLE";
         }

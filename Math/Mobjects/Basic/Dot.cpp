@@ -20,7 +20,6 @@ Dot::Dot(Scene *canvas, QQuickItem *parent)
         properties->base()->setName("Dot");
         properties->base()->setType("Dot");
         properties->base()->setColor(Qt::yellow);
-        // properties->base()->setSize({10,10});
     }
 
     // Connect to property changes
@@ -55,7 +54,7 @@ void Dot::setRadius(qreal radius)
 
 void Dot::setCenter(qreal x, qreal y)
 {
-    m_position = QPointF(x, y);
+    m_position = QPointF(x, y) + QPointF(getcanvas()->width() / 2, getcanvas()->height() / 2);
     ClickableMobject::setCenter(x, y);
 }
 
@@ -100,8 +99,8 @@ QSGNode *Dot::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
     QSGGeometry::Point2D *vertices = geometry->vertexDataAsPoint2D();
 
     qreal scaledRadius = m_radius; // Use simple radius without canvas scaling
-    qreal centerX = width() / 2.0-m_radius;
-    qreal centerY = height() / 2.0-m_radius;
+    qreal centerX = (width() / 2.0 - m_radius) + getcanvas()->width() / 4;
+    qreal centerY = (height() / 2.0 - m_radius) + getcanvas()->height() / 4;
 
     // Create triangles from center to perimeter
     int vertexIndex = 0;
@@ -140,7 +139,7 @@ QSGNode *Dot::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 bool Dot::contains(const QPointF &point) const
 {
     qreal scaledRadius = m_radius; // Use simple radius without canvas scaling
-    QPointF center(width() / 2.0-m_radius, height() / 2.0-m_radius);
+    QPointF center((width() / 2.0 - m_radius) + getcanvas()->width() / 4, (height() / 2.0 - m_radius) + getcanvas()->height() / 4);
     QPointF diff = point - center;
     qreal distance = sqrt(diff.x() * diff.x() + diff.y() * diff.y());
     return distance <= scaledRadius;

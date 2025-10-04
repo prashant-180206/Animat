@@ -89,7 +89,7 @@ qt_add_qml_module(appAnimat
         Math/Mobjects/Complex/MPolygon.h Math/Mobjects/Complex/MPolygon.cpp
         Math/Mobjects/Basic/MRectangle.h Math/Mobjects/Basic/MRectangle.cpp
         Math/Mobjects/Basic/Circle.h Math/Mobjects/Basic/Circle.cpp
-        Math/Mobjects/Text/Text.h Math/Mobjects/Text/Text.cpp
+        Math/Mobjects/Text/MText.h Math/Mobjects/Text/MText.cpp
         Math/Mobjects/Simple/SimpleLine.h Math/Mobjects/Simple/SimpleLine.cpp
         Math/Mobjects/Simple/SimpleDot.h Math/Mobjects/Simple/SimpleDot.cpp
         Math/Mobjects/Simple/SimpleText.h Math/Mobjects/Simple/SimpleText.cpp

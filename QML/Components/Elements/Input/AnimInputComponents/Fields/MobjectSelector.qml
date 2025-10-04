@@ -32,11 +32,9 @@ Column {
 
         // Debug the model changes
         onModelChanged: {
-            console.log("MobjectSelector: ComboBox model changed, count:", model ? model.length : 0);
+
             if (model && model.length > 0) {
-                console.log("MobjectSelector: Mobject IDs:", JSON.stringify(model));
             } else {
-                console.log("MobjectSelector: No mobjects found");
             }
         }
 

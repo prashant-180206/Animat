@@ -43,6 +43,7 @@ void Line::setCenter(qreal x, qreal y)
     m_p1 += shift;
     m_p2 += shift;
     start_pos = newCenter;
+    // QPointF canvasCenter = start_pos* getcanvas()->scalefactor();
     QPointF canvasCenter = getcanvas()->p2c(start_pos);
     setX(canvasCenter.x());
     setY(canvasCenter.y());

@@ -6,6 +6,7 @@
 #include "animTypes/CustomPointAnimation.h"
 #include "animTypes/ValueAnimation.h"
 #include "animTypes/WaitAnimation.h"
+#include "scene.h"
 
 AnimPacket::AnimPacket(QObject *parent, qreal startTime)
     : QObject(parent), m_startTime(startTime), m_duration(0)
@@ -164,7 +165,7 @@ void AnimPacket::addAnimation(const QString &type,
             m_description = "Mixed animation sequence";
             emit descriptionChanged();
         }
-        m_animInfos.append({type, mobj ? mobj->getProperties()->base()->name() : "N/A", prop, startVal, targetVal, duration, easingType});
+        m_animInfos.append({type, mobj ? mobj->getId() : "N/A", prop, startVal, targetVal, duration, easingType});
     }
 }
 
@@ -188,18 +189,29 @@ void AnimPacket::update(qreal sceneTime)
     }
 }
 
-
-
-AnimPacket::AnimpacketData AnimPacket::getData() const
+void AnimPacket::setFromJSON(const QJsonObject &obj, Scene *c)
 {
-    AnimpacketData data;
-    data.name = m_name;
-    data.description = m_description;
-    data.startTime = m_startTime;
-    data.duration = m_duration;
-    data.animations = m_animInfos;
-    return data;
+    AnimpacketData data = AnimpacketData::fromJSON(obj);
+    qInfo()<<obj<<"OBJ CALLED IN PACKET";
+    m_name = data.name;
+    m_description = data.description;
+    m_startTime = data.startTime;
+    m_duration = data.duration;
+    m_animations.clear();
+    m_animInfos.clear();
+    for (const AnimInfo &anim : std::as_const(data.animations))
+    {
+        // Note: You would need to find the ClickableMobject by name in your scene
+        ClickableMobject *mobj = nullptr; // Replace with actual lookup
+        mobj =c->getMobject(anim.targetName);
+        if (!anim.targetName.isEmpty())
+        {
+            // TODO: Lookup mobj by name, if available
+        }
+        addAnimation(anim.type, mobj, anim.startValue, anim.targetValue, anim.property, anim.duration, anim.easingType);
+    }
 }
+
 
 QString AnimPacket::getAnimationTypeName(Animation *anim) const
 {
@@ -223,6 +235,92 @@ QString AnimPacket::getAnimationTypeName(Animation *anim) const
         return "Wait";
     else
         return "Unknown";
+}
+
+
+
+QJsonObject AnimPacket::AnimInfo::toJSON() const
+{
+    QJsonObject obj;
+    obj["type"] = type;
+    obj["targetName"] = targetName;
+    obj["property"] = property;
+    // Handle startValue
+    if (startValue.canConvert<QPointF>())
+    {
+        QPointF pt = startValue.toPointF();
+        QJsonObject ptObj;
+        ptObj["x"] = pt.x();
+        ptObj["y"] = pt.y();
+        obj["startValue"] = ptObj;
+    }
+    else
+    {
+        obj["startValue"] = QJsonValue::fromVariant(startValue);
+    }
+    // Handle targetValue
+    if (targetValue.canConvert<QPointF>())
+    {
+        QPointF pt = targetValue.toPointF();
+        QJsonObject ptObj;
+        ptObj["x"] = pt.x();
+        ptObj["y"] = pt.y();
+        obj["targetValue"] = ptObj;
+    }
+    else
+    {
+        obj["targetValue"] = QJsonValue::fromVariant(targetValue);
+    }
+    obj["duration"] = duration;
+    obj["easingType"] = easingType;
+    return obj;
+}
+
+AnimPacket::AnimInfo AnimPacket::AnimInfo::fromJSON(const QJsonObject &obj)
+{
+    AnimInfo info;
+    info.type = obj.value("type").toString();
+    info.targetName = obj.value("targetName").toString();
+    info.property = obj.value("property").toString();
+    // Handle startValue
+    QJsonValue sv = obj.value("startValue");
+    if (sv.isObject())
+    {
+        QJsonObject ptObj = sv.toObject();
+        if (ptObj.contains("x") && ptObj.contains("y"))
+        {
+            info.startValue = QPointF(ptObj["x"].toDouble(), ptObj["y"].toDouble());
+        }
+        else
+        {
+            info.startValue = sv.toVariant();
+        }
+    }
+    else
+    {
+        info.startValue = sv.toVariant();
+    }
+    // Handle targetValue
+    QJsonValue tv = obj.value("targetValue");
+    if (tv.isObject())
+    {
+        QJsonObject ptObj = tv.toObject();
+        if (ptObj.contains("x") && ptObj.contains("y"))
+        {
+            info.targetValue = QPointF(ptObj["x"].toDouble(), ptObj["y"].toDouble());
+        }
+        else
+        {
+            info.targetValue = tv.toVariant();
+        }
+    }
+    else
+    {
+        info.targetValue = tv.toVariant();
+    }
+    info.duration = obj.value("duration").toDouble();
+    info.easingType = obj.value("easingType").toString();
+    return info;
 }
 
 QJsonObject AnimPacket::AnimpacketData::toJSON() const
@@ -249,15 +347,12 @@ AnimPacket::AnimpacketData AnimPacket::AnimpacketData::fromJSON(const QJsonObjec
     data.description = obj.value("description").toString();
     data.startTime = obj.value("startTime").toDouble();
     data.duration = obj.value("duration").toDouble();
-    if (obj.contains("animations") && obj["animations"].isArray())
+    QJsonArray animArray = obj.value("animations").toArray();
+    for (const QJsonValue &val : std::as_const(animArray))
     {
-        QJsonArray animArray = obj["animations"].toArray();
-        for (const QJsonValue &val : animArray)
+        if (val.isObject())
         {
-            if (val.isObject())
-            {
-                data.animations.append(AnimInfo::fromJSON(val.toObject()));
-            }
+            data.animations.append(AnimInfo::fromJSON(val.toObject()));
         }
     }
     return data;

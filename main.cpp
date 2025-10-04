@@ -21,6 +21,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<Scene>("Animat", 1, 0, "Scene");
     qmlRegisterType<MobjectRegistry>("Animat", 1, 0, "MobjectRegistry");
     qmlRegisterType<MProperties>("Animat", 1, 0, "MProperties");
+    qmlRegisterType<GeometricProperties>("Animat", 1, 0, "GeometricProperties");
     qmlRegisterType<ValueTracker>("Animat", 1, 0, "ValueTracker");
     qmlRegisterType<PtValueTracker>("Animat", 1, 0, "PtValueTracker");
     qmlRegisterType<PlaybackSlider>("Animat", 1, 0, "PlaybackSlider");

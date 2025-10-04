@@ -114,7 +114,7 @@ public:
 
         AnimManagerData d;
         d.size = m_size;
-        d.progressTime = progressTime;
+        d.progressTime = 0;
         d.activePacketName = m_activePacket ? m_activePacket->name() : "";
         AnimPacketNode *node = m_head;
         while (node)
@@ -128,36 +128,27 @@ public:
         return d;
     }
 
-    void setFromJSON(const QJsonObject &o)
+    void setFromJSON(const QJsonObject &o, Scene * c)
     {
         AnimManagerData d = AnimManagerData::fromJSON(o);
         clearList();
         progressTime = d.progressTime;
 
-        AnimPacket *targetActivePacket = nullptr;
+        AnimPacket *targetPacket = nullptr;
 
         for (const QJsonObject &packetObj : std::as_const(d.packetJsons))
         {
             AnimPacket *packet = new AnimPacket(this);
-            packet->setFromJSON(packetObj);
-            insertSorted(packet);
+            packet->setFromJSON(packetObj,c);
 
             qInfo() << packetObj << &packetObj << "PACKET";
-
-            // Remember which packet should be active, but don't set it yet
-            if (packet->name() == d.activePacketName)
-            {
-                targetActivePacket = packet;
-            }
+            targetPacket = packet;
+            setPacketToAdd(targetPacket);
+            add();
         }
 
         // Now set the active packet without calling add()
-        if (targetActivePacket)
-        {
-            setActivePacket(targetActivePacket);
-        }
-
-        // Emit signals to notify of changes
+        if (targetPacket)
         emit packetsChanged();
         emit activePacketChanged();
     }

@@ -58,8 +58,8 @@ void Scene::add_mobject(QString mobj, QString name)
     m->setParentItem(this);
     m->setId(mbj_id);
 
-    m->setCenter(5, 4);
-    m->setZ(total_mobj * 0.1);
+    m->setCenter(0,0);
+    m->getProperties()->base()->setZindex(z()+0.1*total_mobj);
     qDebug() << m << m->getCenter();
     m_objects.insert(mbj_id, m);
 
@@ -115,10 +115,6 @@ PlaybackSlider *Scene::player()
     return m_player;
 }
 
-AnimationManager *Scene::animator()
-{
-    return m_animator;
-}
 
 double Scene::evaluate(const QString &expression)
 {
@@ -152,22 +148,108 @@ void Scene::setShowBorders(bool show)
     }
 }
 
+void Scene::setFromJSON(const QJsonObject &o)
+{
+    qInfo()<<"SCENE DATA SCENE CALLED ";
+    SceneData data = SceneData::fromJSON(o);
+
+    // Set basic scene properties
+    setActiveId(data.activeId);
+    gridsize = data.gridSize;
+    setbg(data.backgroundColor);
+    setShowBorders(data.showBorders);
+
+
+    // Clear existing mobjects
+    qDeleteAll(m_objects);
+    m_objects.clear();
+
+    // Recreate mobjects from data
+    for (const QJsonValue &mobjectVal : std::as_const(data.mobjectsData))
+    {
+        if (mobjectVal.isObject())
+        {
+            QJsonObject mobjectData = mobjectVal.toObject();
+            QString id = mobjectData["id"].toString();
+            QString type = mobjectData["properties"].toObject()["base"].toObject()["type"].toString();
+
+            this->add_mobject(type, id);
+            qInfo()<<"ADDING MOBJECTS";
+            getMobject(id)->setfromJSON(mobjectData);
+        }
+    }
+
+    // Restore managers state
+    if (m_animator && !data.animatorData.isEmpty())
+    {
+        m_animator->setFromJSON(data.animatorData,this);
+        qInfo()<<"ANIMDATA AVAIL ";
+    }
+    if (m_player && !data.playerData.isEmpty())
+    {
+        m_player->setFromJSON(data.playerData);
+    }
+    if (m_trackers && !data.trackerData.isEmpty())
+    {
+        m_trackers->setFromJSON(data.trackerData);
+    }
+}
+
+Scene::SceneData Scene::getData() const{
+    SceneData data;
+    data.activeId = active_m_id;
+    data.gridSize = gridsize;
+    data.backgroundColor = bgcol;
+    data.showBorders = m_showBorders;
+
+    // Get data from all managers
+    if (m_animator)
+    {
+        data.animatorData = animator()->getData().toJson().object();
+    }
+    if (m_player)
+    {
+        data.playerData = m_player->getData().toJson().object();
+    }
+    if (m_parser)
+    {
+        // Note: Parser getData() method needs to be implemented
+        data.parserData = QJsonObject(); // Placeholder
+    }
+    if (m_trackers)
+    {
+        data.trackerData = m_trackers->getData().toJson().object();
+    }
+
+    // Get all mobjects data
+    QJsonArray mobjectsArray;
+    for (auto m : m_objects)
+    {
+        qInfo() << "lOOPING OVER MOBJECTS";
+        mobjectsArray.append(m->getData().toJson().object());
+    }
+
+    data.mobjectsData = mobjectsArray;
+
+    return data;
+}
+
 int Scene::scalefactor() { return gridsize; }
 
 QPointF Scene::p2c(QPointF p)
 {
-    double x = p.x() * gridsize;
-    double y = p.y() * gridsize;
+    double x = p.x() * gridsize +width()/4;
+    double y = -p.y() * gridsize + height()/4;
     auto res = QPointF(x, y);
-    res = mapToItem(this, res);
+    res = mapFromItem(this, res);
     return res;
 }
 
 QPointF Scene::c2p(QPointF c)
 {
-    c = mapToItem(this, c);
-    double x = (c.x()) / gridsize;
-    double y = (c.y()) / gridsize;
+    c = mapFromItem(this, c);
+    double x = (c.x() - width()/4) / gridsize;
+    double y = (-c.y()+height()/4) / gridsize;
     auto res = QPointF(x, y);
     return res;
 }
@@ -254,99 +336,33 @@ QPointF Scene::getTrackerPoint(const QString &name)
     return m_trackers->getTrackerPoint(name);
 }
 
-Scene::SceneData Scene::getData() const
+
+QJsonDocument Scene::SceneData::toJson() const
 {
-    SceneData data;
-    data.activeId = active_m_id;
-    data.gridSize = gridsize;
-    data.backgroundColor = bgcol;
-    data.showBorders = m_showBorders;
-
-    // Get data from all managers
-    if (m_animator)
-    {
-        data.animatorData = m_animator->getData().toJson().object();
-    }
-    if (m_player)
-    {
-        data.playerData = m_player->getData().toJson().object();
-    }
-    if (m_parser)
-    {
-        // Note: Parser getData() method needs to be implemented
-        data.parserData = QJsonObject(); // Placeholder
-    }
-    if (m_trackers)
-    {
-        data.trackerData = m_trackers->getData().toJson().object();
-    }
-
-    // Get all mobjects data
-    QJsonArray mobjectsArray;
-    for (auto m : m_objects)
-    {
-        qInfo() << "lOOPING OVER MOBJECTS";
-        mobjectsArray.append(m->getData().toJson().object());
-    }
-    // for (auto it = m_objects.begin(); it != m_objects.end(); ++it)
-    // {
-    //     if (it.value())
-    //     {
-    //         QJsonObject mobjectData;
-    //         mobjectData["id"] = it.key();
-    //         mobjectData["type"] = it.value()->metaObject()->className();
-    //         if (it.value()->getProperties())
-    //         {
-    //             // Note: Need to implement mobject properties serialization
-    //             mobjectData["properties"] = QJsonObject(); // Placeholder
-    //         }
-    //         mobjectsArray.append(mobjectData);
-    //     }
-    // }
-    data.mobjectsData = mobjectsArray;
-
-    return data;
+    QJsonObject o;
+    o["activeId"] = activeId;
+    o["gridSize"] = gridSize;
+    o["backgroundColor"] = QJsonObject{{"r", backgroundColor.red()}, {"g", backgroundColor.green()}, {"b", backgroundColor.blue()}, {"a", backgroundColor.alpha()}};
+    o["showBorders"] = showBorders;
+    o["animator"] = animatorData;
+    o["player"] = playerData;
+    o["parser"] = parserData;
+    o["tracker"] = trackerData;
+    o["mobjects"] = mobjectsData;
+    return QJsonDocument(o);
 }
 
-void Scene::setFromJSON(const QJsonObject &o)
-{
-    SceneData data = SceneData::fromJSON(o);
-
-    // Set basic scene properties
-    setActiveId(data.activeId);
-    gridsize = data.gridSize;
-    setbg(data.backgroundColor);
-    setShowBorders(data.showBorders);
-
-    // Restore managers state
-    if (m_animator && !data.animatorData.isEmpty())
-    {
-        m_animator->setFromJSON(data.animatorData);
-    }
-    if (m_player && !data.playerData.isEmpty())
-    {
-        m_player->setFromJSON(data.playerData);
-    }
-    if (m_trackers && !data.trackerData.isEmpty())
-    {
-        m_trackers->setFromJSON(data.trackerData);
-    }
-
-    // Clear existing mobjects
-    qDeleteAll(m_objects);
-    m_objects.clear();
-
-    // Recreate mobjects from data
-    for (const QJsonValue &mobjectVal : std::as_const(data.mobjectsData))
-    {
-        if (mobjectVal.isObject())
-        {
-            QJsonObject mobjectData = mobjectVal.toObject();
-            QString id = mobjectData["id"].toString();
-            QString type = mobjectData["properties"].toObject()["base"].toObject()["type"].toString();
-
-            this->add_mobject(type, id);
-            getMobject(id)->setfromJSON(mobjectData);
-        }
-    }
+Scene::SceneData Scene::SceneData::fromJSON(const QJsonObject &o){
+    SceneData d;
+    d.activeId = o["activeId"].toString();
+    d.gridSize = o["gridSize"].toInt();
+    auto bg = o["backgroundColor"].toObject();
+    d.backgroundColor = QColor(bg["r"].toInt(), bg["g"].toInt(), bg["b"].toInt(), bg["a"].toInt());
+    d.showBorders = o["showBorders"].toBool();
+    d.animatorData = o["animator"].toObject();
+    d.playerData = o["player"].toObject();
+    d.parserData = o["parser"].toObject();
+    d.trackerData = o["tracker"].toObject();
+    d.mobjectsData = o["mobjects"].toArray();
+    return d;
 }

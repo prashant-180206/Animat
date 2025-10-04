@@ -25,53 +25,20 @@ public:
     Q_INVOKABLE MProperties *getProperties() const;
 
     QPointF getCenter() const;
-    QPointF top() const;
-    QPointF bottom() const;
-    QPointF left() const;
-    QPointF right() const;
 
     struct MobjData
     {
         QString id;
         MProperties::MPropData properties;
 
-        QJsonDocument toJson() const
-        {
-            QJsonObject o;
-            o["id"] = id;
-            o["properties"]= properties.toJson().object();
+        QJsonDocument toJson() const;
 
-            return QJsonDocument(o);
-        }
-
-        static MobjData fromJSON(const QJsonObject &o, const ClickableMobject *parent = nullptr)
-        {
-            MobjData d;
-            d.id = o["id"].toString();
-            if (parent && parent->getProperties() && o.contains("properties"))
-                d.properties = MProperties::MPropData::fromJSON(o["properties"].toObject(), parent->getProperties());
-            return d;
-        }
+        static MobjData fromJSON(const QJsonObject &o, const ClickableMobject *parent = nullptr);
     };
 
-    MobjData getData() const
-    {
-        MobjData d;
-        d.id = getId();
-        if (this->getProperties()){
-            qInfo()<<"PROP AVAIL"<<getId();
-            d.properties = getProperties()->getData();
-        }
-        return d;
-    }
+    MobjData getData() const;
 
-    void setfromJSON(const QJsonObject &o)
-    {
-        MobjData d = MobjData::fromJSON(o, this);
-        setId(d.id);
-        if (properties)
-            properties->setfromJSON(d.properties.toJson().object());
-    }
+    void setfromJSON(const QJsonObject &o);
 
     virtual ~ClickableMobject();
 

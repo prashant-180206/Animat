@@ -19,7 +19,7 @@ void Group::addMember(Mobject *item)
     if (!item)
         return;
     item->setParentItem(this);
-    item->setZ(this->z() - 1);
+    item->setZ(this->z() - 0.1);
     child.append(item);
 }
 
