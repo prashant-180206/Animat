@@ -44,14 +44,15 @@ Window {
         anchors.right: parent.right
         color: Constants.darkBlack
 
-        SceneManager {
-            id: scenemanager
-            scene: canvas
-        }
+        // SceneManager {
+        //     id: scenemanager
+        //     scene: canvas
+        // }
 
         Rectangle {
             id: sceneContainerDefault
-            anchors.top: scenemanager.bottom
+            // anchors.top: scenemanager.bottom
+            anchors.top: parent.top
             anchors.bottom: parent.bottom
             anchors.left: parent.left
             anchors.right: parent.right
@@ -210,7 +211,6 @@ Window {
                     }
                 }
             }
-
             Text {
                 text: "×"
                 color: "white"

@@ -59,7 +59,7 @@ void Scene::add_mobject(QString mobj, QString name)
     m->setId(mbj_id);
 
     m->setCenter(0,0);
-    m->getProperties()->base()->setZindex(z()+0.1*total_mobj);
+    m->getProperties()->base()->setZindex(z()+0.1*total_mobj+0.1);
     qDebug() << m << m->getCenter();
     m_objects.insert(mbj_id, m);
 

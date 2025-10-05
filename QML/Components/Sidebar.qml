@@ -7,7 +7,7 @@ import "Elements"
 
 Rectangle {
     id: root
-    property var scene: null
+    property Scene scene: null
     property int updateCallCount: 0
 
     property bool barvisible: false
