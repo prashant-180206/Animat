@@ -32,15 +32,15 @@ Curve::Curve(Scene *canvas, QQuickItem *parent)
 
     connect(properties->curve(), &CurveProperties::curveXFuncChanged, this, [this]
             {
-        m_parserX.SetExpr(properties->curve()->curveXFunc().toStdWString());
-        updateCurveFunction();
-        buildCurveSegments(); });
+                m_parserX.SetExpr(properties->curve()->curveXFunc().toStdWString());
+                updateCurveFunction();
+                buildCurveSegments(); });
 
     connect(properties->curve(), &CurveProperties::curveYFuncChanged, this, [this]
             {
-        m_parserY.SetExpr(properties->curve()->curveYFunc().toStdWString());
-        updateCurveFunction();
-        buildCurveSegments(); });
+                m_parserY.SetExpr(properties->curve()->curveYFunc().toStdWString());
+                updateCurveFunction();
+                buildCurveSegments(); });
 
     connect(properties->curve(), &CurveProperties::tRangeChanged, this, [this]
             { buildCurveSegments(); });
@@ -97,19 +97,19 @@ Curve::CurveFunc Curve::curveFunction() const
 
 void Curve::buildCurveSegments()
 {
+
+    const auto childrenCopy = childItems();
+    int removed = 0;
+    for (auto *childObj : childrenCopy)
     {
-        const auto childrenCopy = childItems();
-        int removed = 0;
-        for (auto *childObj : childrenCopy)
+        if (auto *line = qobject_cast<SimpleLine *>(childObj))
         {
-            if (auto *line = qobject_cast<SimpleLine *>(childObj))
-            {
-                line->setParentItem(nullptr);
-                line->deleteLater();
-                ++removed;
-            }
+            line->setParentItem(nullptr);
+            line->deleteLater();
+            ++removed;
         }
     }
+
     QVector<QPointF> points;
     auto tr = properties->curve()->tRange();
     const double t0 = tr.x();

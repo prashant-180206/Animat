@@ -39,7 +39,7 @@ Line::Line(Scene *canvas, QQuickItem *parent) : ClickableMobject(canvas, parent)
 void Line::setCenter(qreal x, qreal y)
 {
     QPointF newCenter(x, y);
-    QPointF shift = newCenter - start_pos;
+    QPointF shift = newCenter; /*- start_pos;*/
     m_p1 += shift;
     m_p2 += shift;
     start_pos = newCenter;

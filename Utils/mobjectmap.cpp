@@ -1,6 +1,6 @@
 // mobjectmap.cpp
 #include "mobjectmap.h"
-#include "Math/Mobjects/Text/MText.h"
+#include "Math/Mobjects/MText/MText.h"
 #include "Math/Mobjects/Basic/Circle.h"
 #include "Math/Mobjects/Complex/Curve.h"
 #include "Math/Mobjects/Basic/MRectangle.h"

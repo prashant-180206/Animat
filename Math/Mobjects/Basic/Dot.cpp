@@ -55,12 +55,11 @@ void Dot::setRadius(qreal radius)
 void Dot::setCenter(qreal x, qreal y)
 {
     m_position = QPointF(x, y) + QPointF(getcanvas()->width() / 2, getcanvas()->height() / 2);
-    ClickableMobject::setCenter(x, y);
+    ClickableMobject::setCenter(x, y );
 }
 
 void Dot::updateDotSize()
 {
-    // Use a simple fixed size without any scaling
     qreal diameter = m_radius * 2; // Simple: radius of 5 = diameter of 10
 
     setWidth(diameter);

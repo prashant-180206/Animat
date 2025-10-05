@@ -99,6 +99,7 @@ void Plane::createGrid()
 
     qreal m_height = properties->geometric()->plane()->height();
     qreal m_width = properties->geometric()->plane()->width();
+    auto shift = QPointF(getcanvas()->width() / 4, getcanvas()->height() / 4);
 
     // Vertical grid lines
     for (qreal x = -m_width / 2; x <= m_width / 2; x += step)
@@ -107,8 +108,8 @@ void Plane::createGrid()
             continue; // Skip center line (will be axis)
 
         SimpleLine *line = new SimpleLine(getcanvas(), this);
-        line->setP1(QPointF(x * 50, -m_height / 2 * 50)); // Scale by 50 for screen coordinates
-        line->setP2(QPointF(x * 50, m_height / 2 * 50));
+        line->setP1(QPointF(x * 50, -m_height / 2 * 50) + shift); // Scale by 50 for screen coordinates
+        line->setP2(QPointF(x * 50, m_height / 2 * 50) + shift);
         line->setThickness(properties->geometric()->plane()->gridThickness());
         line->setColor(properties->geometric()->plane()->lineColor());
         line->setZ(this->z() - 0.1);
@@ -124,8 +125,8 @@ void Plane::createGrid()
             continue; // Skip center line (will be axis)
 
         SimpleLine *line = new SimpleLine(this->getcanvas(), this);
-        line->setP1(QPointF(-m_width / 2 * 50, y * 50));
-        line->setP2(QPointF(m_width / 2 * 50, y * 50));
+        line->setP1(QPointF(-m_width / 2 * 50, y * 50) + shift);
+        line->setP2(QPointF(m_width / 2 * 50, y * 50) + shift);
         line->setThickness(properties->geometric()->plane()->gridThickness());
         line->setColor(properties->geometric()->plane()->lineColor());
         line->setZ(this->z() - 0.1);
@@ -143,10 +144,12 @@ void Plane::createAxis()
     qreal m_height = properties->geometric()->plane()->height();
     qreal m_width = properties->geometric()->plane()->width();
 
+    auto shift = QPointF(getcanvas()->width() / 4, getcanvas()->height() / 4);
+
     // X-axis (horizontal)
     SimpleLine *xAxis = new SimpleLine(getcanvas(), this);
-    xAxis->setP1(QPointF(-m_width / 2 * 50, 0));
-    xAxis->setP2(QPointF(m_width / 2 * 50, 0));
+    xAxis->setP1(QPointF(-m_width / 2 * 50, 0) + shift);
+    xAxis->setP2(QPointF(m_width / 2 * 50, 0) + shift);
     xAxis->setThickness(properties->geometric()->plane()->axisThickness());
     xAxis->setColor(properties->geometric()->plane()->axisColor());
     xAxis->setZ(this->z());
@@ -156,8 +159,9 @@ void Plane::createAxis()
 
     // Y-axis (vertical)
     SimpleLine *yAxis = new SimpleLine(getcanvas(), this);
-    yAxis->setP1(QPointF(0, -m_height / 2 * 50));
-    yAxis->setP2(QPointF(0, m_height / 2 * 50));
+
+    yAxis->setP1(QPointF(0, -m_height / 2 * 50) + shift);
+    yAxis->setP2(QPointF(0, m_height / 2 * 50) + shift);
     yAxis->setThickness(properties->geometric()->plane()->axisThickness());
     yAxis->setColor(properties->geometric()->plane()->axisColor());
     yAxis->setZ(this->z());
@@ -175,6 +179,8 @@ void Plane::createLabels()
     if (step <= 0)
         step = 1.0;
 
+    auto shift = QPointF(getcanvas()->width() / 4, getcanvas()->height() / 4);
+
     // X-axis labels
     qreal m_height = properties->geometric()->plane()->height();
     qreal m_width = properties->geometric()->plane()->width();
@@ -187,7 +193,7 @@ void Plane::createLabels()
         label->setText(QString::number(x));
         label->setFontSize(properties->geometric()->plane()->labelFontSize());
         label->setColor(properties->geometric()->plane()->labelColor());
-        label->setPosition(QPointF(x * 50, -20)); // Position below x-axis
+        label->setPosition(QPointF(x * 50, -20) + shift); // Position below x-axis
         label->setZ(this->z() + 0.1);
 
         addMember(label);
@@ -204,7 +210,7 @@ void Plane::createLabels()
         label->setText(QString::number(y));
         label->setFontSize(properties->geometric()->plane()->labelFontSize());
         label->setColor(properties->geometric()->plane()->labelColor());
-        label->setPosition(QPointF(-30, y * 50)); // Position left of y-axis
+        label->setPosition(QPointF(-30, y * 50) + shift); // Position left of y-axis
         label->setZ(this->z() + 0.1);
 
         addMember(label);
@@ -248,7 +254,7 @@ void Plane::updateLabels()
 
 void Plane::onPlanePropertiesChanged()
 {
-    qInfo()<<"PROP CHANGES";
+    qInfo() << "PROP CHANGES";
     // Recreate all elements when properties change
     clearGrid();
     createGrid();
@@ -269,6 +275,9 @@ QRectF Plane::boundingRect() const
     qreal screenWidth = properties->geometric()->plane()->width() * 50;
     qreal screenHeight = properties->geometric()->plane()->height() * 50;
 
-    // Center the rectangle around the plane's origin
-    return QRectF(-screenWidth / 2, -screenHeight / 2, screenWidth, screenHeight);
+    // Apply the same shift as used in creation methods
+    auto shift = QPointF(getcanvas()->width() / 4, getcanvas()->height() / 4);
+
+    // Center the rectangle around the plane's origin with the shift applied
+    return QRectF(-screenWidth / 2 + shift.x(), -screenHeight / 2 + shift.y(), screenWidth, screenHeight);
 }

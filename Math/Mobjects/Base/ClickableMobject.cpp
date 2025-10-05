@@ -69,7 +69,6 @@ void ClickableMobject::setCenter(qreal xval, qreal yval)
     pt = getcanvas()->p2c(pt);
     setX(pt.x());
     setY(pt.y());
-
     center = pt;
 }
 

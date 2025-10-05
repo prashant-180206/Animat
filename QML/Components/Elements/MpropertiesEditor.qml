@@ -14,13 +14,15 @@ Rectangle {
     border.color: "#2a2a2a"
     border.width: 1
 
+
+
     ScrollView {
         anchors.fill: parent
         anchors.margins: 16
-        contentWidth: availableWidth
 
         ColumnLayout {
             width: parent.width
+            height: parent.height
             spacing: 16
 
             // Mobject ID Display

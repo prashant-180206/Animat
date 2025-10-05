@@ -15,8 +15,10 @@ Window {
     // Presentation mode properties
     property bool presentationMode: false
 
-    // Ensure window can receive key events
+    // Panel visibility properties
+    property bool sidebarVisible: true
 
+    // Ensure window can receive key events
 
     TitleBar {
         id: title
@@ -26,18 +28,20 @@ Window {
         scene: canvas
         mainWindow: globeroot
     }
-    Menubar {
-        id: menu
-    }
-    ControlPanel {
-        id: control
+    Sidebar {
+        id: sidebar
+        scene: canvas
+        barvisible:  sidebarVisible
+        anchors.top: taskbar.bottom
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
     }
     Rectangle {
 
         anchors.top: taskbar.bottom
         anchors.bottom: parent.bottom
-        anchors.left: menu.right
-        anchors.right: control.left
+        anchors.left:  sidebar.right
+        anchors.right: parent.right
         color: Constants.darkBlack
 
         SceneManager {
@@ -46,48 +50,59 @@ Window {
         }
 
         Rectangle {
-            id: sceneParentContainer
+            id: sceneContainerDefault
             anchors.top: scenemanager.bottom
             anchors.bottom: parent.bottom
             anchors.left: parent.left
             anchors.right: parent.right
             color: Constants.darkBlack
 
-            Scene {
-                id: canvas
-                objectName: "canvas"
-                anchors.horizontalCenter: parent.horizontalCenter
+
+            Rectangle {
+                id: sceneParentContainer
                 anchors.top: parent.top
-                anchors.topMargin: 20
+                anchors.bottom: playbackControls.top
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.topMargin: 10
+                color: globeroot.color
+                z: 10
+                Scene {
+                    id: canvas
+                    objectName: "canvas"
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.horizontalCenter: parent.horizontalCenter
 
-                // Add property to control border visibility
-                showBorders: true
+                    // Add property to control border visibility
+                    showBorders: true
+                }
             }
-
             // PlaybackInput positioned below the scene
             PlaybackInput {
                 id: playbackControls
                 player: canvas.player()
                 anchors.horizontalCenter: parent.horizontalCenter
-                anchors.top: canvas.bottom
+                anchors.bottom: parent.bottom
                 anchors.topMargin: 15
+                anchors.bottomMargin: 10
                 width: Math.min(parent.width - 80, 800) // Use most available width, max 800
-                opacity: playbackarea.containsMouse || !presentationMode ? 1: 0
+                opacity: playbackarea.containsMouse || !presentationMode ? 1 : 0
                 height: 40
                 z: 100
             }
 
-            MouseArea{
-                id:playbackarea
+            MouseArea {
+                id: playbackarea
                 hoverEnabled: true
-                anchors.fill: playbackControls
+                anchors.centerIn: playbackControls
+                height: 40
+                width: parent.width
             }
         }
     }
 
     // Functions for presentation mode
     function enterPresentationMode() {
-
         presentationMode = true;
 
         presentationOverlay.visible = true;
@@ -122,10 +137,11 @@ Window {
         playbackControls.anchors.bottom = sceneContainer.bottom;
         playbackControls.anchors.bottomMargin = 10;
         playbackControls.width = sceneContainer.width - 20; // Full width with minimal margin
+
+        playbackarea.anchors.centerIn = playbackControls;
     }
 
     function exitPresentationMode() {
-
         presentationMode = false;
         presentationOverlay.visible = false;
 
@@ -137,24 +153,18 @@ Window {
         playbackControls.parent = sceneParentContainer;
 
         // Restore canvas properties
-        canvas.scale = 1.0;
+        canvas.scale = 0.5;
         canvas.anchors.centerIn = undefined;
         canvas.anchors.verticalCenterOffset = 0;
         canvas.anchors.horizontalCenter = sceneParentContainer.horizontalCenter;
-        canvas.anchors.top = sceneParentContainer.top;
-        canvas.anchors.topMargin = 20;
-        canvas.anchors.verticalCenter = undefined;
-        canvas.anchors.left = undefined;
-        canvas.anchors.leftMargin = 0;
+        canvas.anchors.verticalCenter = sceneParentContainer.verticalCenter;
+        // canvas.anchors.verticalCenter = undefined;
 
         // Restore playback controls position
         playbackControls.anchors.horizontalCenter = sceneParentContainer.horizontalCenter;
-        playbackControls.anchors.bottom = undefined;
-        playbackControls.anchors.bottomMargin = 0;
-        playbackControls.anchors.top = canvas.bottom;
-        playbackControls.anchors.topMargin = 15;
+        playbackControls.anchors.bottom = sceneParentContainer.bottom;
         playbackControls.width = Math.min(sceneParentContainer.width - 80, 800); // Restore original width
-
+        playbackarea.anchors.centerIn = playbackControls;
     }
 
     // Fullscreen presentation overlay

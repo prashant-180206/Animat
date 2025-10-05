@@ -36,8 +36,8 @@ qt_add_qml_module(appAnimat
         QML/Components/TitleBar.qml
         QML/Components/Taskbar.qml
         QML/Components/Menubar.qml
-        QML/Components/ControlPanel.qml
         QML/Components/SceneManager.qml
+        QML/Components/Sidebar.qml
         QML/Components/Elements/MButton.qml
         QML/Components/Elements/TextButton.qml
         QML/Components/Elements/ActiveAnimationsList.qml
@@ -89,7 +89,7 @@ qt_add_qml_module(appAnimat
         Math/Mobjects/Complex/MPolygon.h Math/Mobjects/Complex/MPolygon.cpp
         Math/Mobjects/Basic/MRectangle.h Math/Mobjects/Basic/MRectangle.cpp
         Math/Mobjects/Basic/Circle.h Math/Mobjects/Basic/Circle.cpp
-        Math/Mobjects/Text/MText.h Math/Mobjects/Text/MText.cpp
+        Math/Mobjects/MText/MText.h Math/Mobjects/MText/MText.cpp
         Math/Mobjects/Simple/SimpleLine.h Math/Mobjects/Simple/SimpleLine.cpp
         Math/Mobjects/Simple/SimpleDot.h Math/Mobjects/Simple/SimpleDot.cpp
         Math/Mobjects/Simple/SimpleText.h Math/Mobjects/Simple/SimpleText.cpp
@@ -142,7 +142,7 @@ target_include_directories(appAnimat
     PRIVATE ${CMAKE_SOURCE_DIR}/Math/Mobjects/Complex
     PRIVATE ${CMAKE_SOURCE_DIR}/Math/Mobjects/Groups
     PRIVATE ${CMAKE_SOURCE_DIR}/Math/Mobjects/Simple
-    PRIVATE ${CMAKE_SOURCE_DIR}/Math/Mobjects/Text
+    PRIVATE ${CMAKE_SOURCE_DIR}/Math/Mobjects/MText
     PRIVATE ${CMAKE_SOURCE_DIR}/Math/ValueTracker
     PRIVATE ${CMAKE_SOURCE_DIR}/Math/Managers
     PRIVATE ${CMAKE_SOURCE_DIR}/Math/Animations
