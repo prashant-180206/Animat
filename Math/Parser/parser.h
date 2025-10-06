@@ -1,49 +1,58 @@
 #ifndef PARSER_H
 #define PARSER_H
 
-#include <QString>
-#include <QHash>
-#include <QRegularExpression>
-#include "../lib/include/muParser.h"
+#include <QObject>
+#include "qqmlintegration.h"
+#include <QVariantMap>
+#include <QJsonObject>
+#include <memory>
+#include "trackermanager.h"
+#include "CommandFactory.h"
 
-class Parser
+class Scene;
+
+class Parser : public QObject
 {
+    Q_OBJECT
+    QML_ELEMENT
 public:
-    Parser();
-    ~Parser();
+    explicit Parser(Scene *scene, QObject *parent = nullptr);
 
-    // Evaluate mathematical expressions
-    double evaluate(const QString &expression);
+    // Command parsing functionality
+    Q_INVOKABLE bool parseCommand(const QString &input);
+    Q_INVOKABLE bool executeScript(const QString &script);
+    Q_INVOKABLE bool executeCommands(const QStringList &commands);
 
-    // Evaluate dynamic expression by expanding [varname] brackets
-    double evaluateDynamic(const QString &expression, const QHash<QString, double> &trackerValues);
+    // Access to managers
+    TrackerManager *trackerManager() const { return m_trackerManager; }
 
-    // Set variables that can be used in expressions
-    void setVariable(const QString &name, double value);
+    // Metadata functions for value trackers
+    Q_INVOKABLE QVariantMap getAllTrackerValues() const;
+    Q_INVOKABLE QVariantMap getValueTrackerMetadata() const;
+    Q_INVOKABLE QVariantMap getPointTrackerMetadata() const;
+    Q_INVOKABLE QJsonObject getTrackerMetadataAsJson() const;
 
-    // Set multiple variables at once
-    void setVariables(const QHash<QString, double> &variables);
+    // Individual tracker queries
+    Q_INVOKABLE qreal getTrackerValue(const QString &name) const;
+    Q_INVOKABLE QPointF getPointTrackerValue(const QString &name) const;
+    Q_INVOKABLE bool hasTracker(const QString &name) const;
+    Q_INVOKABLE QStringList getTrackerNames() const;
+    Q_INVOKABLE QStringList getPointTrackerNames() const;
 
-    // Clear all variables
-    void clearVariables();
-
-    // Check if expression is valid
-    bool isValidExpression(const QString &expression);
-
-    // Expand dynamic expression: replace [varname] with varname
-    QString expandDynamicExpression(const QString &expression);
-
-    // Get current variable value
-    double getVariable(const QString &name) const;
-
-    // Check if variable exists
-    bool hasVariable(const QString &name) const;
+signals:
+    void commandExecuted(const QString &commandName, const QString &input);
+    void commandFailed(const QString &input, const QString &error);
+    void trackerCreated(const QString &name);
+    void trackerRemoved(const QString &name);
+    void scriptExecuted(bool success, const QString &message);
 
 private:
-    mu::Parser *m_parser;
-    QHash<QString, double *> m_variables;
+    Scene *m_scene;
+    TrackerManager *m_trackerManager;
+    CommandFactory m_commandFactory;
 
-    void setupBuiltinFunctions();
+    // Helper methods
+    QStringList parseScriptToCommands(const QString &script) const;
 };
 
 #endif // PARSER_H

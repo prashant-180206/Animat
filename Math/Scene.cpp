@@ -19,6 +19,7 @@ Scene::Scene()
     setbg(DEF_CANVAS_BG);
     setZ(0);
     MobjectMap::init(this);
+    setScale(0.8);
 
     connect(this, &QQuickItem::windowChanged, this, [this](QQuickWindow *w)
             {
@@ -58,8 +59,8 @@ void Scene::add_mobject(QString mobj, QString name)
     m->setParentItem(this);
     m->setId(mbj_id);
 
-    m->setCenter(0,0);
-    m->getProperties()->base()->setZindex(z()+0.1*total_mobj+0.1);
+    m->setCenter(0, 0);
+    m->getProperties()->base()->setZindex(z() + 0.1 * total_mobj + 0.1);
     qDebug() << m << m->getCenter();
     m_objects.insert(mbj_id, m);
 
@@ -100,40 +101,13 @@ ClickableMobject *Scene::getMobject(QString id)
     return m_objects.value(id, nullptr);
 }
 
-Parser *Scene::parser()
-{
-    return m_parser;
-}
 
-TrackerManager *Scene::trackers()
-{
-    return m_trackers;
-}
+
+
 
 PlaybackSlider *Scene::player()
 {
     return m_player;
-}
-
-
-double Scene::evaluate(const QString &expression)
-{
-    return m_parser->evaluate(expression);
-}
-
-void Scene::setParserVariable(const QString &name, double value)
-{
-    m_parser->setVariable(name, value);
-}
-
-double Scene::getParserVariable(const QString &name)
-{
-    return m_parser->getVariable(name);
-}
-
-void Scene::clearParserVariables()
-{
-    m_parser->clearVariables();
 }
 
 QColor Scene::getBorderColor() { return TEXT_LIGHT; }
@@ -150,7 +124,7 @@ void Scene::setShowBorders(bool show)
 
 void Scene::setFromJSON(const QJsonObject &o)
 {
-    qInfo()<<"SCENE DATA SCENE CALLED ";
+    qInfo() << "SCENE DATA SCENE CALLED ";
     SceneData data = SceneData::fromJSON(o);
 
     // Set basic scene properties
@@ -158,7 +132,6 @@ void Scene::setFromJSON(const QJsonObject &o)
     gridsize = data.gridSize;
     setbg(data.backgroundColor);
     setShowBorders(data.showBorders);
-
 
     // Clear existing mobjects
     qDeleteAll(m_objects);
@@ -174,7 +147,7 @@ void Scene::setFromJSON(const QJsonObject &o)
             QString type = mobjectData["properties"].toObject()["base"].toObject()["type"].toString();
 
             this->add_mobject(type, id);
-            qInfo()<<"ADDING MOBJECTS";
+            qInfo() << "ADDING MOBJECTS";
             getMobject(id)->setfromJSON(mobjectData);
         }
     }
@@ -182,20 +155,21 @@ void Scene::setFromJSON(const QJsonObject &o)
     // Restore managers state
     if (m_animator && !data.animatorData.isEmpty())
     {
-        m_animator->setFromJSON(data.animatorData,this);
-        qInfo()<<"ANIMDATA AVAIL ";
+        m_animator->setFromJSON(data.animatorData, this);
+        qInfo() << "ANIMDATA AVAIL ";
     }
     if (m_player && !data.playerData.isEmpty())
     {
         m_player->setFromJSON(data.playerData);
     }
-    if (m_trackers && !data.trackerData.isEmpty())
-    {
-        m_trackers->setFromJSON(data.trackerData);
-    }
+    // if (m_trackers && !data.trackerData.isEmpty())
+    // {
+    //     m_trackers->setFromJSON(data.trackerData);
+    // }
 }
 
-Scene::SceneData Scene::getData() const{
+Scene::SceneData Scene::getData() const
+{
     SceneData data;
     data.activeId = active_m_id;
     data.gridSize = gridsize;
@@ -211,15 +185,15 @@ Scene::SceneData Scene::getData() const{
     {
         data.playerData = m_player->getData().toJson().object();
     }
-    if (m_parser)
-    {
-        // Note: Parser getData() method needs to be implemented
-        data.parserData = QJsonObject(); // Placeholder
-    }
-    if (m_trackers)
-    {
-        data.trackerData = m_trackers->getData().toJson().object();
-    }
+    // if (m_parser)
+    // {
+    //     // Note: Parser getData() method needs to be implemented
+    //     data.parserData = QJsonObject(); // Placeholder
+    // }
+    // if (m_trackers)
+    // {
+    //     data.trackerData = m_trackers->getData().toJson().object();
+    // }
 
     // Get all mobjects data
     QJsonArray mobjectsArray;
@@ -238,8 +212,8 @@ int Scene::scalefactor() { return gridsize; }
 
 QPointF Scene::p2c(QPointF p)
 {
-    double x = p.x() * gridsize +width()/4;
-    double y = -p.y() * gridsize + height()/4;
+    double x = p.x() * gridsize + width() / 4;
+    double y = -p.y() * gridsize + height() / 4;
     auto res = QPointF(x, y);
     res = mapFromItem(this, res);
     return res;
@@ -248,8 +222,8 @@ QPointF Scene::p2c(QPointF p)
 QPointF Scene::c2p(QPointF c)
 {
     c = mapFromItem(this, c);
-    double x = (c.x() - width()/4) / gridsize;
-    double y = (-c.y()+height()/4) / gridsize;
+    double x = (c.x() - width() / 4) / gridsize;
+    double y = (-c.y() + height() / 4) / gridsize;
     auto res = QPointF(x, y);
     return res;
 }
@@ -277,6 +251,8 @@ QSGNode *Scene::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
     }
 
     QRectF rect = boundingRect();
+    // Inset border by 0.5 pixels to avoid clipping
+    QRectF borderRect = rect.adjusted(0.5, 0.5, -0.5, -0.5);
 
     // Draw background
     QSGSimpleRectNode *bgNode = new QSGSimpleRectNode(rect, getbg());
@@ -292,11 +268,11 @@ QSGNode *Scene::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
         borderNode->setFlag(QSGNode::OwnsGeometry);
 
         QSGGeometry::Point2D *vertices = geometry->vertexDataAsPoint2D();
-        vertices[0].set(rect.left(), rect.top());
-        vertices[1].set(rect.right(), rect.top());
-        vertices[2].set(rect.right(), rect.bottom());
-        vertices[3].set(rect.left(), rect.bottom());
-        vertices[4].set(rect.left(), rect.top()); // Close loop
+        vertices[0].set(borderRect.left(), borderRect.top());
+        vertices[1].set(borderRect.right(), borderRect.top());
+        vertices[2].set(borderRect.right(), borderRect.bottom());
+        vertices[3].set(borderRect.left(), borderRect.bottom());
+        vertices[4].set(borderRect.left(), borderRect.top()); // Close loop
 
         auto *material = new QSGFlatColorMaterial();
         material->setColor(getBorderColor());
@@ -310,31 +286,12 @@ QSGNode *Scene::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 }
 
 // Tracker command execution methods
-void Scene::executeTrackerScript(const QString &script)
-{
-    m_trackers->parseScript(script);
-}
 
-QStringList Scene::getTrackerNames()
-{
-    QStringList names;
-    auto trackerInfo = m_trackers->getTrackerInfo();
-    for (const auto &info : std::as_const(trackerInfo))
-    {
-        names << info.name;
-    }
-    return names;
-}
 
-double Scene::getTrackerValue(const QString &name)
-{
-    return m_trackers->getTrackerValue(name);
-}
 
-QPointF Scene::getTrackerPoint(const QString &name)
-{
-    return m_trackers->getTrackerPoint(name);
-}
+
+
+
 
 
 QJsonDocument Scene::SceneData::toJson() const
@@ -352,7 +309,8 @@ QJsonDocument Scene::SceneData::toJson() const
     return QJsonDocument(o);
 }
 
-Scene::SceneData Scene::SceneData::fromJSON(const QJsonObject &o){
+Scene::SceneData Scene::SceneData::fromJSON(const QJsonObject &o)
+{
     SceneData d;
     d.activeId = o["activeId"].toString();
     d.gridSize = o["gridSize"].toInt();

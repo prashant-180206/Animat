@@ -1,160 +1,55 @@
 #ifndef TRACKERMANAGER_H
 #define TRACKERMANAGER_H
 
+#include "ptvaluetracker.h"
 #include <QObject>
 #include <QHash>
-#include <QVector>
-#include <QPointF>
-#include <QJsonObject>
-#include <QJsonDocument>
-#include <QJsonArray>
-
-#include "trackercommand.h"
-#include "animationscriptparser.h"
-#include "dependencygraph.h"
-#include "parser.h"
-#include "valuetracker.h"
-#include "ptvaluetracker.h"
+#include <QString>
+#include <qquickitem.h>
 
 class Scene;
-class ClickableMobject;
+class ValueTracker;
 
-class TrackerManager : public QObject
+class TrackerManager : public QQuickItem
 {
     Q_OBJECT
-    QML_ELEMENT
-
 public:
-    struct TrackerInfo
+    explicit TrackerManager(Scene *c, QObject *parent = nullptr)
+        : canvas(c), QQuickItem{}
     {
-        QString name;
-        QString displayValue;
-        QString expression;
-        bool isExpression;
-        bool isDynamic;
-    };
+    }
 
-    Q_PROPERTY(QVector<TrackerInfo> trackerInfo READ getTrackerInfo NOTIFY trackerInfoChanged)
-
-public:
-    explicit TrackerManager(Scene *canvas, QObject *parent = nullptr);
-    ~TrackerManager();
-
-    // Main interface
-    Q_INVOKABLE void parseScript(const QString &script);
-    Q_INVOKABLE void setMasterVariable(const QString &name, double value);
-    Q_INVOKABLE void updateTracker(const QString &name, double value);
-
-    // Getters
-    QVector<TrackerInfo> getTrackerInfo() const;
+    // ValueTracker management
+    void addValueTracker(const QString &name, ValueTracker *tracker);
+    void addValueTracker(const QString &name, PtValueTracker *tracker);
+    void removeValueTracker(const QString &name);
     ValueTracker *getValueTracker(const QString &name) const;
-    PtValueTracker *getPointTracker(const QString &name) const;
-    Q_INVOKABLE double getTrackerValue(const QString &name) const;
-    Q_INVOKABLE QPointF getTrackerPoint(const QString &name) const;
-    Q_INVOKABLE QStringList getAllValueTrackerNames() const;
-    Q_INVOKABLE QStringList getAllPointTrackerNames() const;
+    PtValueTracker *getPtValueTracker(const QString &name) const;
+    bool hasValueTracker(const QString &name) const;
+    bool hasPointTracker(const QString &name) const;
 
-    // Connection management
-    void connectTracker(const QString &trackerName, ClickableMobject *object, const QString &property);
-    void disconnectTracker(const QString &trackerName, ClickableMobject *object);
+    // Create new ValueTracker instances
+    ValueTracker *createValueTracker(const QString &name, qreal initialValue = 0.0);
+    PtValueTracker *createValueTracker(const QString &name, QPointF initialValue = {0, 0});
 
-    // Control
-    void clearAllTrackers();
-    void removeTracker(const QString &name);
+    // Get all tracker names
+    QStringList getTrackerNames() const;
+    QStringList getPointTrackerNames() const;
 
-    struct TrackerManagerData
-    {
-        QJsonArray valueTrackers;
-        QJsonArray pointTrackers;
-        QJsonObject dynamicExpressions;
-        QJsonObject dynamicPointExpressions;
-        QJsonObject regularExpressions;
-        QJsonObject regularPointExpressions;
-        QJsonArray trackerInfo;
-
-        QJsonDocument toJson() const
-        {
-            QJsonObject o;
-            o["valueTrackers"] = valueTrackers;
-            o["pointTrackers"] = pointTrackers;
-            o["dynamicExpressions"] = dynamicExpressions;
-            o["dynamicPointExpressions"] = dynamicPointExpressions;
-            o["regularExpressions"] = regularExpressions;
-            o["regularPointExpressions"] = regularPointExpressions;
-            o["trackerInfo"] = trackerInfo;
-            return QJsonDocument(o);
-        }
-
-        static TrackerManagerData fromJSON(const QJsonObject &o)
-        {
-            TrackerManagerData d;
-            d.valueTrackers = o["valueTrackers"].toArray();
-            d.pointTrackers = o["pointTrackers"].toArray();
-            d.dynamicExpressions = o["dynamicExpressions"].toObject();
-            d.dynamicPointExpressions = o["dynamicPointExpressions"].toObject();
-            d.regularExpressions = o["regularExpressions"].toObject();
-            d.regularPointExpressions = o["regularPointExpressions"].toObject();
-            d.trackerInfo = o["trackerInfo"].toArray();
-            return d;
-        }
-    };
-
-    TrackerManagerData getData() const;
-    void setFromJSON(const QJsonObject &o);
+    // Scene access
+    Scene *scene() const { return canvas; }
 
 signals:
-    void trackerInfoChanged();
-    void trackerValueChanged(const QString &name, double value);
-    void trackerPointChanged(const QString &name, QPointF point);
-    void trackersListChanged(); // Signal when trackers are added/removed
+    void trackerAdded(const QString &name);
+    void trackerRemoved(const QString &name);
 
-private slots:
-    void onTrackerValueChanged(double value);
-    void onTrackerPointChanged(QPointF point);
+public slots:
+    void clearAllTrackers();
 
 private:
-    // Core components
-    Scene *m_canvas;
-    Parser *m_parser;
-    AnimationScriptParser *m_scriptParser;
-    DependencyGraph *m_dependencyGraph;
-
-    // Tracker storage
+    Scene *canvas;
     QHash<QString, ValueTracker *> m_valueTrackers;
-    QHash<QString, PtValueTracker *> m_pointTrackers;
-    QVector<TrackerInfo> m_trackerInfo;
-
-    // Dynamic tracker expressions (for updates)
-    QHash<QString, QString> m_dynamicExpressions;
-    QHash<QString, QPair<QString, QString>> m_dynamicPointExpressions;
-
-    // Regular expression trackers (time-based, etc.)
-    QHash<QString, QString> m_regularExpressions;
-    QHash<QString, QPair<QString, QString>> m_regularPointExpressions;
-
-    // Connection tracking
-    struct Connection
-    {
-        ClickableMobject *object;
-        QString property;
-    };
-    QHash<QString, QVector<Connection>> m_connections; // tracker name -> connections
-
-    // Helper methods
-    void executeCommand(const TrackerCommand &command);
-    void createValueTracker(const TrackerCommand &command);
-    void createPointTracker(const TrackerCommand &command);
-    void createConnection(const TrackerCommand &command);
-
-    void updateDynamicTrackers();
-    void updateRegularExpressionTrackers();
-    void updateSingleDynamicTracker(const QString &name);
-    void updateTrackerInfo();
-    void updateConnectedObjects(const QString &trackerName);
-
-    QHash<QString, double> getCurrentTrackerValues() const;
-
-    TrackerInfo createTrackerInfo(const QString &name) const;
+    QHash<QString, PtValueTracker *> m_ptvalueTrackers;
 };
 
 #endif // TRACKERMANAGER_H

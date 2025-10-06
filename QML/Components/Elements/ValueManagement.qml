@@ -62,7 +62,6 @@ Rectangle {
                         placeholderText: "Enter tracker commands and expressions...\n\n" + "Value Trackers:\n" + "val x = 5\n" + "val radius = 10 + 5 * sin(t)\n\n" + "Point Trackers:\n" + "pval center = (100, 200)\n" + "pval position = (x * 2, radius)\n\n" + "Expressions:\n" + "area = pi * radius^2\n" + "distance = sqrt(x^2 + y^2)"
                     }
                 }
-
                 // Action buttons
                 RowLayout {
                     Layout.fillWidth: true
@@ -99,77 +98,77 @@ Rectangle {
         }
 
         // Quick Examples Section
-        Rectangle {
-            Layout.fillWidth: true
-            Layout.preferredHeight: 80
-            color: "#2c2c2c"
-            border.color: "#444"
-            border.width: 1
-            radius: 4
+        // Rectangle {
+        //     Layout.fillWidth: true
+        //     Layout.preferredHeight: 80
+        //     color: "#2c2c2c"
+        //     border.color: "#444"
+        //     border.width: 1
+        //     radius: 4
 
-            ColumnLayout {
-                anchors.fill: parent
-                anchors.margins: 8
-                spacing: 4
+        //     ColumnLayout {
+        //         anchors.fill: parent
+        //         anchors.margins: 8
+        //         spacing: 4
 
-                Text {
-                    text: "🚀 Quick Examples:"
-                    color: "#ccc"
-                    font.pixelSize: 12
-                }
+        //         Text {
+        //             text: "🚀 Quick Examples:"
+        //             color: "#ccc"
+        //             font.pixelSize: 12
+        //         }
 
-                Flow {
-                    Layout.fillWidth: true
-                    spacing: 4
+        //         Flow {
+        //             Layout.fillWidth: true
+        //             spacing: 4
 
-                    Repeater {
-                        model: [
-                            {
-                                text: "val x",
-                                expr: "val x = 5"
-                            },
-                            {
-                                text: "val r",
-                                expr: "val radius = 10"
-                            },
-                            {
-                                text: "pval",
-                                expr: "pval center = (100, 200)"
-                            },
-                            {
-                                text: "expr",
-                                expr: "area = pi * radius^2"
-                            },
-                            {
-                                text: "func",
-                                expr: "val wave = 50 * sin(t)"
-                            },
-                            {
-                                text: "point",
-                                expr: "pval pos = (x, wave)"
-                            },
-                            {
-                                text: "connect",
-                                expr: "connect x myCircle radius"
-                            }
-                        ]
+        //             Repeater {
+        //                 model: [
+        //                     {
+        //                         text: "val x",
+        //                         expr: "val x = 5"
+        //                     },
+        //                     {
+        //                         text: "val r",
+        //                         expr: "val radius = 10"
+        //                     },
+        //                     {
+        //                         text: "pval",
+        //                         expr: "pval center = (100, 200)"
+        //                     },
+        //                     {
+        //                         text: "expr",
+        //                         expr: "area = pi * radius^2"
+        //                     },
+        //                     {
+        //                         text: "func",
+        //                         expr: "val wave = 50 * sin(t)"
+        //                     },
+        //                     {
+        //                         text: "point",
+        //                         expr: "pval pos = (x, wave)"
+        //                     },
+        //                     {
+        //                         text: "connect",
+        //                         expr: "connect x myCircle radius"
+        //                     }
+        //                 ]
 
-                        StyledButton {
-                            required property var modelData
-                            text: modelData.text
-                            width: 60
-                            height: 24
-                            backgroundColor: "#4a9eff"
-                            font.pixelSize: 9
-                            onClicked: {
-                                codeInput.text = modelData.expr;
-                                evaluateExpression();
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        //                 StyledButton {
+        //                     required property var modelData
+        //                     text: modelData.text
+        //                     width: 60
+        //                     height: 24
+        //                     backgroundColor: "#4a9eff"
+        //                     font.pixelSize: 9
+        //                     onClicked: {
+        //                         codeInput.text = modelData.expr;
+        //                         evaluateExpression();
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
 
         // Logs Section
         Rectangle {

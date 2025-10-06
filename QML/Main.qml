@@ -73,8 +73,7 @@ Window {
                     objectName: "canvas"
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.horizontalCenter: parent.horizontalCenter
-
-                    // Add property to control border visibility
+                    clip: true
                     showBorders: true
                 }
             }
@@ -154,7 +153,7 @@ Window {
         playbackControls.parent = sceneParentContainer;
 
         // Restore canvas properties
-        canvas.scale = 0.5;
+        canvas.scale = 0.8;
         canvas.anchors.centerIn = undefined;
         canvas.anchors.verticalCenterOffset = 0;
         canvas.anchors.horizontalCenter = sceneParentContainer.horizontalCenter;

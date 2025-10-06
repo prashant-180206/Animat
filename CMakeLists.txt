@@ -11,6 +11,9 @@ find_package(Qt6 REQUIRED COMPONENTS Core Quick)
 find_package(Qt6 REQUIRED COMPONENTS Core Quick)
 find_package(Qt6 REQUIRED COMPONENTS Quick)
 find_package(Qt6 REQUIRED COMPONENTS Core)
+find_package(Qt6 REQUIRED COMPONENTS Quick)
+find_package(Qt6 REQUIRED COMPONENTS Core)
+find_package(Qt6 REQUIRED COMPONENTS Core)
 
 
 qt_standard_project_setup(REQUIRES 6.8)
@@ -105,11 +108,11 @@ qt_add_qml_module(appAnimat
         Math/Helper/Properties/geometricproperties.h Math/Helper/Properties/geometricproperties.cpp
         Math/Helper/Properties/planeproperties.h Math/Helper/Properties/planeproperties.cpp
         Math/Mobjects/Complex/plane.h Math/Mobjects/Complex/plane.cpp
-        Math/Parser/trackermanager.h Math/Parser/trackermanager.cpp
-        Math/Parser/parser.h Math/Parser/parser.cpp
-        Math/Parser/trackercommand.h Math/Parser/trackercommand.cpp
-        Math/Parser/animationscriptparser.h Math/Parser/animationscriptparser.cpp
-        Math/Parser/dependencygraph.h Math/Parser/dependencygraph.cpp
+
+
+
+
+
         Math/Animations/animation.h Math/Animations/animation.cpp
         Math/Animations/animationmanager.h Math/Animations/animationmanager.cpp
         Math/Animations/animTypes/MoveAnimation.h Math/Animations/animTypes/MoveAnimation.cpp
@@ -126,11 +129,23 @@ qt_add_qml_module(appAnimat
         lib/muparser.pc.in
         lib/muparserConfig.cmake.in
         Resources.qrc
+        SOURCES Math/Parser/parser.h Math/Parser/parser.cpp
+        SOURCES Math/Parser/command.h Math/Parser/command.cpp
+        SOURCES Math/Parser/trackermanager.h Math/Parser/trackermanager.cpp
+        SOURCES Math/Parser/CommandFactory.h
+        SOURCES Math/Parser/Commands/makevalcommand.h Math/Parser/Commands/makevalcommand.cpp
+        SOURCES Math/Parser/Commands/makeptvalcommand.h Math/Parser/Commands/makeptvalcommand.cpp
+        SOURCES Math/Parser/Commands/dvalcommand.h Math/Parser/Commands/dvalcommand.cpp
+        SOURCES Math/Parser/Commands/dpvalcommand.h Math/Parser/Commands/dpvalcommand.cpp
+        SOURCES Math/Parser/Commands/connectcommand.h Math/Parser/Commands/connectcommand.cpp
 )
 
 target_link_libraries(appAnimat
     PRIVATE Qt6::Core Qt6::Quick muparser
 )
+target_link_libraries(appAnimat PRIVATE Qt6::Quick)
+target_link_libraries(appAnimat PRIVATE Qt6::Core)
+target_link_libraries(appAnimat PRIVATE Qt6::Core)
 
 target_include_directories(appAnimat
     PRIVATE ${CMAKE_SOURCE_DIR}/lib/include
@@ -147,6 +162,7 @@ target_include_directories(appAnimat
     PRIVATE ${CMAKE_SOURCE_DIR}/Math/Managers
     PRIVATE ${CMAKE_SOURCE_DIR}/Math/Animations
     PRIVATE ${CMAKE_SOURCE_DIR}/Math/Parser
+    PRIVATE ${CMAKE_SOURCE_DIR}/Math/Parser/Commands
     PRIVATE ${CMAKE_SOURCE_DIR}/Utils
 )
 

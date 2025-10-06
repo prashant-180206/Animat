@@ -1,159 +1,220 @@
 #include "parser.h"
+#include "../Scene.h"
+#include "CommandFactory.h"
 #include <QDebug>
+#include <QJsonDocument>
+#include <QRegularExpression>
 
-Parser::Parser()
+Parser::Parser(Scene *scene, QObject *parent)
+    : QObject(parent), m_scene(scene), m_commandFactory()
 {
-    m_parser = new mu::Parser();
-    setupBuiltinFunctions();
+    // Initialize TrackerManager
+    m_trackerManager = new TrackerManager(scene, this);
+
+    // Connect TrackerManager signals
+    connect(m_trackerManager, &TrackerManager::trackerAdded,
+            this, &Parser::trackerCreated);
+    connect(m_trackerManager, &TrackerManager::trackerRemoved,
+            this, &Parser::trackerRemoved);
 }
 
-Parser::~Parser()
+bool Parser::parseCommand(const QString &input)
 {
-    clearVariables();
-    delete m_parser;
-}
-
-double Parser::evaluate(const QString &expression)
-{
-    try
+    if (input.trimmed().isEmpty())
     {
-        m_parser->SetExpr(expression.toStdWString());
-        return m_parser->Eval();
+        emit commandFailed(input, "Empty command");
+        return false;
     }
-    catch (mu::Parser::exception_type &e)
-    {
-        qDebug() << "Parser error:" << QString::fromStdWString(e.GetMsg());
-        return 0.0;
-    }
-}
 
-void Parser::setVariable(const QString &name, double value)
-{
-    if (!m_variables.contains(name))
+    auto command = m_commandFactory.createCommand(input);
+
+    if (command)
     {
-        m_variables[name] = new double(value);
-        m_parser->DefineVar(name.toStdWString(), m_variables[name]);
+        try
+        {
+            command->execute(m_scene, m_trackerManager);
+            emit commandExecuted("Command", input);
+            return true;
+        }
+        catch (const std::exception &e)
+        {
+            emit commandFailed(input, QString("Execution error: %1").arg(e.what()));
+            return false;
+        }
     }
     else
     {
-        *m_variables[name] = value;
+        emit commandFailed(input, "No matching command found");
+        return false;
     }
 }
 
-double Parser::evaluateDynamic(const QString &expression, const QHash<QString, double> &trackerValues)
+bool Parser::executeScript(const QString &script)
 {
-    // First expand the dynamic expression
-    QString expandedExpression = expandDynamicExpression(expression);
+    QStringList commands = parseScriptToCommands(script);
+    return executeCommands(commands);
+}
 
-    // Temporarily set tracker values as variables
-    QHash<QString, double *> tempVariables;
-    for (auto it = trackerValues.begin(); it != trackerValues.end(); ++it)
+bool Parser::executeCommands(const QStringList &commands)
+{
+    bool allSuccess = true;
+    QString errorMessage;
+
+    for (const QString &command : commands)
     {
-        const QString &name = it.key();
-        double value = it.value();
-
-        if (!m_variables.contains(name))
+        if (!parseCommand(command))
         {
-            tempVariables[name] = new double(value);
-            m_parser->DefineVar(name.toStdWString(), tempVariables[name]);
-        }
-        else
-        {
-            *m_variables[name] = value;
+            allSuccess = false;
+            errorMessage += QString("Failed: %1\n").arg(command);
         }
     }
 
-    // Evaluate the expression
-    double result = evaluate(expandedExpression);
+    emit scriptExecuted(allSuccess, allSuccess ? "Script executed successfully" : errorMessage);
+    return allSuccess;
+}
 
-    // Clean up temporary variables
-    for (auto it = tempVariables.begin(); it != tempVariables.end(); ++it)
+QStringList Parser::parseScriptToCommands(const QString &script) const
+{
+    QStringList commands;
+
+    // Split by semicolons and clean up each command
+    QStringList rawCommands = script.split(';', Qt::SkipEmptyParts);
+
+    for (const QString &rawCommand : rawCommands)
     {
-        m_parser->RemoveVar(it.key().toStdWString());
-        delete it.value();
+        QString cleanCommand = rawCommand.trimmed();
+
+        // Skip empty commands and comments
+        if (cleanCommand.isEmpty() || cleanCommand.startsWith("//"))
+        {
+            continue;
+        }
+
+        // Add semicolon back if not present (needed for regex matching)
+        if (!cleanCommand.endsWith(';'))
+        {
+            cleanCommand += ';';
+        }
+
+        commands.append(cleanCommand);
+    }
+
+    return commands;
+}
+
+QVariantMap Parser::getAllTrackerValues() const
+{
+    QVariantMap result;
+
+    // Add value trackers
+    QStringList valueTrackerNames = m_trackerManager->getTrackerNames();
+    for (const QString &name : valueTrackerNames)
+    {
+        ValueTracker *tracker = m_trackerManager->getValueTracker(name);
+        if (tracker)
+        {
+            result[name] = tracker->value();
+        }
+    }
+
+    // Add point trackers
+    QStringList pointTrackerNames = getPointTrackerNames();
+    for (const QString &name : pointTrackerNames)
+    {
+        PtValueTracker *tracker = m_trackerManager->getPtValueTracker(name);
+        if (tracker)
+        {
+            QVariantMap pointData;
+            pointData["x"] = tracker->value().x();
+            pointData["y"] = tracker->value().y();
+            result[name] = pointData;
+        }
     }
 
     return result;
 }
 
-void Parser::setVariables(const QHash<QString, double> &variables)
+QVariantMap Parser::getValueTrackerMetadata() const
 {
-    for (auto it = variables.begin(); it != variables.end(); ++it)
+    QVariantMap metadata;
+    QStringList trackerNames = m_trackerManager->getTrackerNames();
+
+    for (const QString &name : trackerNames)
     {
-        setVariable(it.key(), it.value());
+        ValueTracker *tracker = m_trackerManager->getValueTracker(name);
+        if (tracker)
+        {
+            QVariantMap trackerInfo;
+            trackerInfo["name"] = name;
+            trackerInfo["value"] = tracker->value();
+            trackerInfo["type"] = "qreal";
+            trackerInfo["exists"] = true;
+            metadata[name] = trackerInfo;
+        }
     }
+
+    return metadata;
 }
 
-QString Parser::expandDynamicExpression(const QString &expression)
+QVariantMap Parser::getPointTrackerMetadata() const
 {
-    QString expanded = expression;
+    QVariantMap metadata;
+    QStringList pointTrackerNames = getPointTrackerNames();
 
-    // Replace [varname] with varname for muparser evaluation
-    QRegularExpression bracketPattern(R"(\[(\w+)\])");
-    QRegularExpressionMatchIterator iterator = bracketPattern.globalMatch(expression);
-
-    // Process matches in reverse order to avoid position shifts
-    QList<QRegularExpressionMatch> matches;
-    while (iterator.hasNext())
+    for (const QString &name : pointTrackerNames)
     {
-        matches.prepend(iterator.next());
+        PtValueTracker *tracker = m_trackerManager->getPtValueTracker(name);
+        if (tracker)
+        {
+            QVariantMap trackerInfo;
+            trackerInfo["name"] = name;
+            QVariantMap pointValue;
+            pointValue["x"] = tracker->value().x();
+            pointValue["y"] = tracker->value().y();
+            trackerInfo["value"] = pointValue;
+            trackerInfo["type"] = "QPointF";
+            trackerInfo["exists"] = true;
+            metadata[name] = trackerInfo;
+        }
     }
 
-    for (const QRegularExpressionMatch &match : matches)
-    {
-        QString varName = match.captured(1);
-        QString bracketedVar = match.captured(0); // [varname]
-
-        // Replace [varname] with varname
-        expanded.replace(match.capturedStart(0), match.capturedLength(0), varName);
-    }
-
-    return expanded;
+    return metadata;
 }
 
-double Parser::getVariable(const QString &name) const
+QJsonObject Parser::getTrackerMetadataAsJson() const
 {
-    if (m_variables.contains(name))
-    {
-        return *m_variables[name];
-    }
-    return 0.0;
+    QVariantMap allMetadata;
+    allMetadata["valueTrackers"] = getValueTrackerMetadata();
+    allMetadata["pointTrackers"] = getPointTrackerMetadata();
+    allMetadata["totalCount"] = getTrackerNames().size() + getPointTrackerNames().size();
+
+    QJsonDocument doc = QJsonDocument::fromVariant(allMetadata);
+    return doc.object();
 }
 
-bool Parser::hasVariable(const QString &name) const
+qreal Parser::getTrackerValue(const QString &name) const
 {
-    return m_variables.contains(name);
+    ValueTracker *tracker = m_trackerManager->getValueTracker(name);
+    return tracker ? tracker->value() : 0.0;
 }
 
-void Parser::clearVariables()
+QPointF Parser::getPointTrackerValue(const QString &name) const
 {
-    for (auto var : std::as_const(m_variables))
-    {
-        delete var;
-    }
-    m_variables.clear();
-    m_parser->ClearVar();
+    PtValueTracker *tracker = m_trackerManager->getPtValueTracker(name);
+    return tracker ? tracker->value() : QPointF(0, 0);
 }
 
-bool Parser::isValidExpression(const QString &expression)
+bool Parser::hasTracker(const QString &name) const
 {
-    try
-    {
-        m_parser->SetExpr(expression.toStdWString());
-        m_parser->Eval();
-        return true;
-    }
-    catch (mu::Parser::exception_type &)
-    {
-        return false;
-    }
+    return m_trackerManager->hasValueTracker(name) || m_trackerManager->hasPointTracker(name);
 }
 
-void Parser::setupBuiltinFunctions()
+QStringList Parser::getTrackerNames() const
 {
-    // Built-in functions are already available in muParser
-    // sin, cos, tan, sqrt, log, exp, etc.
+    return m_trackerManager->getTrackerNames();
+}
 
-    // You can add custom functions here if needed
-    // m_parser->DefineFun("myFunc", myFunctionPtr, false);
+QStringList Parser::getPointTrackerNames() const
+{
+    return m_trackerManager->getPointTrackerNames();
 }
