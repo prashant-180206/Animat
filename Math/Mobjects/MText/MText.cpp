@@ -1,269 +1,210 @@
 #include "MText.h"
-#include "Math/Scene.h"
-#include <QSGTextNode>
-#include <QTextLayout>
-#include <QFont>
-#include <QFontMetrics>
-#include <QQuickTextDocument>
-#include <QMouseEvent>
+#include <QSGSimpleRectNode>
+#include <QSGSimpleTextureNode>
+#include <QPainter>
+#include <QImage>
+#include <QTextCursor>
+#include <QTextDocument>
+#include <QEvent>
 
 MText::MText(Scene *canvas, QQuickItem *parent)
-    : ClickableMobject(canvas, parent),
-      m_position(0, 0),
-      m_textSize(0, 0)
+    : ClickableMobject(canvas, parent)
 {
-    setFlag(ItemHasContents, true);
-    setAcceptedMouseButtons(Qt::AllButtons);
+    setAcceptedMouseButtons(Qt::LeftButton);
+    setAcceptHoverEvents(true);
+    setFlag(ItemIsFocusScope, true);
+    setFocus(false);
 
-    // Set up base properties
-    properties->base()->setName("Text");
-    properties->base()->setColor(Qt::white);
-    properties->base()->setPos(QPointF(0, 0));
-    properties->base()->setType("Text");
+    m_font.setPointSize(16);
+    m_font.setFamily("Segoe UI");
 
-    // Initialize text properties
-    properties->setText(new TextProperties(this));
-    properties->text()->setTextValue("Hello World");
-    properties->text()->setFontSize(24);
-
-    // Connect property changes to updates - use base color instead of text color
-    connect(properties->text(), &TextProperties::textValueChanged, this, [this]()
-            {
-        updateTextMetrics();
+    connect(&m_panelHideTimer, &QTimer::timeout, this, [this] {
+        m_showPanel = false;
+        emit showPanelChanged();
         update();
-        emit textChanged(); });
+    });
+    m_panelHideTimer.setInterval(300);
+    m_panelHideTimer.setSingleShot(true);
 
-    connect(properties->text(), &TextProperties::fontSizeChanged, this, [this]()
-            {
-        updateTextMetrics();
+    setRichText("<b>TYPE HERE</b>");
+}
+
+QString MText::richText() const { return m_richText; }
+
+void MText::setRichText(const QString &txt)
+{
+    if (txt != m_richText) {
+        m_richText = txt;
+        emit richTextChanged();
+        updateSizeToFitText();
         update();
-        emit fontSizeChanged(); });
-
-    // Connect font weight, bold, italic changes
-    connect(properties->text(), &TextProperties::fontWeightChanged, this, [this]()
-            {
-        updateTextMetrics();
-        update(); });
-
-    connect(properties->text(), &TextProperties::boldChanged, this, [this]()
-            {
-        updateTextMetrics();
-        update(); });
-
-    connect(properties->text(), &TextProperties::italicChanged, this, [this]()
-            {
-        updateTextMetrics();
-        update(); });
-
-    connect(properties->text(), &TextProperties::fontFamilyChanged, this, [this]()
-            {
-        updateTextMetrics();
-        update(); });
-
-    connect(properties->base(), &BaseProperties::colorChanged, this, [this]()
-            {
-        update();
-        emit colorChanged(); });
-
-    // Connect to window changes for updates
-    connect(this, &QQuickItem::windowChanged, this, [this](QQuickWindow *w)
-            {
-        if(w){
-            updateTextMetrics(); // Update metrics when window is available
-            update();
-        } });
-
-    // Connect properties changes to updates
-    connect(this, &MText::textChanged, this, &MText::updateTextMetrics);
-    connect(this, &MText::fontSizeChanged, this, &MText::updateTextMetrics);
-
-    // Initial position setup
-    m_position = properties->base()->pos();
-    updateTextMetrics();
-}
-
-void MText::setText(const QString &text)
-{
-    if (properties->text() && properties->text()->textValue() == text)
-        return;
-    if (properties->text())
-    {
-        properties->text()->setTextValue(text);
     }
-    // Note: updateTextMetrics and signals are handled by property change connections
 }
 
-void MText::setColor(const QColor &color)
-{
-    if (properties->base() && properties->base()->color() == color)
-        return;
-    if (properties->base())
-    {
-        properties->base()->setColor(color);
-    }
-    // Note: update and signals are handled by property change connections
-}
-
-void MText::setFontSize(int size)
-{
-    if (properties->text() && properties->text()->fontSize() == size)
-        return;
-    if (properties->text())
-    {
-        properties->text()->setFontSize(size);
-    }
-    // Note: updateTextMetrics and signals are handled by property change connections
-}
-
-void MText::setCenter(qreal x, qreal y)
-{
-    QPointF newCenter(x, y);
-    m_position = newCenter;
-    properties->base()->setPos(newCenter);
-
-    QPointF canvasCenter = getcanvas()->p2c(newCenter);
-    setX(canvasCenter.x() - m_textSize.width() / 2); // Center the text
-    setY(canvasCenter.y() - m_textSize.height() / 2);
-    setZ(50);
-}
-
+//-------------------------------------------
+// Mouse & keyboard events
+//-------------------------------------------
 void MText::mousePressEvent(QMouseEvent *event)
 {
-    // Don't update m_position here - let the base class handle dragging logic
-    // Just pass through to base class for proper drag initialization
     ClickableMobject::mousePressEvent(event);
 }
 
 void MText::mouseMoveEvent(QMouseEvent *event)
 {
-    // Let base class handle the dragging logic
     ClickableMobject::mouseMoveEvent(event);
-
-    // auto scenePos = event->scenePosition();
-
-
-    // QPointF scenePos = event->scenePosition();
-    // QPointF canvasPos = m_canvas->mapFromScene(scenePos);
-    // QPointF newCanvasPos = canvasPos - m_dragItemOffset;
-    // QPointF logicalPos = m_canvas->c2p(newCanvasPos);
-    // properties->base()->setPos(logicalPos);
-    // // setCenter(logicalPos.x(), logicalPos.y());
-    // event->accept();
-
-    // Update our cached position after base class moves the object
-    if (properties->base())
-    {
-        m_position = properties->base()->pos() - properties->base()->size()/2;
-    }
 }
 
 void MText::mouseReleaseEvent(QMouseEvent *event)
 {
-    // Let base class handle the release logic
     ClickableMobject::mouseReleaseEvent(event);
-
-    // Update our cached position after dragging is complete
-    if (properties->base())
-    {
-        m_position = properties->base()->pos();
-    }
 }
 
-void MText::updateTextMetrics()
+void MText::hoverEnterEvent(QHoverEvent *event)
 {
-    if (!properties->text())
-        return;
-
-    QFont font(properties->text()->fontFamily().isEmpty() ? "Arial" : properties->text()->fontFamily(),
-               properties->text()->fontSize());
-
-    // Set font weight properly - use QFont::Weight enum values
-    int weight = properties->text()->fontWeight();
-    if (weight >= 0 && weight <= 900)
-    {
-        font.setWeight(QFont::Weight(weight));
-    }
-
-    // Override with bold if set
-    if (properties->text()->bold())
-    {
-        font.setBold(true);
-    }
-
-    font.setItalic(properties->text()->italic());
-
-    QFontMetrics metrics(font);
-    m_textSize = QSizeF(metrics.horizontalAdvance(properties->text()->textValue()),
-                        metrics.height());
-
-    // Update the item's implicit size
-    properties->base()->setSize({m_textSize.height(), m_textSize.width()});
-    setImplicitWidth(m_textSize.width());
-    setImplicitHeight(m_textSize.height());
+    m_showPanel = true;
+    emit showPanelChanged();
+    update();
 }
 
-QRectF MText::boundingRect() const
+void MText::hoverLeaveEvent(QHoverEvent *event)
 {
-    // Return bounding rectangle in local coordinates
-    return QRectF(-m_textSize.width() / 2, -m_textSize.height() / 2,
-                  m_textSize.width(), m_textSize.height());
+    m_panelHideTimer.start();
 }
 
-bool MText::contains(const QPointF &point) const
+void MText::mouseDoubleClickEvent(QMouseEvent *event)
 {
-    // Check if point is within the text bounds
-    return boundingRect().contains(point);
+    m_editing = true;
+    setFocus(true);
+    update();
 }
 
+void MText::keyPressEvent(QKeyEvent *event)
+{
+    if (m_editing) {
+        switch (event->key()) {
+        case Qt::Key_Return:
+        case Qt::Key_Enter:
+            m_editing = false;
+            setFocus(false);
+            break;
+        case Qt::Key_Backspace:
+            m_richText.chop(1);
+            break;
+        default:
+            if (!event->text().isEmpty())
+                m_richText += event->text();
+        }
+    }
+    updateSizeToFitText();
+    update();
+}
+
+void MText::focusOutEvent(QFocusEvent *event)
+{
+    m_editing = false;
+    update();
+}
+
+//-------------------------------------------
+// Dynamic text sizing
+//-------------------------------------------
+void MText::updateSizeToFitText()
+{
+    QTextDocument doc;
+    doc.setDefaultFont(m_font);
+    doc.setHtml(m_richText);
+    doc.setTextWidth(-1); // Let it size freely
+    doc.adjustSize();
+
+    setWidth(doc.idealWidth() + 20);  // small padding
+    setHeight(doc.size().height() + 20);
+}
+
+//-------------------------------------------
+// Painting logic
+//-------------------------------------------
 QSGNode *MText::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 {
-    QSGTextNode *node = static_cast<QSGTextNode *>(oldNode);
-    if (!node)
-    {
-        node = this->window()->createTextNode();
+    QSGNode *root = oldNode;
+    if (!root)
+        root = new QSGNode();
+
+    // Clear old nodes
+    while (QSGNode *child = root->firstChild()) {
+        root->removeChildNode(child);
+        delete child;
     }
 
-    if (!properties->text() || !properties->base())
-    {
-        return node;
+    QRectF bounds(0, 0, width(), height());
+    QImage img(bounds.size().toSize(), QImage::Format_ARGB32_Premultiplied);
+    img.fill(Qt::transparent);
+
+    QPainter p(&img);
+    p.setRenderHint(QPainter::Antialiasing);
+    p.setRenderHint(QPainter::TextAntialiasing);
+
+    // Draw background if focused or editing
+    if (m_editing || hasFocus()) {
+        QPen border(Qt::cyan, 2);
+        p.setPen(border);
+        p.setBrush(Qt::NoBrush);
+        p.drawRoundedRect(bounds.adjusted(1, 1, -1, -1), 6, 6);
     }
 
-    // Configure font using properties
-    QFont font(properties->text()->fontFamily().isEmpty() ? "Arial" : properties->text()->fontFamily(),
-               properties->text()->fontSize());
+    // Draw the text
+    QTextDocument doc;
+    doc.setDefaultFont(m_font);
+    doc.setHtml(m_richText);
+    doc.setTextWidth(width() - 10);
+    p.translate(5, 5);
+    doc.drawContents(&p);
+    p.translate(-5, -5);
 
-    // Set font weight properly - use QFont::Weight enum values
-    int weight = properties->text()->fontWeight();
-    if (weight >= 0 && weight <= 900)
-    {
-        font.setWeight(QFont::Weight(weight));
+    // Draw format panel if visible
+    if (m_showPanel) {
+        drawFormattingPanel(p);
     }
 
-    // Override with bold if set
-    if (properties->text()->bold())
-    {
-        font.setBold(true);
-    }
+    p.end();
 
-    font.setItalic(properties->text()->italic());
+    auto *textureNode = new QSGSimpleTextureNode();
+    textureNode->setTexture(window()->createTextureFromImage(img));
+    textureNode->setRect(bounds);
+    root->appendChildNode(textureNode);
 
-    // Create layout (ownership passed to node)
-    QTextLayout *layout = new QTextLayout(properties->text()->textValue(), font);
+    return root;
+}
 
-    QTextOption option;
-    option.setWrapMode(QTextOption::NoWrap);
-    layout->setTextOption(option);
+//-------------------------------------------
+// Formatting panel rendering
+//-------------------------------------------
+void MText::drawFormattingPanel(QPainter &p)
+{
+    // const int w = 140, h = 36;
+    // QRectF panelRect(width() - w - 5, 5, w, h);
 
-    layout->beginLayout();
-    layout->createLine();
-    layout->endLayout();
+    // // panel background
+    // p.setPen(Qt::NoPen);
+    // p.setBrush(QColor(35, 35, 35, 230));
+    // p.drawRoundedRect(panelRect, 6, 6);
 
-    node->clear();
-    node->setColor(properties->base()->color()); // Use base color
+    // p.setPen(Qt::white);
+    // QFont iconFont = m_font;
+    // iconFont.setBold(true);
+    // p.setFont(iconFont);
 
-    // Center the text at the origin (like Line does with its geometry)
-    QPointF textOffset(-m_textSize.width() / 2, -m_textSize.height() / 2);
-    node->addTextLayout(textOffset, layout);
+    // // Draw options: Bold, Italic, Bullet (just icons for now)
+    // p.drawText(panelRect.adjusted(10, 0, -90, 0), Qt::AlignVCenter, "B");
+    // QFont italicFont = iconFont;
+    // italicFont.setItalic(true);
+    // p.setFont(italicFont);
+    // p.drawText(panelRect.adjusted(35, 0, -60, 0), Qt::AlignVCenter, "I");
 
-    return node;
+    // p.setFont(m_font);
+    // p.drawText(panelRect.adjusted(65, 0, -30, 0), Qt::AlignVCenter, "•");
+
+    // // small “panel” label (optional)
+    // p.setPen(QColor(180, 180, 180));
+    // p.setFont(QFont("Segoe UI", 9));
+    // p.drawText(panelRect.adjusted(95, 0, -5, 0), Qt::AlignVCenter | Qt::AlignRight, "⋯");
 }

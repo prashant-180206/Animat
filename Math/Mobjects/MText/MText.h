@@ -1,51 +1,45 @@
-#ifndef MTEXT_H
-#define MTEXT_H
+#pragma once
+#include "ClickableMobject.h"
+#include <QTextDocument>
+#include <QTimer>
+#include <QFont>
 
-#include "Math/Mobjects/Base/ClickableMobject.h"
-#include <QColor>
-#include <QString>
-// #include <Math/Mobjects/Mobject.h>
-
-class MText : public ClickableMobject
-{
+class MText : public ClickableMobject {
     Q_OBJECT
-    QML_ELEMENT
-    Q_PROPERTY(QString text READ text WRITE setText NOTIFY textChanged)
-    Q_PROPERTY(QColor color READ color WRITE setColor NOTIFY colorChanged)
-    Q_PROPERTY(int fontSize READ fontSize WRITE setFontSize NOTIFY fontSizeChanged)
+    Q_PROPERTY(QString richText READ richText WRITE setRichText NOTIFY richTextChanged)
+    Q_PROPERTY(bool showPanel READ showPanel NOTIFY showPanelChanged)
 
 public:
-    explicit MText(Scene *canvas = nullptr, QQuickItem *parent = nullptr);
+    explicit MText(Scene *canvas, QQuickItem *parent = nullptr);
 
-    QString text() const { return properties->text() ? properties->text()->textValue() : "Hello World"; }
-    QColor color() const { return properties->base() ? properties->base()->color() : Qt::white; }
-    int fontSize() const { return properties->text() ? properties->text()->fontSize() : 24; }
+    QString richText() const;
+    void setRichText(const QString &text);
 
-    void setText(const QString &text);
-    void setColor(const QColor &color);
-    void setFontSize(int size);
-
-    // Override essential methods for proper mobject behavior
-    virtual void setCenter(qreal x, qreal y) override;
+    bool showPanel() const { return m_showPanel; }
 
 signals:
-    void textChanged();
-    void colorChanged();
-    void fontSizeChanged();
+    void richTextChanged();
+    void showPanelChanged();
 
 protected:
-    QSGNode *updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *) override;
-    bool contains(const QPointF &point) const override;
-    QRectF boundingRect() const override;
     void mousePressEvent(QMouseEvent *event) override;
-    void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
+    void hoverEnterEvent(QHoverEvent *event) override;
+    void hoverLeaveEvent(QHoverEvent *event) override;
+    void mouseDoubleClickEvent(QMouseEvent *event) override;
+    void keyPressEvent(QKeyEvent *event) override;
+    void focusOutEvent(QFocusEvent *event) override;
+    QSGNode *updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *data) override;
 
 private:
-    QPointF m_position; // Store logical position
-    QSizeF m_textSize;  // Cache text size for bounds calculation
+    void updateSizeToFitText();
+    void drawFormattingPanel(QPainter &p);
 
-    void updateTextMetrics(); // Helper to calculate text bounds
+private:
+    QString m_richText;
+    bool m_showPanel = false;
+    QTimer m_panelHideTimer;
+    bool m_editing = false;
+    QFont m_font;
 };
-
-#endif // MTEXT_H

@@ -218,6 +218,50 @@ void AnimationManager::removePacket(AnimPacket *packet)
     }
 }
 
+void AnimationManager::setFromJSON(const QJsonObject &o, Scene *c)
+{
+    AnimManagerData d = AnimManagerData::fromJSON(o);
+    clearList();
+    progressTime = d.progressTime;
+
+    AnimPacket *targetPacket = nullptr;
+
+    for (const QJsonObject &packetObj : std::as_const(d.packetJsons))
+    {
+        AnimPacket *packet = new AnimPacket(this);
+        packet->setFromJSON(packetObj,c);
+
+        qInfo() << packetObj << &packetObj << "PACKET";
+        targetPacket = packet;
+        setPacketToAdd(targetPacket);
+        add();
+    }
+
+    // Now set the active packet without calling add()
+    if (targetPacket)
+        emit packetsChanged();
+    emit activePacketChanged();
+}
+
+AnimationManager::AnimManagerData AnimationManager::getData() const
+{
+
+    AnimManagerData d;
+    d.size = m_size;
+    d.progressTime = 0;
+    d.activePacketName = m_activePacket ? m_activePacket->name() : "";
+    AnimPacketNode *node = m_head;
+    while (node)
+    {
+        if (node->packet)
+        {
+            d.packetJsons.append(node->packet->getData().toJSON());
+        }
+        node = node->next;
+    }
+    return d;
+}
+
 
 
 
@@ -417,3 +461,35 @@ void AnimationManager::setActiveNode(AnimPacketNode *node)
 //     }
 //     return d;
 // }
+
+QJsonDocument AnimationManager::AnimManagerData::toJson() const
+{
+    QJsonObject o;
+    o["size"] = size;
+    o["progressTime"] = progressTime;
+    o["activePacketName"] = activePacketName;
+    QJsonArray packetArray;
+    for (const QJsonObject &packetObj : packetJsons)
+    {
+        packetArray.append(packetObj);
+    }
+    o["packets"] = packetArray;
+    return QJsonDocument(o);
+}
+
+AnimationManager::AnimManagerData AnimationManager::AnimManagerData::fromJSON(const QJsonObject &o)
+{
+    AnimManagerData d;
+    d.size = o["size"].toInt();
+    d.progressTime = o["progressTime"].toDouble();
+    d.activePacketName = o["activePacketName"].toString();
+    QJsonArray packetArray = o["packets"].toArray();
+    for (const QJsonValue &val : std::as_const(packetArray))
+    {
+        if (val.isObject())
+        {
+            d.packetJsons.append(val.toObject());
+        }
+    }
+    return d;
+}
