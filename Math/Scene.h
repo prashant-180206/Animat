@@ -12,7 +12,6 @@
 #include "Animations/animationmanager.h"
 #include "Helper/mproperties.h"
 #include "ValueTracker/playbackslider.h"
-// #include "Parser/parser.h"
 #include "Parser/trackermanager.h"
 #include <QHash>
 #include <QJsonObject>
@@ -20,6 +19,7 @@
 #include <QJsonArray>
 
 class ClickableMobject;
+class Parser;
 
 class Scene : public QQuickItem
 {
@@ -37,13 +37,14 @@ public:
     QString activeId() { return active_m_id; };
 
     Q_INVOKABLE void add_mobject(QString mobj, QString name = "");
+    Q_INVOKABLE Parser *getParser();
 
     Q_INVOKABLE void removeMobject(QString mobjectId);
 
     ClickableMobject *SelectedMobject();
 
     Q_INVOKABLE PlaybackSlider *player();
-    Q_INVOKABLE AnimationManager *animator() const{ return m_animator;};
+    Q_INVOKABLE AnimationManager *animator() const { return m_animator; };
     Q_INVOKABLE MProperties *getProperties() { return m_prop; };
 
     Q_INVOKABLE ClickableMobject *getMobject(QString id);
@@ -74,10 +75,12 @@ public:
 
         QJsonDocument toJson() const;
 
-        static SceneData fromJSON(const QJsonObject &o);;
+        static SceneData fromJSON(const QJsonObject &o);
+        ;
     };
 
-    SceneData getData() const;;
+    SceneData getData() const;
+    ;
 
     void setFromJSON(const QJsonObject &o);
 
@@ -101,6 +104,8 @@ private:
     PlaybackSlider *m_player = new PlaybackSlider(this);
     AnimationManager *m_animator = new AnimationManager(this);
     bool m_showBorders = true; // Default to showing borders
+
+    Parser *m_parser = nullptr;
 
 signals:
     void SelectedMobjectChanged();

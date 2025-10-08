@@ -74,6 +74,10 @@ qt_add_qml_module(appAnimat
         QML/Components/Elements/PropertyPanels/LinePanel.qml
         QML/Components/Elements/PropertyPanels/CurvePanel.qml
         QML/Components/Elements/PropertyPanels/PlanePanel.qml
+        QML/Components/Elements/TrackerDataDisplay.qml
+        QML/Components/Elements/TrackerComponents/SliderConfigPopup.qml
+        QML/Components/Elements/TrackerComponents/ValSlider.qml
+        # QML\Components\Elements\TrackerComponents\ValSlider.qml
     SOURCES
         Utils/Singleton.h
         Utils/Constants.h

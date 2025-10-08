@@ -218,3 +218,51 @@ QStringList Parser::getPointTrackerNames() const
 {
     return m_trackerManager->getPointTrackerNames();
 }
+
+// Direct tracker update methods
+bool Parser::setTrackerValue(const QString &name, qreal value)
+{
+    ValueTracker *tracker = m_trackerManager->getValueTracker(name);
+    if (tracker)
+    {
+        tracker->setValue(value);
+        return true;
+    }
+    return false;
+}
+
+bool Parser::setPointTrackerValue(const QString &name, const QPointF &point)
+{
+    PtValueTracker *tracker = m_trackerManager->getPtValueTracker(name);
+    if (tracker)
+    {
+        tracker->setValue(point);
+        return true;
+    }
+    return false;
+}
+
+bool Parser::setPointTrackerValue(const QString &name, qreal x, qreal y)
+{
+    return setPointTrackerValue(name, QPointF(x, y));
+}
+
+bool Parser::deleteTracker(const QString &name)
+{
+    if (m_trackerManager->hasValueTracker(name))
+    {
+        m_trackerManager->removeValueTracker(name);
+        return true;
+    }
+    return false;
+}
+
+bool Parser::deletePointTracker(const QString &name)
+{
+    if (m_trackerManager->hasPointTracker(name))
+    {
+        m_trackerManager->removePtValueTracker(name);
+        return true;
+    }
+    return false;
+}

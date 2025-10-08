@@ -10,6 +10,7 @@
 #include "Math/ValueTracker/playbackslider.h"
 #include "filehandler.h"
 #include "trackermanager.h"
+#include "Parser/parser.h"
 #include <QQmlContext>
 
 // #include "muParser.h"
@@ -29,6 +30,8 @@ int main(int argc, char *argv[])
     qmlRegisterType<AnimPacket>("Animat", 1, 0, "AnimPacket");
     qmlRegisterType<TrackerManager>("Animat", 1, 0, "TrackerManager");
     qmlRegisterType<FileHandler>("Animat", 1, 0, "FileHandler");
+    qmlRegisterType<Parser>("Animat", 1, 0, "Parser");
+    qmlRegisterType<TrackerManager>("Animat", 1, 0, "TrackerManager");
 
     qmlRegisterSingletonType<ConstantsSingleton>("Animat", 1, 0, "Constants", [](QQmlEngine *, QJSEngine *) -> QObject *
                                                  { return new ConstantsSingleton(); });

@@ -23,6 +23,7 @@ public:
     void addValueTracker(const QString &name, ValueTracker *tracker);
     void addValueTracker(const QString &name, PtValueTracker *tracker);
     void removeValueTracker(const QString &name);
+    void removePtValueTracker(const QString &name);
     ValueTracker *getValueTracker(const QString &name) const;
     PtValueTracker *getPtValueTracker(const QString &name) const;
     bool hasValueTracker(const QString &name) const;

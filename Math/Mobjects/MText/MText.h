@@ -6,7 +6,7 @@
 #include <QString>
 // #include <Math/Mobjects/Mobject.h>
 
-class Text : public ClickableMobject
+class MText : public ClickableMobject
 {
     Q_OBJECT
     QML_ELEMENT
@@ -15,7 +15,7 @@ class Text : public ClickableMobject
     Q_PROPERTY(int fontSize READ fontSize WRITE setFontSize NOTIFY fontSizeChanged)
 
 public:
-    explicit Text(Scene *canvas = nullptr, QQuickItem *parent = nullptr);
+    explicit MText(Scene *canvas = nullptr, QQuickItem *parent = nullptr);
 
     QString text() const { return properties->text() ? properties->text()->textValue() : "Hello World"; }
     QColor color() const { return properties->base() ? properties->base()->color() : Qt::white; }

@@ -8,7 +8,6 @@
 #include "Math/Mobjects/Basic/Dot.h"
 #include "Math/Mobjects/Complex/MPolygon.h"
 #include "Math/Mobjects/Complex/plane.h"
-
 QHash<QString, MobjectMap::Factory> MobjectMap::map;
 
 void MobjectMap::init(Scene *canvas)
@@ -18,7 +17,7 @@ void MobjectMap::init(Scene *canvas)
     map["Line"] = [canvas]()
     { return new Line(canvas, canvas); };
     map["Text"] = [canvas]()
-    { return new Text(canvas, canvas); };
+    { return new MText(canvas, canvas); };
     map["Curve"] = [canvas]()
     { return new Curve(canvas, canvas); };
     map["Rectangle"] = [canvas]()

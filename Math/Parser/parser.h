@@ -5,7 +5,6 @@
 #include "qqmlintegration.h"
 #include <QVariantMap>
 #include <QJsonObject>
-#include <memory>
 #include "trackermanager.h"
 #include "CommandFactory.h"
 
@@ -24,7 +23,7 @@ public:
     Q_INVOKABLE bool executeCommands(const QStringList &commands);
 
     // Access to managers
-    TrackerManager *trackerManager() const { return m_trackerManager; }
+    Q_INVOKABLE TrackerManager *trackerManager() const { return m_trackerManager; }
 
     // Metadata functions for value trackers
     Q_INVOKABLE QVariantMap getAllTrackerValues() const;
@@ -38,6 +37,13 @@ public:
     Q_INVOKABLE bool hasTracker(const QString &name) const;
     Q_INVOKABLE QStringList getTrackerNames() const;
     Q_INVOKABLE QStringList getPointTrackerNames() const;
+
+    // Direct tracker updates (bypass command system)
+    Q_INVOKABLE bool setTrackerValue(const QString &name, qreal value);
+    Q_INVOKABLE bool setPointTrackerValue(const QString &name, const QPointF &point);
+    Q_INVOKABLE bool setPointTrackerValue(const QString &name, qreal x, qreal y);
+    Q_INVOKABLE bool deleteTracker(const QString &name);
+    Q_INVOKABLE bool deletePointTracker(const QString &name);
 
 signals:
     void commandExecuted(const QString &commandName, const QString &input);

@@ -6,6 +6,7 @@
 #include <Math/Mobjects/Basic/line.h>
 #include "Utils/mobjectmap.h"
 #include "Parser/trackermanager.h"
+#include "Parser/parser.h"
 
 Scene::Scene()
 {
@@ -40,6 +41,17 @@ Scene::~Scene()
 {
     qDeleteAll(m_objects);
     m_objects.clear();
+
+    delete m_parser;
+    m_parser = nullptr;
+}
+Parser *Scene::getParser()
+{
+    if (!m_parser)
+    {
+        m_parser = new Parser(this, this);
+    }
+    return m_parser;
 }
 
 void Scene::add_mobject(QString mobj, QString name)
@@ -100,10 +112,6 @@ ClickableMobject *Scene::getMobject(QString id)
 {
     return m_objects.value(id, nullptr);
 }
-
-
-
-
 
 PlaybackSlider *Scene::player()
 {
@@ -286,13 +294,6 @@ QSGNode *Scene::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 }
 
 // Tracker command execution methods
-
-
-
-
-
-
-
 
 QJsonDocument Scene::SceneData::toJson() const
 {

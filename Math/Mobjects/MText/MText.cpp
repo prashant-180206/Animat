@@ -7,7 +7,7 @@
 #include <QQuickTextDocument>
 #include <QMouseEvent>
 
-Text::Text(Scene *canvas, QQuickItem *parent)
+MText::MText(Scene *canvas, QQuickItem *parent)
     : ClickableMobject(canvas, parent),
       m_position(0, 0),
       m_textSize(0, 0)
@@ -74,15 +74,15 @@ Text::Text(Scene *canvas, QQuickItem *parent)
         } });
 
     // Connect properties changes to updates
-    connect(this, &Text::textChanged, this, &Text::updateTextMetrics);
-    connect(this, &Text::fontSizeChanged, this, &Text::updateTextMetrics);
+    connect(this, &MText::textChanged, this, &MText::updateTextMetrics);
+    connect(this, &MText::fontSizeChanged, this, &MText::updateTextMetrics);
 
     // Initial position setup
     m_position = properties->base()->pos();
     updateTextMetrics();
 }
 
-void Text::setText(const QString &text)
+void MText::setText(const QString &text)
 {
     if (properties->text() && properties->text()->textValue() == text)
         return;
@@ -93,7 +93,7 @@ void Text::setText(const QString &text)
     // Note: updateTextMetrics and signals are handled by property change connections
 }
 
-void Text::setColor(const QColor &color)
+void MText::setColor(const QColor &color)
 {
     if (properties->base() && properties->base()->color() == color)
         return;
@@ -104,7 +104,7 @@ void Text::setColor(const QColor &color)
     // Note: update and signals are handled by property change connections
 }
 
-void Text::setFontSize(int size)
+void MText::setFontSize(int size)
 {
     if (properties->text() && properties->text()->fontSize() == size)
         return;
@@ -115,7 +115,7 @@ void Text::setFontSize(int size)
     // Note: updateTextMetrics and signals are handled by property change connections
 }
 
-void Text::setCenter(qreal x, qreal y)
+void MText::setCenter(qreal x, qreal y)
 {
     QPointF newCenter(x, y);
     m_position = newCenter;
@@ -127,14 +127,14 @@ void Text::setCenter(qreal x, qreal y)
     setZ(50);
 }
 
-void Text::mousePressEvent(QMouseEvent *event)
+void MText::mousePressEvent(QMouseEvent *event)
 {
     // Don't update m_position here - let the base class handle dragging logic
     // Just pass through to base class for proper drag initialization
     ClickableMobject::mousePressEvent(event);
 }
 
-void Text::mouseMoveEvent(QMouseEvent *event)
+void MText::mouseMoveEvent(QMouseEvent *event)
 {
     // Let base class handle the dragging logic
     ClickableMobject::mouseMoveEvent(event);
@@ -157,7 +157,7 @@ void Text::mouseMoveEvent(QMouseEvent *event)
     }
 }
 
-void Text::mouseReleaseEvent(QMouseEvent *event)
+void MText::mouseReleaseEvent(QMouseEvent *event)
 {
     // Let base class handle the release logic
     ClickableMobject::mouseReleaseEvent(event);
@@ -169,7 +169,7 @@ void Text::mouseReleaseEvent(QMouseEvent *event)
     }
 }
 
-void Text::updateTextMetrics()
+void MText::updateTextMetrics()
 {
     if (!properties->text())
         return;
@@ -202,20 +202,20 @@ void Text::updateTextMetrics()
     setImplicitHeight(m_textSize.height());
 }
 
-QRectF Text::boundingRect() const
+QRectF MText::boundingRect() const
 {
     // Return bounding rectangle in local coordinates
     return QRectF(-m_textSize.width() / 2, -m_textSize.height() / 2,
                   m_textSize.width(), m_textSize.height());
 }
 
-bool Text::contains(const QPointF &point) const
+bool MText::contains(const QPointF &point) const
 {
     // Check if point is within the text bounds
     return boundingRect().contains(point);
 }
 
-QSGNode *Text::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
+QSGNode *MText::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 {
     QSGTextNode *node = static_cast<QSGTextNode *>(oldNode);
     if (!node)

@@ -12,7 +12,7 @@ class connectcommand : public Command
 public:
     connectcommand(QString line) : Command(line)
     {
-        setRegex(QRegularExpression(R"(connectval\s*\(\s*([A-Za-z_]\w*)\s*,\s*([A-Za-z_]\w*)\.([A-Za-z_]\w*)\s*\)\s*;)"));
+        setRegex(QRegularExpression(R"(connect\s*\(\s*([A-Za-z_]\w*)\s*,\s*([A-Za-z_]\w*)\.([A-Za-z_]\w*)\s*\)\s*;)"));
     }
 
     void execute(Scene *c, TrackerManager *tm) const override
@@ -38,6 +38,7 @@ public:
             auto pt = tm->getPtValueTracker(sourceTrackerName);
             if (m && pt && FuncMap::PtConnectFunc.contains(propertyName))
             {
+                qInfo()<<"CALLED FOR "<<propertyName;
                 auto func = FuncMap::PtConnectFunc[propertyName];
                 func(m, pt->value());
                 QObject::connect(pt, &PtValueTracker::valueChanged, m, [m, func](QPointF newval)

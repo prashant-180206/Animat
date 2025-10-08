@@ -19,7 +19,7 @@ Rectangle {
         anchors.fill: parent
         // Tab navigation buttons (Canva-style vertical)
         Rectangle {
-            id:rec
+            id: rec
             Layout.preferredWidth: 70
             Layout.fillHeight: true // Height for 6 tabs
             color: "#2c2c2c"
@@ -58,6 +58,11 @@ Rectangle {
                             emoji: "🧮",
                             name: "Values",
                             type: "values"
+                        },
+                        {
+                            emoji: "📊",
+                            name: "Trackers",
+                            type: "trackers"
                         }
                     ]
 
@@ -70,7 +75,7 @@ Rectangle {
                         width: 60
                         height: 60
                         radius: 20
-                        color: active &&barvisible ? Constants.darkGrayC : "transparent"
+                        color: active && barvisible ? Constants.darkGrayC : "transparent"
                         anchors.horizontalCenter: parent.horizontalCenter
                         anchors.margins: 4
                         anchors.bottomMargin: 10
@@ -111,7 +116,7 @@ Rectangle {
 
         // Content area
         ScrollView {
-            id:scr
+            id: scr
             Layout.preferredHeight: root.height
             clip: true
             ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
@@ -120,7 +125,7 @@ Rectangle {
 
             StackLayout {
                 id: stackLayout
-                anchors.fill:  parent
+                anchors.fill: parent
                 anchors.margins: 20
                 currentIndex: 0
 
@@ -145,9 +150,9 @@ Rectangle {
                                 path: iconpath
                                 size: 60
                                 callfunc: () => {
-                                              console.log("Adding mobject:", name);
-                                              canvas.add_mobject(name);
-                                          }
+                                    console.log("Adding mobject:", name);
+                                    canvas.add_mobject(name);
+                                }
                             }
                         }
                     }
@@ -156,31 +161,38 @@ Rectangle {
                 // Properties tab (from ControlPanel)
                 MpropertiesEditor {
                     id: editor
-                    Layout.preferredWidth:  root.width -80
-                    Layout.preferredHeight: scr.height -20
+                    Layout.preferredWidth: root.width - 80
+                    Layout.preferredHeight: scr.height - 20
                 }
 
                 // Animations tab (from ControlPanel)
                 AnimInput {
                     manager: canvas.animator()
                     scene: canvas
-                    Layout.preferredWidth:  root.width -80
-                    Layout.preferredHeight: scr.height -20
+                    Layout.preferredWidth: root.width - 80
+                    Layout.preferredHeight: scr.height - 20
                 }
 
                 // Active animations tab (from ControlPanel)
                 ActiveAnimationsList {
                     manager: canvas.animator()
                     scene: canvas
-                    Layout.preferredWidth:  root.width -80
-                    Layout.preferredHeight: scr.height -20
+                    Layout.preferredWidth: root.width - 80
+                    Layout.preferredHeight: scr.height - 20
                 }
 
                 // Values tab (from ControlPanel)
                 ValueManagement {
                     scene: canvas
-                    Layout.preferredWidth:  root.width -80
-                    Layout.preferredHeight: scr.height -20
+                    Layout.preferredWidth: root.width - 80
+                    Layout.preferredHeight: scr.height - 20
+                }
+
+                // Tracker Data tab
+                TrackerDataDisplay {
+                    scene: canvas
+                    Layout.preferredWidth: root.width - 80
+                    Layout.preferredHeight: scr.height - 20
                 }
             }
         }

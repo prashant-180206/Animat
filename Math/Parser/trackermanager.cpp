@@ -44,6 +44,21 @@ void TrackerManager::removeValueTracker(const QString &name)
     }
 }
 
+void TrackerManager::removePtValueTracker(const QString &name)
+{
+    if (m_valueTrackers.contains(name))
+    {
+        PtValueTracker *tracker = m_ptvalueTrackers.take(name);
+        if (tracker && tracker->parent() == this)
+        {
+            tracker->deleteLater();
+        }
+        emit trackerRemoved(name);
+    }
+}
+
+
+
 ValueTracker *TrackerManager::getValueTracker(const QString &name) const
 {
     return m_valueTrackers.value(name, nullptr);

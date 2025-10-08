@@ -5,7 +5,6 @@
 #include "trackermanager.h"
 
 #include <QDebug>
-// #define CMD_DEBUG(msg) qDebug() << "[makePtvalcommand]" << msg;
 
 class makePtvalcommand : public Command
 {
@@ -13,7 +12,6 @@ public:
     makePtvalcommand(const QString &name) : Command(name)
     {
         setRegex(QRegularExpression(R"(pval\s+([A-Za-z_]\w*)\s*=\s*\(\s*([+-]?\d*\.?\d+)\s*,\s*([+-]?\d*\.?\d+)\s*\);)"));
-        // CMD_DEBUG("Constructor called");
     }
 
     void execute(Scene *c, TrackerManager *tm) const override

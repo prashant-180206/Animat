@@ -7,7 +7,8 @@ import "Input"
 Rectangle {
     id: root
 
-    property var scene: null
+    property Scene scene: null
+    property var parser: scene ? scene.getParser() : null
 
     color: "#1f1f1f"
     radius: 4
@@ -52,14 +53,15 @@ Rectangle {
                     clip: true
 
                     StyledTextArea {
+                        Layout.fillHeight: true
+                        Layout.fillWidth: true
                         id: codeInput
                         font.family: "Consolas, Monaco, monospace"
-                        font.pixelSize: 11
+                        font.pixelSize: 14
                         backgroundColor: "#1a1a1a"
                         textColor: "#ffffff"
                         borderColor: "#333333"
-                        placeholderColor: "#666666"
-                        placeholderText: "Enter tracker commands and expressions...\n\n" + "Value Trackers:\n" + "val x = 5\n" + "val radius = 10 + 5 * sin(t)\n\n" + "Point Trackers:\n" + "pval center = (100, 200)\n" + "pval position = (x * 2, radius)\n\n" + "Expressions:\n" + "area = pi * radius^2\n" + "distance = sqrt(x^2 + y^2)"
+                        scene: canvas
                     }
                 }
                 // Action buttons
@@ -96,79 +98,6 @@ Rectangle {
                 }
             }
         }
-
-        // Quick Examples Section
-        // Rectangle {
-        //     Layout.fillWidth: true
-        //     Layout.preferredHeight: 80
-        //     color: "#2c2c2c"
-        //     border.color: "#444"
-        //     border.width: 1
-        //     radius: 4
-
-        //     ColumnLayout {
-        //         anchors.fill: parent
-        //         anchors.margins: 8
-        //         spacing: 4
-
-        //         Text {
-        //             text: "🚀 Quick Examples:"
-        //             color: "#ccc"
-        //             font.pixelSize: 12
-        //         }
-
-        //         Flow {
-        //             Layout.fillWidth: true
-        //             spacing: 4
-
-        //             Repeater {
-        //                 model: [
-        //                     {
-        //                         text: "val x",
-        //                         expr: "val x = 5"
-        //                     },
-        //                     {
-        //                         text: "val r",
-        //                         expr: "val radius = 10"
-        //                     },
-        //                     {
-        //                         text: "pval",
-        //                         expr: "pval center = (100, 200)"
-        //                     },
-        //                     {
-        //                         text: "expr",
-        //                         expr: "area = pi * radius^2"
-        //                     },
-        //                     {
-        //                         text: "func",
-        //                         expr: "val wave = 50 * sin(t)"
-        //                     },
-        //                     {
-        //                         text: "point",
-        //                         expr: "pval pos = (x, wave)"
-        //                     },
-        //                     {
-        //                         text: "connect",
-        //                         expr: "connect x myCircle radius"
-        //                     }
-        //                 ]
-
-        //                 StyledButton {
-        //                     required property var modelData
-        //                     text: modelData.text
-        //                     width: 60
-        //                     height: 24
-        //                     backgroundColor: "#4a9eff"
-        //                     font.pixelSize: 9
-        //                     onClicked: {
-        //                         codeInput.text = modelData.expr;
-        //                         evaluateExpression();
-        //                     }
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
 
         // Logs Section
         Rectangle {
@@ -262,7 +191,12 @@ Rectangle {
             return;
         }
 
-        let expression = codeInput.text.trim();
+        if (!root.parser) {
+            addLog("❌", "Error: Parser not available", "#ff4444");
+            return;
+        }
+
+        let expression = codeInput.getText(0,codeInput.length).trim();
         if (expression === "") {
             addLog("⚠️", "Warning: Empty expression", "#ffaa44");
             return;
@@ -271,19 +205,20 @@ Rectangle {
         try {
             // Check if it's a tracker command (val, pval, connect, etc.)
             if (expression.startsWith("val ") || expression.startsWith("pval ") || expression.startsWith("connect ") || expression.includes("=")) {
-                // Execute as tracker script
-                root.scene.executeTrackerScript(expression);
-                addLog("🎯", `Executed: ${expression}`, "#44ff44");
-
+                // Execute as tracker script using parser
+                let success = root.parser.executeScript(expression);
+                if (success) {
+                    addLog("🎯", `Executed: ${expression}`, "#44ff44");
+                } else {
+                    addLog("❌", `Parser failed: ${expression}`, "#ff4444");
+                }
                 // Show current tracker values
-                let trackerNames = root.scene.getTrackerNames();
+                let trackerNames = root.parser.getTrackerNames();
                 if (trackerNames.length > 0) {
                     addLog("📊", `Active trackers: ${trackerNames.join(", ")}`, "#5ce1e6");
                 }
             } else {
-                // Evaluate as mathematical expression
-                let result = root.scene.evaluate(expression);
-                addLog("✅", `${expression} = ${result}`, "#44ff44");
+                addLog("⚠️", "Not a tracker command", "#ffaa44");
             }
         } catch (error) {
             addLog("❌", `Error: ${error}`, "#ff4444");
@@ -295,11 +230,11 @@ Rectangle {
         let timestamp = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0') + ":" + now.getSeconds().toString().padStart(2, '0');
 
         logModel.append({
-            timestamp: timestamp,
-            icon: icon,
-            message: message,
-            color: color || "#ccc"
-        });
+                            timestamp: timestamp,
+                            icon: icon,
+                            message: message,
+                            color: color || "#ccc"
+                        });
 
         // Keep only last 100 entries
         if (logModel.count > 100) {

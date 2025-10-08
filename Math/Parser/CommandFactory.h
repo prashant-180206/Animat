@@ -83,7 +83,7 @@ private:
     {
         // Define regex patterns for each command type
         m_regexMap[CommandType::ConnectCommand] = QRegularExpression(
-            R"(connectval\s*\(\s*([A-Za-z_]\w*)\s*,\s*([A-Za-z_]\w*)\.([A-Za-z_]\w*)\s*\)\s*;)");
+            R"(connect\s*\(\s*([A-Za-z_]\w*)\s*,\s*([A-Za-z_]\w*)\.([A-Za-z_]\w*)\s*\)\s*;)");
 
         m_regexMap[CommandType::DpvalCommand] = QRegularExpression(
             R"(dpval\s+([A-Za-z_]\w*)\s*=\s*(.+);)");

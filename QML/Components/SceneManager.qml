@@ -4,7 +4,7 @@ import Animat 1.0
 import "Elements/Input"
 
 Rectangle {
-    property var scene: null
+    property Scene scene: null
     property int updateCallCount: 0
 
     color: Constants.darkGrayA
@@ -110,53 +110,47 @@ Rectangle {
     }
 
     // Signal connections for immediate updates
-    Connections {
-        target: scene ? scene.trackers() : null
-        function onTrackersListChanged() {
-            updateTrackerDisplays();
-        }
-    }
 
     function updateTrackerDisplays() {
         updateCallCount++;
 
         try {
-            if (!scene || !scene.trackers()) {
+            if (!scene || !scene.getParser().trackerManager) {
                 return;
             }
 
-            var trackerManager = scene.trackers();
+            var trackerManager = scene.getParser();
 
             // Clear and update tracker list
             trackerValuesModel.clear();
 
             // Add value trackers
-            var valueNames = trackerManager.getAllValueTrackerNames();
+            var valueNames = trackerManager.getAllTrackerValues();
             for (var i = 0; i < valueNames.length; i++) {
                 var name = valueNames[i];
                 var value = trackerManager.getTrackerValue(name);
                 trackerValuesModel.append({
-                    "name": name,
-                    "type": "value",
-                    "value": value,
-                    "x": 0,
-                    "y": 0
-                });
+                                              "name": name,
+                                              "type": "value",
+                                              "value": value,
+                                              "x": 0,
+                                              "y": 0
+                                          });
             }
 
             // Add point trackers
-            var pointNames = trackerManager.getAllPointTrackerNames();
-            for (var j = 0; j < pointNames.length; j++) {
-                var pointName = pointNames[j];
-                var point = trackerManager.getTrackerPoint(pointName);
-                trackerValuesModel.append({
-                    "name": pointName,
-                    "type": "point",
-                    "value": 0,
-                    "x": point.x,
-                    "y": point.y
-                });
-            }
+            // var pointNames = trackerManager.getAllPointTrackerNames();
+            // for (var j = 0; j < pointNames.length; j++) {
+            //     var pointName = pointNames[j];
+            //     var point = trackerManager.getTrackerPoint(pointName);
+            //     trackerValuesModel.append({
+            //                                   "name": pointName,
+            //                                   "type": "point",
+            //                                   "value": 0,
+            //                                   "x": point.x,
+            //                                   "y": point.y
+            //                               });
+            // }
         } catch (error) {
             console.log("SceneManager: Error updating trackers:", error.toString());
         }
