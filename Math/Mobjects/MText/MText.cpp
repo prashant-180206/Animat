@@ -18,11 +18,11 @@ MText::MText(Scene *canvas, QQuickItem *parent)
     m_font.setPointSize(16);
     m_font.setFamily("Segoe UI");
 
-    connect(&m_panelHideTimer, &QTimer::timeout, this, [this] {
+    connect(&m_panelHideTimer, &QTimer::timeout, this, [this]
+            {
         m_showPanel = false;
         emit showPanelChanged();
-        update();
-    });
+        update(); });
     m_panelHideTimer.setInterval(300);
     m_panelHideTimer.setSingleShot(true);
 
@@ -33,7 +33,8 @@ QString MText::richText() const { return m_richText; }
 
 void MText::setRichText(const QString &txt)
 {
-    if (txt != m_richText) {
+    if (txt != m_richText)
+    {
         m_richText = txt;
         emit richTextChanged();
         updateSizeToFitText();
@@ -80,8 +81,10 @@ void MText::mouseDoubleClickEvent(QMouseEvent *event)
 
 void MText::keyPressEvent(QKeyEvent *event)
 {
-    if (m_editing) {
-        switch (event->key()) {
+    if (m_editing)
+    {
+        switch (event->key())
+        {
         case Qt::Key_Return:
         case Qt::Key_Enter:
             m_editing = false;
@@ -105,9 +108,6 @@ void MText::focusOutEvent(QFocusEvent *event)
     update();
 }
 
-//-------------------------------------------
-// Dynamic text sizing
-//-------------------------------------------
 void MText::updateSizeToFitText()
 {
     QTextDocument doc;
@@ -116,7 +116,7 @@ void MText::updateSizeToFitText()
     doc.setTextWidth(-1); // Let it size freely
     doc.adjustSize();
 
-    setWidth(doc.idealWidth() + 20);  // small padding
+    setWidth(doc.idealWidth() + 20); // small padding
     setHeight(doc.size().height() + 20);
 }
 
@@ -130,7 +130,8 @@ QSGNode *MText::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
         root = new QSGNode();
 
     // Clear old nodes
-    while (QSGNode *child = root->firstChild()) {
+    while (QSGNode *child = root->firstChild())
+    {
         root->removeChildNode(child);
         delete child;
     }
@@ -144,7 +145,8 @@ QSGNode *MText::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
     p.setRenderHint(QPainter::TextAntialiasing);
 
     // Draw background if focused or editing
-    if (m_editing || hasFocus()) {
+    if (m_editing || hasFocus())
+    {
         QPen border(Qt::cyan, 2);
         p.setPen(border);
         p.setBrush(Qt::NoBrush);
@@ -161,7 +163,8 @@ QSGNode *MText::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
     p.translate(-5, -5);
 
     // Draw format panel if visible
-    if (m_showPanel) {
+    if (m_showPanel)
+    {
         drawFormattingPanel(p);
     }
 

@@ -1,8 +1,10 @@
 // NumberInput.qml - Reusable number input component
 import QtQuick 2.15
 import QtQuick.Controls.Basic
+import QtQuick.Layouts
 
-Row {
+
+RowLayout {
     property string label: ""
     property real value: 0
     property int decimals: 2
@@ -15,7 +17,6 @@ Row {
     Text {
         text: label
         color: "#bbbbbb"
-        anchors.verticalCenter: parent.verticalCenter
         font.pixelSize: 13
     }
 

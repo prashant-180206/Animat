@@ -31,16 +31,15 @@ Window {
     Sidebar {
         id: sidebar
         scene: canvas
-        barvisible:  sidebarVisible
+        barvisible: sidebarVisible
         anchors.top: taskbar.bottom
         anchors.bottom: parent.bottom
         anchors.left: parent.left
     }
     Rectangle {
-
         anchors.top: taskbar.bottom
         anchors.bottom: parent.bottom
-        anchors.left:  sidebar.right
+        anchors.left: sidebar.right
         anchors.right: parent.right
         color: Constants.darkBlack
 
@@ -58,10 +57,23 @@ Window {
             anchors.right: parent.right
             color: Constants.darkBlack
 
+            // Properties toolbar above the scene
+
+            PropertiesToolbar {
+                id: propbar
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.right: parent.right
+                height: 120
+                scene: canvas
+                z: 15
+                color: globeroot.color
+
+            }
 
             Rectangle {
                 id: sceneParentContainer
-                anchors.top: parent.top
+                anchors.top: propbar.bottom
                 anchors.bottom: playbackControls.top
                 anchors.left: parent.left
                 anchors.right: parent.right
@@ -73,6 +85,7 @@ Window {
                     objectName: "canvas"
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.horizontalCenter: parent.horizontalCenter
+                    scale: 0.7
                     clip: true
                     showBorders: true
                 }
@@ -224,8 +237,6 @@ Window {
             id: sceneContainer
             anchors.fill: parent
             anchors.margins: 0  // No margins for full scaling
-
-            // The main canvas will be moved here during presentation mode
         }
     }
 }

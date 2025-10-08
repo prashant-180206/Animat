@@ -45,7 +45,7 @@ qt_add_qml_module(appAnimat
         QML/Components/Elements/TextButton.qml
         QML/Components/Elements/ActiveAnimationsList.qml
         QML/Components/Elements/ValueManagement.qml
-        QML/Components/Elements/MpropertiesEditor.qml
+
         QML/Components/Elements/Input/PointInput.qml
         QML/Components/Elements/Input/AnimInput.qml
         QML/Components/Elements/Input/AnimInputComponents/AnimationFieldsPanel.qml
@@ -64,19 +64,15 @@ qt_add_qml_module(appAnimat
         QML/Components/Elements/Input/StyledButton.qml
         QML/Components/Elements/Input/ColorPicker.qml
         QML/Components/Elements/Input/NumberInput.qml
-        QML/Components/Elements/PropertyPanels/MobjectIdPanel.qml
-        QML/Components/Elements/PropertyPanels/MobjectNamePanel.qml
-        QML/Components/Elements/PropertyPanels/TransformPanel.qml
-        QML/Components/Elements/PropertyPanels/AppearancePanel.qml
-        QML/Components/Elements/PropertyPanels/NumericPanel.qml
-        QML/Components/Elements/PropertyPanels/PolygonPanel.qml
-        QML/Components/Elements/PropertyPanels/TextPanel.qml
-        QML/Components/Elements/PropertyPanels/LinePanel.qml
-        QML/Components/Elements/PropertyPanels/CurvePanel.qml
-        QML/Components/Elements/PropertyPanels/PlanePanel.qml
         QML/Components/Elements/TrackerDataDisplay.qml
         QML/Components/Elements/TrackerComponents/SliderConfigPopup.qml
         QML/Components/Elements/TrackerComponents/ValSlider.qml
+        QML/Components/PropertiesToolbar.qml
+        QML/Components/Elements/ToolbarButton.qml
+        QML/Components/Elements/ToolbarSection.qml
+
+        QML/Components/ToolbarSections/AppearanceToolbarSection.qml
+        QML/Components/ToolbarSections/TextToolbarSection.qml
         # QML\Components\Elements\TrackerComponents\ValSlider.qml
     SOURCES
         Utils/Singleton.h
@@ -142,6 +138,11 @@ qt_add_qml_module(appAnimat
         SOURCES Math/Parser/Commands/dvalcommand.h Math/Parser/Commands/dvalcommand.cpp
         SOURCES Math/Parser/Commands/dpvalcommand.h Math/Parser/Commands/dpvalcommand.cpp
         SOURCES Math/Parser/Commands/connectcommand.h Math/Parser/Commands/connectcommand.cpp
+        QML_FILES QML/Components/Elements/Input/MSlider.qml
+        QML_FILES QML/Components/ToolbarSections/SpecialSection.qml
+        QML_FILES
+        QML_FILES QML/Components/ToolbarSections/PolygonToolBar.qml
+        QML_FILES QML/Components/Elements/Input/DarkCheckBox.qml
 )
 
 target_link_libraries(appAnimat

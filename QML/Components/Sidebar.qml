@@ -40,11 +40,6 @@ Rectangle {
                             type: "objects"
                         },
                         {
-                            emoji: "🔧",
-                            name: "Properties",
-                            type: "properties"
-                        },
-                        {
                             emoji: "🎬",
                             name: "Animations",
                             type: "animations"
@@ -156,13 +151,6 @@ Rectangle {
                             }
                         }
                     }
-                }
-
-                // Properties tab (from ControlPanel)
-                MpropertiesEditor {
-                    id: editor
-                    Layout.preferredWidth: root.width - 80
-                    Layout.preferredHeight: scr.height - 20
                 }
 
                 // Animations tab (from ControlPanel)

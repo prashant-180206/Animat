@@ -1,9 +1,10 @@
 import QtQuick 2.15
 import QtQuick.Controls.Basic
+import QtQuick.Layouts
 import QtQuick.Dialogs
 import Animat 1.0
 
-Row {
+RowLayout {
 
     property string label: "value"
     property color inputBackgroundColor: "#1e1e1e"
@@ -11,9 +12,7 @@ Row {
     property color labelColor: "#bbbbbb"
     property color borderColor: "#bbbbbb"
     property point pt: Qt.point(0,0)
-    property var func: ()=>{
-                           console.log("Point changed")
-                       }
+    property var func: ()=>{}
 
     property point pt2: pt
 
@@ -21,7 +20,7 @@ Row {
     Label {
         text: label
         color: labelColor
-        width: 70
+        // width:
     }
     TextField {
         width: 50
@@ -32,7 +31,7 @@ Row {
         background: Rectangle {
             color: inputBackgroundColor
             radius: 4
-            border.color: borderColor
+            // border.color: borderColor
         }
 
         onEditingFinished: {
@@ -52,7 +51,7 @@ Row {
         background: Rectangle {
             color: inputBackgroundColor
             radius: 4
-            border.color: borderColor
+            // border.color: borderColor
         }
 
         onEditingFinished: {
