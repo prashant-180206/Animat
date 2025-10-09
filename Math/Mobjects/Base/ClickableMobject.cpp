@@ -11,7 +11,7 @@ ClickableMobject::ClickableMobject(Scene *canvas, QQuickItem *parent)
     properties->setBase(new BaseProperties(this->properties)); // REMOVED - prevents double initialization
 
     connect(properties->base(), &BaseProperties::posChanged, this, [this](const QPointF &newPos)
-            { this->setCenter(newPos.x(), newPos.y());});
+            { this->setCenter(newPos.x(), newPos.y());update();});
 
     connect(properties->base(), &BaseProperties::sizeChanged, this, [this](const QPointF &newSize)
             { this->setSize(newSize.x(), newSize.y()); });
@@ -53,8 +53,6 @@ void ClickableMobject::setId(QString newid)
 {
     m_id = newid;
 }
-
-
 
 Scene *ClickableMobject::getcanvas() const
 {
@@ -114,10 +112,6 @@ ClickableMobject::MobjData ClickableMobject::getData() const
 
 ClickableMobject::~ClickableMobject()
 {
-    // Properties are QObject children and will be automatically deleted
-    // Don't manually delete to prevent double-delete
-    // delete properties;
-    // properties = nullptr;
 }
 
 

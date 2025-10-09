@@ -17,6 +17,7 @@ Curve::Curve(Scene *canvas, QQuickItem *parent)
     properties->curve()->setSegments(30);
     properties->curve()->setThickness(4);
     properties->base()->setType("Curve");
+    properties->base()->setColor(Qt::yellow);
 
     m_parserX.DefineVar(L"t", &m_tVal);
     m_parserY.DefineVar(L"t", &m_tVal);
@@ -50,9 +51,10 @@ Curve::Curve(Scene *canvas, QQuickItem *parent)
     connect(properties->curve(), &CurveProperties::thicknessChanged, this, [this]
             { buildCurveSegments(); });
 
+    shift = getcanvas()->p2c(properties->base()->pos());
+
     buildCurveSegments();
 
-    qDebug() << "[Curve::Ctor] done";
 }
 
 void Curve::updateCurveFunction()
@@ -116,6 +118,7 @@ void Curve::buildCurveSegments()
     const double t1 = tr.y();
     int invalidPts = 0;
     points.reserve(m_segmentCount + 1);
+
     for (int i = 0; i <= m_segmentCount; ++i)
     {
         const double t = t0 + ((t1 - t0) / static_cast<double>(m_segmentCount)) * i;
@@ -146,8 +149,8 @@ void Curve::buildCurveSegments()
     for (int i = 0; i < m_cachedPoints.size() - 1; ++i)
     {
         auto *segment = new SimpleLine(getcanvas(), this);
-        segment->setP1(m_cachedPoints[i]);
-        segment->setP2(m_cachedPoints[i + 1]);
+        segment->setP1(m_cachedPoints[i]-shift);
+        segment->setP2(m_cachedPoints[i + 1]-shift);
         segment->setColor(properties->base()->color());
         segment->setThickness(properties->curve()->thickness());
         addMember(segment);
@@ -162,12 +165,16 @@ QRectF Curve::boundingRect() const
     {
         return QRectF();
     }
+    QVector<QPointF> pts;
+    for (auto p : m_cachedPoints){
+        pts.append(p-shift);
+    }
     constexpr qreal penWidth = 8.0;
-    qreal minX = m_cachedPoints[0].x();
+    qreal minX = pts[0].x();
     qreal maxX = minX;
-    qreal minY = m_cachedPoints[0].y();
+    qreal minY = pts[0].y();
     qreal maxY = minY;
-    for (const QPointF &pt : m_cachedPoints)
+    for (const QPointF &pt : std::as_const(pts))
     {
         minX = qMin(minX, pt.x());
         maxX = qMax(maxX, pt.x());
@@ -188,8 +195,8 @@ bool Curve::contains(const QPointF &point) const
         return false;
     for (int i = 0; i < m_cachedPoints.size() - 1; ++i)
     {
-        const QVector2D p1(m_cachedPoints[i]);
-        const QVector2D p2(m_cachedPoints[i + 1]);
+        const QVector2D p1(m_cachedPoints[i]-shift);
+        const QVector2D p2(m_cachedPoints[i + 1]-shift);
         const QVector2D v = p2 - p1;
         const QVector2D w = pt - p1;
         const float c1 = QVector2D::dotProduct(w, v);

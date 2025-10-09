@@ -30,6 +30,7 @@ protected:
 
     // Curve::CurveFunc curveFunction() const;
 private:
+    QPointF shift ;
     void buildCurveSegments();
     void updateCurveFunction();
 

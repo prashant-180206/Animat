@@ -220,18 +220,18 @@ int Scene::scalefactor() { return gridsize; }
 
 QPointF Scene::p2c(QPointF p)
 {
-    double x = p.x() * gridsize + width() / 4;
-    double y = -p.y() * gridsize + height() / 4;
+    double x = p.x() * gridsize + width() / 2;
+    double y = -p.y() * gridsize + height() / 2;
     auto res = QPointF(x, y);
-    res = mapFromItem(this, res);
+    // res = mapFromItem(this, res);
     return res;
 }
 
 QPointF Scene::c2p(QPointF c)
 {
-    c = mapFromItem(this, c);
-    double x = (c.x() - width() / 4) / gridsize;
-    double y = (-c.y() + height() / 4) / gridsize;
+    // c = mapFromItem(this, c);
+    double x = (c.x() - width() / 2) / gridsize;
+    double y = (-c.y() + height() / 2) / gridsize;
     auto res = QPointF(x, y);
     return res;
 }

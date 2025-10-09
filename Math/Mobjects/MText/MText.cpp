@@ -6,6 +6,7 @@
 #include <QTextCursor>
 #include <QTextDocument>
 #include <QEvent>
+#include <QPalette>
 
 MText::MText(Scene *canvas, QQuickItem *parent)
     : ClickableMobject(canvas, parent)
@@ -15,18 +16,47 @@ MText::MText(Scene *canvas, QQuickItem *parent)
     setFlag(ItemIsFocusScope, true);
     setFocus(false);
 
-    m_font.setPointSize(16);
-    m_font.setFamily("Segoe UI");
+    setRichText("Type Here");
+    updateSizeToFitText();
 
-    connect(&m_panelHideTimer, &QTimer::timeout, this, [this]
+    properties->setText(new TextProperties(this));
+
+    connect(properties->text(), &TextProperties::fontFamilyChanged, this, [this]()
             {
-        m_showPanel = false;
-        emit showPanelChanged();
+        m_font.setFamily(properties->text()->fontFamily());
+        updateSizeToFitText();
         update(); });
-    m_panelHideTimer.setInterval(300);
-    m_panelHideTimer.setSingleShot(true);
 
-    setRichText("<b>TYPE HERE</b>");
+    connect(properties->text(), &TextProperties::fontSizeChanged, this, [this]()
+            {
+        m_font.setPointSize(properties->text()->fontSize());
+        updateSizeToFitText();
+        update(); });
+
+    connect(properties->text(), &TextProperties::boldChanged, this, [this]()
+            {
+        m_font.setBold(properties->text()->bold());
+        updateSizeToFitText();
+        update(); });
+
+    connect(properties->text(), &TextProperties::italicChanged, this, [this]()
+            {   
+        m_font.setItalic(properties->text()->italic());
+        updateSizeToFitText();
+        update(); });
+
+    connect(properties->text(), &TextProperties::fontWeightChanged, this, [this]()
+            {
+        m_font.setWeight(QFont::Weight(properties->text()->fontWeight()));
+        updateSizeToFitText();
+        update(); });
+
+    connect(properties->base(), &BaseProperties::colorChanged, this, [this]()
+            {
+        m_color = properties->base()->color();
+        update(); });
+
+    properties->text()->setFontSize(32);
 }
 
 QString MText::richText() const { return m_richText; }
@@ -42,9 +72,6 @@ void MText::setRichText(const QString &txt)
     }
 }
 
-//-------------------------------------------
-// Mouse & keyboard events
-//-------------------------------------------
 void MText::mousePressEvent(QMouseEvent *event)
 {
     ClickableMobject::mousePressEvent(event);
@@ -58,18 +85,6 @@ void MText::mouseMoveEvent(QMouseEvent *event)
 void MText::mouseReleaseEvent(QMouseEvent *event)
 {
     ClickableMobject::mouseReleaseEvent(event);
-}
-
-void MText::hoverEnterEvent(QHoverEvent *event)
-{
-    m_showPanel = true;
-    emit showPanelChanged();
-    update();
-}
-
-void MText::hoverLeaveEvent(QHoverEvent *event)
-{
-    m_panelHideTimer.start();
 }
 
 void MText::mouseDoubleClickEvent(QMouseEvent *event)
@@ -89,6 +104,7 @@ void MText::keyPressEvent(QKeyEvent *event)
         case Qt::Key_Enter:
             m_editing = false;
             setFocus(false);
+            updateSizeToFitText(); // ← fixes width on Enter
             break;
         case Qt::Key_Backspace:
             m_richText.chop(1);
@@ -114,9 +130,20 @@ void MText::updateSizeToFitText()
     doc.setDefaultFont(m_font);
     doc.setHtml(m_richText);
     doc.setTextWidth(-1); // Let it size freely
-    doc.adjustSize();
 
-    setWidth(doc.idealWidth() + 20); // small padding
+    if (m_editing)
+    {
+        setWidth(doc.idealWidth() + 20); // Gradually expands
+        m_committedWidth = width();      // Remember current width
+    }
+    else if (m_committedWidth == 0)
+    {
+        setWidth(100);
+    }
+    else
+    {
+        setWidth(m_committedWidth); // Clamp to last width on Enter
+    }
     setHeight(doc.size().height() + 20);
 }
 
@@ -154,19 +181,22 @@ QSGNode *MText::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
     }
 
     // Draw the text
+    // Draw the text
     QTextDocument doc;
     doc.setDefaultFont(m_font);
     doc.setHtml(m_richText);
+
+    // Force all text to m_color from properties, unless <span style="color:..."> is present
+    QTextCursor cursor(&doc);
+    cursor.select(QTextCursor::Document);
+    QTextCharFormat fmt;
+    fmt.setForeground(m_color);
+    cursor.mergeCharFormat(fmt);
+
     doc.setTextWidth(width() - 10);
     p.translate(5, 5);
     doc.drawContents(&p);
     p.translate(-5, -5);
-
-    // Draw format panel if visible
-    if (m_showPanel)
-    {
-        drawFormattingPanel(p);
-    }
 
     p.end();
 
@@ -176,38 +206,4 @@ QSGNode *MText::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
     root->appendChildNode(textureNode);
 
     return root;
-}
-
-//-------------------------------------------
-// Formatting panel rendering
-//-------------------------------------------
-void MText::drawFormattingPanel(QPainter &p)
-{
-    // const int w = 140, h = 36;
-    // QRectF panelRect(width() - w - 5, 5, w, h);
-
-    // // panel background
-    // p.setPen(Qt::NoPen);
-    // p.setBrush(QColor(35, 35, 35, 230));
-    // p.drawRoundedRect(panelRect, 6, 6);
-
-    // p.setPen(Qt::white);
-    // QFont iconFont = m_font;
-    // iconFont.setBold(true);
-    // p.setFont(iconFont);
-
-    // // Draw options: Bold, Italic, Bullet (just icons for now)
-    // p.drawText(panelRect.adjusted(10, 0, -90, 0), Qt::AlignVCenter, "B");
-    // QFont italicFont = iconFont;
-    // italicFont.setItalic(true);
-    // p.setFont(italicFont);
-    // p.drawText(panelRect.adjusted(35, 0, -60, 0), Qt::AlignVCenter, "I");
-
-    // p.setFont(m_font);
-    // p.drawText(panelRect.adjusted(65, 0, -30, 0), Qt::AlignVCenter, "•");
-
-    // // small “panel” label (optional)
-    // p.setPen(QColor(180, 180, 180));
-    // p.setFont(QFont("Segoe UI", 9));
-    // p.drawText(panelRect.adjusted(95, 0, -5, 0), Qt::AlignVCenter | Qt::AlignRight, "⋯");
 }

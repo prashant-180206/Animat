@@ -85,6 +85,16 @@ RowLayout {
     }
 
     NumberInput {
+        visible: root.mprop && root.mprop.base
+        label: "Scale:"
+        value: root.mprop && root.mprop.base ? root.mprop.base.scale : 0.0
+        func: () => {
+                  if (root.mprop && root.mprop.base)
+                  root.mprop.base.scale = newValue;
+              }
+    }
+
+    NumberInput {
         visible: root.mprop && root.mprop.polygon
         label: "Thickness:"
         value: root.mprop && root.mprop.polygon ? root.mprop.polygon.thickness : 0

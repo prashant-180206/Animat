@@ -22,21 +22,24 @@ protected:
     bool contains(const QPointF &) const override;
     QRectF boundingRect() const override;
 
-    QList<QPointF> points()const{
+    QList<QPointF> points() const
+    {
         return m_points;
     }
 
-    void setPoints(const QList<QPointF> & pts){
+    void setPoints(const QList<QPointF> &pts)
+    {
         m_points = pts;
     }
 
-    void updateLines() ;
+    void updateLines();
 
 private:
+    QPointF shift;
 
     QSGGeometryNode *m_fillNode = nullptr;
     QList<QPointF> m_points;
-    QList<SimpleLine * > m_lines{};
+    QList<SimpleLine *> m_lines{};
 
 signals:
     void borderColorChanged();

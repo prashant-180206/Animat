@@ -51,8 +51,6 @@ public:
 
     Q_INVOKABLE QStringList getAllMobjectIds();
 
-    // Tracker command execution
-
     void setbg(QColor c) { bgcol = c; }
     QColor getbg() { return bgcol; };
     QColor getBorderColor();
@@ -97,7 +95,7 @@ protected:
 private:
     int total_mobj;
     QString active_m_id = "";
-    int gridsize = 50;
+    int gridsize = 70;
     QColor bgcol;
     QHash<QString, ClickableMobject *> m_objects;
     MProperties *m_prop = new MProperties(this);

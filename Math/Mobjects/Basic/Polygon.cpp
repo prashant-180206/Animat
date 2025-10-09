@@ -22,6 +22,7 @@ Polygon::Polygon(Scene *canvas, QQuickItem *parent)
     properties->base()->setName("Polygon");
     properties->polygon()->setThickness(4);
     properties->base()->setColor(Qt::blue);
+    shift = getcanvas()->p2c(properties->base()->pos());
 }
 
 void Polygon::buildPolygon()
@@ -57,7 +58,7 @@ void Polygon::buildPolygon()
         if (p.y() > maxY)
             maxY = p.y();
 
-        pts[i] = getcanvas()->p2c(pts[i]);
+        pts[i] = getcanvas()->p2c(pts[i])-shift;
     }
 
     for (int i = 0; i < n; ++i)
@@ -79,7 +80,7 @@ void Polygon::updateLines()
     QVector<QPointF> convertedPts;
     for (const QPointF &p : std::as_const(pts))
     {
-        convertedPts.append(getcanvas()->p2c(p));
+        convertedPts.append(getcanvas()->p2c(p)-shift);
     }
     if (m_lines.size() != convertedPts.size())
     {
@@ -101,7 +102,7 @@ QSGNode *Polygon::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 
     for (int i = 0; i < pts.size(); i++)
     {
-        pts[i] = getcanvas()->p2c(pts[i]);
+        pts[i] = getcanvas()->p2c(pts[i]) - shift;
     }
 
     if (m_points.size() < 3)
@@ -165,7 +166,7 @@ QRectF Polygon::boundingRect() const
 
     for (const QPointF &p : std::as_const(pts))
     {
-        auto pt = getcanvas()->p2c(p);
+        auto pt = getcanvas()->p2c(p) - shift;
         minX = qMin(minX, pt.x());
         maxX = qMax(maxX, pt.x());
         minY = qMin(minY, pt.y());

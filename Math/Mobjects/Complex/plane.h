@@ -4,7 +4,6 @@
 #include "Math/Mobjects/Groups/group.h"
 #include "Math/Mobjects/Simple/SimpleLine.h"
 #include "Math/Mobjects/Simple/SimpleText.h"
-#include "Math/Helper/Properties/planeproperties.h"
 #include <qqmlintegration.h>
 
 class Plane : public Group
