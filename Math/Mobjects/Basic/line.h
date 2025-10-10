@@ -30,6 +30,7 @@ private:
     QPointF start_pos;
     QPointF m_p1;
     QPointF m_p2;
+    QPointF m_shift;
 signals:
     void ThicknessChanged();
 };

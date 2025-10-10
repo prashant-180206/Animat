@@ -14,6 +14,7 @@ find_package(Qt6 REQUIRED COMPONENTS Core)
 find_package(Qt6 REQUIRED COMPONENTS Quick)
 find_package(Qt6 REQUIRED COMPONENTS Core)
 find_package(Qt6 REQUIRED COMPONENTS Core)
+find_package(Qt6 REQUIRED COMPONENTS Quick)
 
 
 qt_standard_project_setup(REQUIRES 6.8)
@@ -131,7 +132,7 @@ qt_add_qml_module(appAnimat
         Resources.qrc
         SOURCES Math/Parser/parser.h Math/Parser/parser.cpp
         SOURCES Math/Parser/command.h Math/Parser/command.cpp
-        SOURCES Math/Parser/trackermanager.h Math/Parser/trackermanager.cpp
+        SOURCES Math/ValueTracker/trackermanager.h Math/ValueTracker/trackermanager.cpp
         SOURCES Math/Parser/CommandFactory.h
         SOURCES Math/Parser/Commands/makevalcommand.h Math/Parser/Commands/makevalcommand.cpp
         SOURCES Math/Parser/Commands/makeptvalcommand.h Math/Parser/Commands/makeptvalcommand.cpp
@@ -143,6 +144,7 @@ qt_add_qml_module(appAnimat
         QML_FILES
         QML_FILES QML/Components/ToolbarSections/PolygonToolBar.qml
         QML_FILES QML/Components/Elements/Input/DarkCheckBox.qml
+        SOURCES Utils/scenevalinterface.h Utils/scenevalinterface.cpp
 )
 
 target_link_libraries(appAnimat
@@ -151,6 +153,7 @@ target_link_libraries(appAnimat
 target_link_libraries(appAnimat PRIVATE Qt6::Quick)
 target_link_libraries(appAnimat PRIVATE Qt6::Core)
 target_link_libraries(appAnimat PRIVATE Qt6::Core)
+target_link_libraries(appAnimat PRIVATE Qt6::Quick)
 
 target_include_directories(appAnimat
     PRIVATE ${CMAKE_SOURCE_DIR}/lib/include

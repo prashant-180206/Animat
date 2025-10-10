@@ -12,7 +12,7 @@
 #include "Animations/animationmanager.h"
 #include "Helper/mproperties.h"
 #include "ValueTracker/playbackslider.h"
-#include "Parser/trackermanager.h"
+#include "ValueTracker/trackermanager.h"
 #include <QHash>
 #include <QJsonObject>
 #include <QJsonDocument>

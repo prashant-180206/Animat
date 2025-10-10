@@ -5,7 +5,7 @@
 #include "qqmlintegration.h"
 #include <QVariantMap>
 #include <QJsonObject>
-#include "trackermanager.h"
+#include "../ValueTracker/trackermanager.h"
 #include "CommandFactory.h"
 
 class Scene;

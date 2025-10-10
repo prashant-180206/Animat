@@ -1,5 +1,5 @@
 #include "command.h"
-#include "trackermanager.h"
+#include "../ValueTracker/trackermanager.h"
 #include "../Scene.h"
 
 

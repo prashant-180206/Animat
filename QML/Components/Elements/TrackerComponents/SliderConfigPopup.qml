@@ -11,14 +11,18 @@ Popup {
     property real currentValue: 0.0
     property point currentPoint: Qt.point(0, 0)
 
+    property real minValue: -10.0
+    property real maxValue: 10.0
+    property point minPoint: Qt.point(-10, -10)
+    property point maxPoint: Qt.point(10, 10)
+
     signal sliderRequested(string name, string type, real minVal, real maxVal, real currentVal, point currentPt, point minPt, point maxPt)
 
-    width: 350
+    width: 180
     height: trackerType === "pval" ? 300 : 200
     x: (parent.width - width) / 2
     y: (parent.height - height) / 2
 
-    modal: true
     closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
 
     background: Rectangle {
@@ -64,85 +68,20 @@ Popup {
                 font.pixelSize: 12
             }
 
-            RowLayout {
-                Layout.fillWidth: true
-
-                Text {
-                    text: "Min:"
-                    color: "#ccc"
-                    Layout.preferredWidth: 40
-                }
-
-                SpinBox {
-                    id: minValueSpinBox
-                    from: -20
-                    to: 20
-                    value: Math.min(-10, currentValue - 10)
-                    stepSize: 1
-                    editable: true
-                    Layout.fillWidth: true
-
-                    property real realValue: value / 100
-
-                    validator: DoubleValidator {
-                        bottom: -1000
-                        top: 1000
-                        decimals: 2
-                    }
-
-                    textFromValue: function (value, locale) {
-                        return (value / 100).toFixed(2);
-                    }
-
-                    valueFromText: function (text, locale) {
-                        return parseFloat(text) * 100;
-                    }
-                }
+            NumberInput{
+                value:minValue
+                label:"Min:"
+                func : ()=>{
+                          minValue = newValue
+                      }
             }
 
-            RowLayout {
-                Layout.fillWidth: true
-
-                Text {
-                    text: "Max:"
-                    color: "#ccc"
-                    Layout.preferredWidth: 40
-                }
-
-                // NumberInput{
-                //     id: maxValueSpinBox
-                //     value: -5
-                //     property real realValue: value
-                //     func: ()=>{
-                //               realValue = newValue
-                //           }
-                // }
-
-                SpinBox {
-                    id: maxValueSpinBox
-                    from: -10000
-                    to: 10000
-                    value: Math.max(1000, currentValue + 10) * 100
-                    stepSize: 1
-                    editable: true
-                    Layout.fillWidth: true
-
-                    property real realValue: value / 100
-
-                    validator: DoubleValidator {
-                        bottom: -1000
-                        top: 1000
-                        decimals: 2
-                    }
-
-                    textFromValue: function (value, locale) {
-                        return (value / 100).toFixed(2);
-                    }
-
-                    valueFromText: function (text, locale) {
-                        return parseFloat(text) * 100;
-                    }
-                }
+            NumberInput{
+                value:maxValue
+                label:"Max:"
+                func : ()=>{
+                          maxValue = newValue
+                      }
             }
         }
 
@@ -157,107 +96,22 @@ Popup {
                 font.pixelSize: 12
             }
 
-            RowLayout {
-                Layout.fillWidth: true
-
-                Text {
-                    text: "X Range:"
-                    color: "#ccc"
-                    Layout.preferredWidth: 60
-                }
-
-                SpinBox {
-                    id: minXSpinBox
-                    from: -10000
-                    to: 10000
-                    value: Math.min(-500, (currentPoint.x - 5) * 100)
-                    stepSize: 10
-                    editable: true
-                    Layout.fillWidth: true
-
-                    textFromValue: function (value, locale) {
-                        return (value / 100).toFixed(2);
-                    }
-
-                    valueFromText: function (text, locale) {
-                        return parseFloat(text) * 100;
-                    }
-                }
-
-                Text {
-                    text: "to"
-                    color: "#ccc"
-                }
-
-                SpinBox {
-                    id: maxXSpinBox
-                    from: -10000
-                    to: 10000
-                    value: Math.max(500, (currentPoint.x + 5) * 100)
-                    stepSize: 10
-                    editable: true
-                    Layout.fillWidth: true
-
-                    textFromValue: function (value, locale) {
-                        return (value / 100).toFixed(2);
-                    }
-
-                    valueFromText: function (text, locale) {
-                        return parseFloat(text) * 100;
-                    }
-                }
+            PointInput{
+                label:"X Range:"
+                pt:minPoint
+                func : (newPoint)=>{
+                          minPoint = pt2
+                      }
             }
 
-            RowLayout {
-                Layout.fillWidth: true
-
-                Text {
-                    text: "Y Range:"
-                    color: "#ccc"
-                    Layout.preferredWidth: 60
-                }
-
-                SpinBox {
-                    id: minYSpinBox
-                    from: -10000
-                    to: 10000
-                    value: Math.min(-500, (currentPoint.y - 5) * 100)
-                    stepSize: 10
-                    editable: true
-                    Layout.fillWidth: true
-
-                    textFromValue: function (value, locale) {
-                        return (value / 100).toFixed(2);
-                    }
-
-                    valueFromText: function (text, locale) {
-                        return parseFloat(text) * 100;
-                    }
-                }
-
-                Text {
-                    text: "to"
-                    color: "#ccc"
-                }
-
-                SpinBox {
-                    id: maxYSpinBox
-                    from: -10000
-                    to: 10000
-                    value: Math.max(500, (currentPoint.y + 5) * 100)
-                    stepSize: 10
-                    editable: true
-                    Layout.fillWidth: true
-
-                    textFromValue: function (value, locale) {
-                        return (value / 100).toFixed(2);
-                    }
-
-                    valueFromText: function (text, locale) {
-                        return parseFloat(text) * 100;
-                    }
-                }
+            PointInput{
+                label:"Y Range:"
+                pt:maxPoint
+                func : (newPoint)=>{
+                          maxPoint = pt2
+                      }
             }
+
         }
 
         Rectangle {
@@ -293,14 +147,9 @@ Popup {
                 Layout.fillWidth: true
                 onClicked: {
                     if (trackerType === "val") {
-                        sliderRequested(trackerName, trackerType, minValueSpinBox.realValue, maxValueSpinBox.realValue, currentValue, Qt.point(0, 0), Qt.point(0, 0), Qt.point(0, 0));
+                        sliderRequested(trackerName, trackerType, minValue, maxValue, currentValue, Qt.point(0, 0), Qt.point(0, 0), Qt.point(0, 0));
                     } else {
-                        // Convert spinbox values back to real numbers and create proper point ranges
-                        let minX = minXSpinBox.value / 100;
-                        let maxX = maxXSpinBox.value / 100;
-                        let minY = minYSpinBox.value / 100;
-                        let maxY = maxYSpinBox.value / 100;
-                        sliderRequested(trackerName, trackerType, 0, 0, 0, currentPoint, Qt.point(minX, minY), Qt.point(maxX, maxY));
+                        sliderRequested(trackerName, trackerType, 0, 0, 0, currentPoint, minPoint, maxPoint);
                     }
                     popup.close();
                 }

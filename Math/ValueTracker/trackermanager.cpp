@@ -1,5 +1,5 @@
 #include "trackermanager.h"
-#include "../ValueTracker/ValueTracker.h"
+#include "ValueTracker.h"
 
 void TrackerManager::addValueTracker(const QString &name, ValueTracker *tracker)
 {

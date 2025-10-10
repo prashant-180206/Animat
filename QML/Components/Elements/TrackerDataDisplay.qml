@@ -15,7 +15,7 @@ Rectangle {
     radius: 4
 
     // Slider management
-    property var activeSliders: ({}) // Map of slider name -> slider data
+    property var activeSliders: ({})
 
     ListModel {
         id: sliderModel
