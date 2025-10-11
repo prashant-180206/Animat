@@ -13,8 +13,8 @@ Popup {
 
     property real minValue: -10.0
     property real maxValue: 10.0
-    property point minPoint: Qt.point(-10, -10)
-    property point maxPoint: Qt.point(10, 10)
+    property point minPoint: Qt.point(-5, 5)
+    property point maxPoint: Qt.point(-5, 5)
 
     signal sliderRequested(string name, string type, real minVal, real maxVal, real currentVal, point currentPt, point minPt, point maxPt)
 
@@ -72,16 +72,16 @@ Popup {
                 value:minValue
                 label:"Min:"
                 func : ()=>{
-                          minValue = newValue
-                      }
+                           minValue = newValue
+                       }
             }
 
             NumberInput{
                 value:maxValue
                 label:"Max:"
                 func : ()=>{
-                          maxValue = newValue
-                      }
+                           maxValue = newValue
+                       }
             }
         }
 
@@ -97,19 +97,21 @@ Popup {
             }
 
             PointInput{
-                label:"X Range:"
+                label:"X Range"
                 pt:minPoint
-                func : (newPoint)=>{
-                          minPoint = pt2
-                      }
+                func : ()=>{
+                           minPoint.x =pt2.x
+                           maxPoint.x = pt2.y
+                       }
             }
 
             PointInput{
-                label:"Y Range:"
+                label:"Y Range"
                 pt:maxPoint
-                func : (newPoint)=>{
-                          maxPoint = pt2
-                      }
+                func : ()=>{
+                           minPoint.y =pt2.x
+                           maxPoint.y = pt2.y
+                       }
             }
 
         }

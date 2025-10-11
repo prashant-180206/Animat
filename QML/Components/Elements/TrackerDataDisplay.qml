@@ -172,7 +172,7 @@ Rectangle {
                                                     color: "#5ce1e6"
                                                     font.pixelSize: 12
                                                     font.bold: true
-                                                    Layout.preferredWidth: 120
+                                                    Layout.preferredWidth: 60
                                                 }
 
                                                 Text {
@@ -281,7 +281,7 @@ Rectangle {
                                                     color: "#5ce1e6"
                                                     font.pixelSize: 12
                                                     font.bold: true
-                                                    Layout.preferredWidth: 120
+                                                    Layout.preferredWidth: 60
                                                 }
 
                                                 Text {
