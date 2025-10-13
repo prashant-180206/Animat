@@ -171,45 +171,15 @@ Rectangle {
                     Layout.preferredWidth: 35
                 }
 
-                Slider {
+                MSlider {
                     id: xSlider
-                    from: minPoint.x
-                    to: maxPoint.x
-                    value: currentPoint.x
                     Layout.fillWidth: true
-
-                    background: Rectangle {
-                        x: xSlider.leftPadding
-                        y: xSlider.topPadding + xSlider.availableHeight / 2 - height / 2
-                        implicitWidth: 200
-                        implicitHeight: 3
-                        width: xSlider.availableWidth
-                        height: implicitHeight
-                        radius: 1.5
-                        color: "#444"
-
-                        Rectangle {
-                            width: xSlider.visualPosition * parent.width
-                            height: parent.height
-                            color: "#ff6b6b"
-                            radius: 1.5
-                        }
-                    }
-
-                    handle: Rectangle {
-                        x: xSlider.leftPadding + xSlider.visualPosition * (xSlider.availableWidth - width)
-                        y: xSlider.topPadding + xSlider.availableHeight / 2 - height / 2
-                        implicitWidth: 12
-                        implicitHeight: 12
-                        radius: 6
-                        color: xSlider.pressed ? "#ff8e8e" : "#ff6b6b"
-                        border.color: "#fff"
-                        border.width: 1
-                    }
-
-                    onValueChanged: {
-                        if (Math.abs(value - currentPoint.x) > 0.001) {
-                            currentPoint = Qt.point(value, currentPoint.y);
+                    minValue:  minPoint.x
+                    maxValue:  maxPoint.x
+                    currentValue:  currentPoint.x
+                    onValueUpdated: (val)=> {
+                        if (Math.abs(val - currentPoint.x) > 0.001) {
+                            currentPoint = Qt.point(val, currentPoint.y);
                             updatePtTracker();
                         }
                     }
@@ -319,6 +289,5 @@ Rectangle {
 
     function removeSlider() {
         sliderRemoved(trackerName, trackerType);
-        root.destroy();
     }
 }

@@ -11,17 +11,25 @@ Popup {
     property real currentValue: 0.0
     property point currentPoint: Qt.point(0, 0)
 
+    // For "val" tracker
     property real minValue: -10.0
     property real maxValue: 10.0
-    property point minPoint: Qt.point(-10, -10)
-    property point maxPoint: Qt.point(10, 10)
 
-    signal sliderRequested(string name, string type, real minVal, real maxVal, real currentVal, point currentPt, point minPt, point maxPt)
+    // Independent properties for point range
+    property real minX: -5.0
+    property real maxX: 5.0
+    property real minY: -5.0
+    property real maxY: 5.0
+
+    signal sliderRequested(
+        string name, string type, real minVal, real maxVal, real currentVal,
+        point currentPt, point minPt, point maxPt
+    )
 
     width: 180
     height: trackerType === "pval" ? 300 : 200
-    x: (parent.width - width) / 2
-    y: (parent.height - height) / 2
+    x: (parent ? (parent.width - width) / 2 : 0)
+    y: (parent ? (parent.height - height) / 2 : 0)
 
     closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
 
@@ -68,20 +76,20 @@ Popup {
                 font.pixelSize: 12
             }
 
-            NumberInput{
-                value:minValue
-                label:"Min:"
-                func : ()=>{
-                          minValue = newValue
-                      }
+            NumberInput {
+                value: minValue
+                label: "Min:"
+                func: () => {
+                    minValue = newValue
+                }
             }
 
-            NumberInput{
-                value:maxValue
-                label:"Max:"
-                func : ()=>{
-                          maxValue = newValue
-                      }
+            NumberInput {
+                value: maxValue
+                label: "Max:"
+                func: () => {
+                    maxValue = newValue
+                }
             }
         }
 
@@ -96,22 +104,25 @@ Popup {
                 font.pixelSize: 12
             }
 
-            PointInput{
-                label:"X Range:"
-                pt:minPoint
-                func : (newPoint)=>{
-                          minPoint = pt2
-                      }
+            // X Range Input
+            PointInput {
+                label: "X Range:"
+                pt: Qt.point(minX, maxX)
+                func: () => {
+                    minX = pt2.x
+                    maxX = pt2.y
+                }
             }
 
-            PointInput{
-                label:"Y Range:"
-                pt:maxPoint
-                func : (newPoint)=>{
-                          maxPoint = pt2
-                      }
+            // Y Range Input
+            PointInput {
+                label: "Y Range:"
+                pt: Qt.point(minY, maxY)
+                func: () => {
+                    minY = pt2.x
+                    maxY = pt2.y
+                }
             }
-
         }
 
         Rectangle {
@@ -147,11 +158,21 @@ Popup {
                 Layout.fillWidth: true
                 onClicked: {
                     if (trackerType === "val") {
-                        sliderRequested(trackerName, trackerType, minValue, maxValue, currentValue, Qt.point(0, 0), Qt.point(0, 0), Qt.point(0, 0));
+                        sliderRequested(
+                            trackerName, trackerType,
+                            minValue, maxValue, currentValue,
+                            Qt.point(0, 0), Qt.point(0, 0), Qt.point(0, 0)
+                        )
                     } else {
-                        sliderRequested(trackerName, trackerType, 0, 0, 0, currentPoint, minPoint, maxPoint);
+                        sliderRequested(
+                            trackerName, trackerType,
+                            0, 0, 0,
+                            currentPoint,
+                            Qt.point(minX, minY),
+                            Qt.point(maxX, maxY)
+                        )
                     }
-                    popup.close();
+                    popup.close()
                 }
 
                 background: Rectangle {

@@ -21,6 +21,14 @@ Rectangle {
         id: sliderModel
     }
 
+    ListModel {
+        id: trackerModel
+    }
+
+    ListModel {
+        id: pointTrackerModel
+    }
+
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: 10
@@ -53,325 +61,54 @@ Rectangle {
                     anchors.fill: parent
                     spacing: 10
 
-                    // Refresh button
-                    RowLayout {
-                        Layout.fillWidth: true
-
-                        StyledButton {
-                            text: " Refresh Data"
-                            backgroundColor: "#4a9eff"
-                            onClicked: refreshData()
-                        }
-
-                        Item {
-                            Layout.fillWidth: true
-                        }
-
-                        Text {
-                            text: `Trackers: ${trackerModel.count} | Point Trackers: ${pointTrackerModel.count}`
-                            color: "#ccc"
-                            font.pixelSize: 10
-                        }
+                    // Header with refresh button
+                    TrackerDataHeader {
+                        trackerCount: trackerModel.count
+                        pointTrackerCount: pointTrackerModel.count
+                        onRefreshRequested: refreshData()
                     }
 
-                    // Tabs for different tracker types
-                    TabBar {
-                        id: trackerTabs
-                        Layout.fillWidth: true
-
-                        TabButton {
-                            text: "📊 Value Trackers"
-                        }
-
-                        TabButton {
-                            text: "📍 Point Trackers"
-                        }
-                    }
-
-                    // Content area
-                    StackLayout {
-                        id: stackLayout
+                    // Tabs panel for trackers
+                    TrackerTabsPanel {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-                        currentIndex: trackerTabs.currentIndex
+                        valueTrackersModel: trackerModel
+                        pointTrackersModel: pointTrackerModel
 
-                        // Value Trackers Tab
-                        Rectangle {
-                            color: "#2c2c2c"
-                            border.color: "#444"
-                            border.width: 1
-                            radius: 4
-
-                            ColumnLayout {
-                                anchors.fill: parent
-                                anchors.margins: 8
-                                spacing: 4
-
-                                Text {
-                                    text: "Value Trackers (qreal):"
-                                    color: "#ccc"
-                                    font.pixelSize: 12
-                                    font.bold: true
-                                }
-
-                                ScrollView {
-                                    Layout.fillWidth: true
-                                    Layout.fillHeight: true
-                                    clip: true
-
-                                    ListView {
-                                        id: trackerListView
-                                        model: ListModel {
-                                            id: trackerModel
-                                        }
-                                        spacing: 2
-
-                                        delegate: Rectangle {
-                                            width: trackerListView.width
-                                            height: 40
-                                            color: index % 2 === 0 ? "#1a1a1a" : "#222"
-                                            radius: 4
-
-                                            MouseArea {
-                                                anchors.fill: parent
-                                                hoverEnabled: true
-                                                onClicked: {
-                                                    sliderConfigPopup.trackerName = model.name;
-                                                    sliderConfigPopup.trackerType = "val";
-                                                    sliderConfigPopup.currentValue = model.value;
-                                                    sliderConfigPopup.open();
-                                                }
-
-                                                Rectangle {
-                                                    anchors.fill: parent
-                                                    color: "#4a9eff"
-                                                    opacity: parent.containsMouse ? 0.1 : 0
-                                                    radius: 4
-
-                                                    Behavior on opacity {
-                                                        NumberAnimation {
-                                                            duration: 150
-                                                        }
-                                                    }
-                                                }
-                                            }
-
-                                            RowLayout {
-                                                anchors.fill: parent
-                                                anchors.margins: 8
-                                                spacing: 12
-
-                                                Text {
-                                                    text: "📊"
-                                                    font.pixelSize: 16
-                                                    Layout.preferredWidth: 20
-                                                }
-
-                                                Text {
-                                                    text: model.name
-                                                    color: "#5ce1e6"
-                                                    font.pixelSize: 12
-                                                    font.bold: true
-                                                    Layout.preferredWidth: 120
-                                                }
-
-                                                Text {
-                                                    text: "="
-                                                    color: "#ccc"
-                                                    font.pixelSize: 12
-                                                    Layout.preferredWidth: 15
-                                                }
-
-                                                Text {
-                                                    text: model.value.toFixed(3)
-                                                    color: "#44ff44"
-                                                    font.pixelSize: 12
-                                                    font.family: "Consolas, Monaco, monospace"
-                                                    Layout.fillWidth: true
-                                                }
-
-                                                StyledButton {
-                                                    text: "🗑️"
-                                                    backgroundColor: "#d4651a"
-                                                    Layout.preferredWidth: 30
-                                                    Layout.preferredHeight: 25
-                                                    onClicked: deleteTracker(model.name)
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
+                        onValueTrackerClicked: (name, value) => {
+                            sliderConfigPopup.trackerName = name;
+                            sliderConfigPopup.trackerType = "val";
+                            sliderConfigPopup.currentValue = value;
+                            sliderConfigPopup.open();
                         }
 
-                        // Point Trackers Tab
-                        Rectangle {
-                            color: "#2c2c2c"
-                            border.color: "#444"
-                            border.width: 1
-                            radius: 4
+                        onPointTrackerClicked: (name, xval, yval) => {
+                            sliderConfigPopup.trackerName = name;
+                            sliderConfigPopup.trackerType = "pval";
+                            sliderConfigPopup.currentPoint = Qt.point(xval, yval);
+                            sliderConfigPopup.open();
+                        }
 
-                            ColumnLayout {
-                                anchors.fill: parent
-                                anchors.margins: 8
-                                spacing: 4
+                        onValueTrackerDeleteRequested: name => {
+                            deleteTracker(name);
+                        }
 
-                                Text {
-                                    text: "Point Trackers (QPointF):"
-                                    color: "#ccc"
-                                    font.pixelSize: 12
-                                    font.bold: true
-                                }
-
-                                ScrollView {
-                                    Layout.fillWidth: true
-                                    Layout.fillHeight: true
-                                    clip: true
-
-                                    ListView {
-                                        id: pointTrackerListView
-                                        model: ListModel {
-                                            id: pointTrackerModel
-                                        }
-                                        spacing: 2
-
-                                        delegate: Rectangle {
-                                            width: pointTrackerListView.width
-                                            height: 40
-                                            color: index % 2 === 0 ? "#1a1a1a" : "#222"
-                                            radius: 4
-
-                                            MouseArea {
-                                                anchors.fill: parent
-                                                hoverEnabled: true
-                                                onClicked: {
-                                                    sliderConfigPopup.trackerName = model.name;
-                                                    sliderConfigPopup.trackerType = "pval";
-                                                    sliderConfigPopup.currentPoint = Qt.point(model.x, model.y);
-                                                    sliderConfigPopup.open();
-                                                }
-
-                                                Rectangle {
-                                                    anchors.fill: parent
-                                                    color: "#4a9eff"
-                                                    opacity: parent.containsMouse ? 0.1 : 0
-                                                    radius: 4
-
-                                                    Behavior on opacity {
-                                                        NumberAnimation {
-                                                            duration: 150
-                                                        }
-                                                    }
-                                                }
-                                            }
-
-                                            RowLayout {
-                                                anchors.fill: parent
-                                                anchors.margins: 8
-                                                spacing: 12
-
-                                                Text {
-                                                    text: "📍"
-                                                    font.pixelSize: 16
-                                                    Layout.preferredWidth: 20
-                                                }
-
-                                                Text {
-                                                    text: model.name
-                                                    color: "#5ce1e6"
-                                                    font.pixelSize: 12
-                                                    font.bold: true
-                                                    Layout.preferredWidth: 120
-                                                }
-
-                                                Text {
-                                                    text: "="
-                                                    color: "#ccc"
-                                                    font.pixelSize: 12
-                                                    Layout.preferredWidth: 15
-                                                }
-
-                                                Text {
-                                                    text: `(${model.x.toFixed(2)}, ${model.y.toFixed(2)})`
-                                                    color: "#44ff44"
-                                                    font.pixelSize: 12
-                                                    font.family: "Consolas, Monaco, monospace"
-                                                    Layout.fillWidth: true
-                                                }
-
-                                                StyledButton {
-                                                    text: "🗑️"
-                                                    backgroundColor: "#d4651a"
-                                                    Layout.preferredWidth: 30
-                                                    Layout.preferredHeight: 25
-                                                    onClicked: deletePointTracker(model.name)
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
+                        onPointTrackerDeleteRequested: name => {
+                            deletePointTracker(name);
                         }
                     }
                 }
             }
 
             // Right side - Active Sliders
-            Rectangle {
+            ActiveSlidersPanel {
                 Layout.fillWidth: true
                 Layout.preferredHeight: root.height * 0.3
                 Layout.minimumHeight: 250
-                color: "#2c2c2c"
-                border.color: "#444"
-                border.width: 1
-                radius: 4
-
-                ColumnLayout {
-                    anchors.fill: parent
-                    anchors.margins: 8
-                    spacing: 8
-
-                    Text {
-                        text: "🎛️ Active Sliders"
-                        color: "#5ce1e6"
-                        font.pixelSize: 14
-                        font.bold: true
-                        Layout.alignment: Qt.AlignHCenter
-                    }
-
-                    ListView {
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        model: sliderModel
-                        spacing: 8
-                        clip: true
-
-                        delegate: ValSlider {
-                            width: ListView.view.width
-                            trackerName: model.name
-                            trackerType: model.type
-                            minValue: model.minVal
-                            maxValue: model.maxVal
-                            currentValue: model.currentVal
-                            currentPoint: model.currentPt
-                            minPoint: model.minPt
-                            maxPoint: model.maxPt
-                            parser: root.parser
-                            onSliderRemoved: (name, type) => {
-                                removeSlider(name, type);
-                            }
-                        }
-
-                        // Empty state
-                        Text {
-                            visible: sliderModel.count === 0
-                            anchors.centerIn: parent
-                            text: "Click on a tracker to create a slider"
-                            color: "#888"
-                            font.pixelSize: 12
-                            font.italic: true
-                        }
-                    }
+                sliderModel: sliderModel
+                parser: root.parser
+                onSliderRemoved: (name, type) => {
+                    removeSlider(name, type);
                 }
             }
         }
@@ -415,8 +152,8 @@ Rectangle {
             let point = root.parser.getPointTrackerValue(name);
             pointTrackerModel.append({
                 name: name,
-                x: point.x,
-                y: point.y
+                xval: point.x,
+                yval: point.y
             });
         }
 
@@ -424,6 +161,8 @@ Rectangle {
     }
 
     function createSlider(name, type, minVal, maxVal, currentVal, currentPt, minPt, maxPt) {
+        console.log(`createSlider called: ${name}, ${type}, minVal: ${minVal}, maxVal: ${maxVal}`);
+
         // Check if slider already exists
         let key = name + "_" + type;
         if (root.activeSliders[key]) {
@@ -459,6 +198,7 @@ Rectangle {
         root.activeSliders[key] = sliderData;
 
         console.log(`Created slider for ${name} (${type}) with ranges: minPt=${actualMinPt.x},${actualMinPt.y} maxPt=${actualMaxPt.x},${actualMaxPt.y}`);
+        console.log(`SliderModel count is now: ${sliderModel.count}`);
     }
 
     function removeSlider(name, type) {
@@ -516,13 +256,4 @@ Rectangle {
     onSceneChanged: {
         refreshData();
     }
-
-    // Auto-refresh timer
-    // Timer {
-    //     id: refreshTimer
-    //     interval: 2000 // Refresh every 2 seconds
-    //     running: true
-    //     repeat: true
-    //     onTriggered: refreshData()
-    // }
 }

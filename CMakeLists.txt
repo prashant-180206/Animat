@@ -46,7 +46,6 @@ qt_add_qml_module(appAnimat
         QML/Components/Elements/TextButton.qml
         QML/Components/Elements/ActiveAnimationsList.qml
         QML/Components/Elements/ValueManagement.qml
-
         QML/Components/Elements/Input/PointInput.qml
         QML/Components/Elements/Input/AnimInput.qml
         QML/Components/Elements/Input/AnimInputComponents/AnimationFieldsPanel.qml
@@ -71,9 +70,13 @@ qt_add_qml_module(appAnimat
         QML/Components/PropertiesToolbar.qml
         QML/Components/Elements/ToolbarButton.qml
         QML/Components/Elements/ToolbarSection.qml
-
         QML/Components/ToolbarSections/AppearanceToolbarSection.qml
         QML/Components/ToolbarSections/TextToolbarSection.qml
+        QML/Components/Elements/TrackerComponents/PointTrackersList.qml
+        QML/Components/Elements/TrackerComponents/ActiveSlidersPanel.qml
+        QML/Components/Elements/TrackerComponents/ValueTrackersList.qml
+        QML/Components/Elements/TrackerComponents/TrackerDataHeader.qml
+        QML/Components/Elements/TrackerComponents/TrackerTabsPanel.qml
         # QML\Components\Elements\TrackerComponents\ValSlider.qml
     SOURCES
         Utils/Singleton.h
@@ -109,11 +112,6 @@ qt_add_qml_module(appAnimat
         Math/Helper/Properties/geometricproperties.h Math/Helper/Properties/geometricproperties.cpp
         Math/Helper/Properties/planeproperties.h Math/Helper/Properties/planeproperties.cpp
         Math/Mobjects/Complex/plane.h Math/Mobjects/Complex/plane.cpp
-
-
-
-
-
         Math/Animations/animation.h Math/Animations/animation.cpp
         Math/Animations/animationmanager.h Math/Animations/animationmanager.cpp
         Math/Animations/animTypes/MoveAnimation.h Math/Animations/animTypes/MoveAnimation.cpp
@@ -145,6 +143,7 @@ qt_add_qml_module(appAnimat
         QML_FILES QML/Components/ToolbarSections/PolygonToolBar.qml
         QML_FILES QML/Components/Elements/Input/DarkCheckBox.qml
         SOURCES Utils/scenevalinterface.h Utils/scenevalinterface.cpp
+        QML_FILES
 )
 
 target_link_libraries(appAnimat
