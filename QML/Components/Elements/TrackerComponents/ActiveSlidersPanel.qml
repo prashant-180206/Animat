@@ -11,6 +11,7 @@ Rectangle {
     // Properties
     property alias sliderModel: listView.model
     property var parser: null
+    property Scene scene: null
 
     // Signals
     signal sliderRemoved(string name, string type)

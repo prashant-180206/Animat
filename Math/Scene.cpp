@@ -8,7 +8,7 @@
 #include "ValueTracker/trackermanager.h"
 #include "Parser/parser.h"
 
-Scene::Scene()
+Scene::Scene():m_parser(new Parser(this,this))
 {
     total_mobj = 0;
     setWidth(DEF_CANVAS_WIDTH);
@@ -24,17 +24,19 @@ Scene::Scene()
 
     connect(this, &QQuickItem::windowChanged, this, [this](QQuickWindow *w)
             {
-        if(w) update(); });
+                if(w) update(); });
 
     // Connect player to animator for time updates
     connect(m_player, &ValueTracker::valueChanged, m_animator, [this](qreal v)
             {
-        if(animator()->activePacket()){
-            animator()->setTime(v/1000);
-        } });
+                if(animator()->activePacket()){
+                    animator()->setTime(v/1000);
+                } });
 
     // Connect the PlaybackSlider to the AnimationManager for dynamic duration
     m_player->setAnimationManager(m_animator);
+    connect(m_player, &ValueTracker::valueChanged,m_parser->trackerManager(), &TrackerManager::changeActiveTrackers);
+
 }
 
 Scene::~Scene()

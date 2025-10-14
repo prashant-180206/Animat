@@ -15,6 +15,8 @@ find_package(Qt6 REQUIRED COMPONENTS Quick)
 find_package(Qt6 REQUIRED COMPONENTS Core)
 find_package(Qt6 REQUIRED COMPONENTS Core)
 find_package(Qt6 REQUIRED COMPONENTS Quick)
+find_package(Qt6 REQUIRED COMPONENTS Quick)
+find_package(Qt6 REQUIRED COMPONENTS Quick)
 
 
 qt_standard_project_setup(REQUIRES 6.8)
@@ -144,6 +146,11 @@ qt_add_qml_module(appAnimat
         QML_FILES QML/Components/Elements/Input/DarkCheckBox.qml
         SOURCES Utils/scenevalinterface.h Utils/scenevalinterface.cpp
         QML_FILES
+        SOURCES
+        SOURCES
+        SOURCES Math/ValueTracker/trackerdata.h Math/ValueTracker/trackerdata.cpp
+        SOURCES Math/ValueTracker/pttrackerdata.h
+        SOURCES Math/ValueTracker/pttrackerdata.cpp
 )
 
 target_link_libraries(appAnimat
@@ -152,6 +159,8 @@ target_link_libraries(appAnimat
 target_link_libraries(appAnimat PRIVATE Qt6::Quick)
 target_link_libraries(appAnimat PRIVATE Qt6::Core)
 target_link_libraries(appAnimat PRIVATE Qt6::Core)
+target_link_libraries(appAnimat PRIVATE Qt6::Quick)
+target_link_libraries(appAnimat PRIVATE Qt6::Quick)
 target_link_libraries(appAnimat PRIVATE Qt6::Quick)
 
 target_include_directories(appAnimat

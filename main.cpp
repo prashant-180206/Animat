@@ -31,7 +31,8 @@ int main(int argc, char *argv[])
     qmlRegisterType<TrackerManager>("Animat", 1, 0, "TrackerManager");
     qmlRegisterType<FileHandler>("Animat", 1, 0, "FileHandler");
     qmlRegisterType<Parser>("Animat", 1, 0, "Parser");
-    qmlRegisterType<TrackerManager>("Animat", 1, 0, "TrackerManager");
+    qmlRegisterType<TrackerData>("Animat", 1, 0, "TrackerData");
+    qmlRegisterType<PtTrackerData>("Animat", 1, 0, "PtTrackerData");
 
     qmlRegisterSingletonType<ConstantsSingleton>("Animat", 1, 0, "Constants", [](QQmlEngine *, QJSEngine *) -> QObject *
                                                  { return new ConstantsSingleton(); });
