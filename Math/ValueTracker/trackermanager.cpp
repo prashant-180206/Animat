@@ -298,7 +298,7 @@ void TrackerManager::changeActiveTrackers(qreal t)
     emit activePtTrackersChanged();
 }
 
-void TrackerManager::onContinue()
+void TrackerManager::Continue()
 {
     for (auto item : std::as_const(m_activeTrackers))
     {
@@ -316,3 +316,4 @@ void TrackerManager::onContinue()
 
     canvas->player()->play();
 }
+

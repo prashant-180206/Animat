@@ -11,7 +11,7 @@ class TrackerData : public QQuickItem
 public:
     TrackerData();
 
-    ValueTracker *tracker() const;
+    Q_INVOKABLE  ValueTracker *tracker() const;
     void setTracker(ValueTracker *newTracker);
 
     qreal min() const;

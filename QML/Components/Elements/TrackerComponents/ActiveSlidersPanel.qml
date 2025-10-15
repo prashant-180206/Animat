@@ -204,7 +204,7 @@ Rectangle {
     }
     
     Timer {
-        interval: 100
+        interval: 1000
         running: root.trackerManager !== null && 
                  ((root.trackerManager.activeTrackers ? root.trackerManager.activeTrackers.length : 0) > 0 || 
                   (root.trackerManager.activePtTrackers ? root.trackerManager.activePtTrackers.length : 0) > 0)

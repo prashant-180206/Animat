@@ -60,6 +60,7 @@ public:
 
     Q_INVOKABLE void addSlider(const QString &s, QPointF maxval, QPointF minval, qreal aprtime);
 
+    Q_INVOKABLE void Continue();
 signals:
     void trackerAdded(const QString &name);
     void trackerRemoved(const QString &name);
@@ -71,7 +72,6 @@ signals:
 public slots:
     void clearAllTrackers();
     void changeActiveTrackers(qreal t);
-    void onContinue();
 
 private:
     Scene *canvas;
