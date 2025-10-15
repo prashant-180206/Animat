@@ -26,11 +26,6 @@ public:
         setValue(0);
     }
 
-    ~PlaybackSlider()
-    {
-        qDebug() << "PlaybackSlider destroyed";
-    }
-
     bool isPlaying() const { return m_updateTimer->isActive(); }
     qreal maxDuration() const { return calculateMaxDuration(); }
 

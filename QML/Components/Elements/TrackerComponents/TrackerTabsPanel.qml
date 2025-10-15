@@ -1,14 +1,14 @@
 import QtQuick 2.15
 import QtQuick.Controls.Basic
 import QtQuick.Layouts 1.15
+import Animat 1.0
 
 // TrackerTabsPanel - Tabbed panel for displaying tracker data
 ColumnLayout {
     id: root
 
     // Properties
-    property alias valueTrackersModel: valueTrackersList.model
-    property alias pointTrackersModel: pointTrackersList.model
+    property var trackerManager: null
 
     // Signals
     signal valueTrackerClicked(string name, real value)
@@ -42,6 +42,7 @@ ColumnLayout {
         // Value Trackers Tab
         ValueTrackersList {
             id: valueTrackersList
+            trackerManager: root.trackerManager
             onTrackerClicked: (name, value) => {
                 root.valueTrackerClicked(name, value);
             }
@@ -53,6 +54,7 @@ ColumnLayout {
         // Point Trackers Tab
         PointTrackersList {
             id: pointTrackersList
+            trackerManager: root.trackerManager
             onTrackerClicked: (name, xval, yval) => {
                 root.pointTrackerClicked(name, xval, yval);
             }

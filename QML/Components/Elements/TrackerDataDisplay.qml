@@ -10,23 +10,42 @@ Rectangle {
 
     property Scene scene: null
     property var parser: scene ? scene.getParser() : null
+    property var trackerManager: parser ? parser.trackerManager() : null
 
     color: "#1f1f1f"
     radius: 4
 
-    // Slider management
-    property var activeSliders: ({})
-
-    ListModel {
-        id: sliderModel
-    }
-
-    ListModel {
-        id: trackerModel
-    }
-
-    ListModel {
-        id: pointTrackerModel
+    // Monitor active tracker changes
+    Connections {
+        target: root.trackerManager
+        function onActiveTrackersChanged() {
+            if (root.trackerManager) {
+                console.log(`Active Value Trackers changed: ${root.trackerManager.activeTrackers.length} trackers`);
+                for (let i = 0; i < root.trackerManager.activeTrackers.length; i++) {
+                    let tracker = root.trackerManager.activeTrackers[i];
+                    console.log(`  - Value Tracker ${i}: min=${tracker.min}, max=${tracker.max}, appearTime=${tracker.appeartime}`);
+                }
+            }
+        }
+        function onActivePtTrackersChanged() {
+            if (root.trackerManager) {
+                console.log(`Active Point Trackers changed: ${root.trackerManager.activePtTrackers.length} trackers`);
+                for (let i = 0; i < root.trackerManager.activePtTrackers.length; i++) {
+                    let tracker = root.trackerManager.activePtTrackers[i];
+                    console.log(`  - Point Tracker ${i}: min=(${tracker.min.x},${tracker.min.y}), max=(${tracker.max.x},${tracker.max.y}), appearTime=${tracker.appeartime}`);
+                }
+            }
+        }
+        function onTrackerAdded(name) {
+            console.log(`Tracker added: ${name}`);
+            // Force UI update
+            root.trackerManager = root.trackerManager;
+        }
+        function onTrackerRemoved(name) {
+            console.log(`Tracker removed: ${name}`);
+            // Force UI update
+            root.trackerManager = root.trackerManager;
+        }
     }
 
     ColumnLayout {
@@ -40,6 +59,14 @@ Rectangle {
             color: "#5ce1e6"
             font.pixelSize: 16
             font.bold: true
+            Layout.alignment: Qt.AlignHCenter
+        }
+
+        // Debug information
+        Text {
+            text: `Scene: ${root.scene ? "OK" : "NULL"} | Parser: ${root.parser ? "OK" : "NULL"} | TrackerManager: ${root.trackerManager ? "OK" : "NULL"}`
+            color: "#ff6666"
+            font.pixelSize: 10
             Layout.alignment: Qt.AlignHCenter
         }
 
@@ -61,19 +88,29 @@ Rectangle {
                     anchors.fill: parent
                     spacing: 10
 
-                    // Header with refresh button
+                    // Header with count display
                     TrackerDataHeader {
-                        trackerCount: trackerModel.count
-                        pointTrackerCount: pointTrackerModel.count
-                        onRefreshRequested: refreshData()
+                        trackerCount: {
+                            if (trackerManager) {
+                                let names = trackerManager.getTrackerNames();
+                                return names ? names.length : 0;
+                            }
+                            return 0;
+                        }
+                        pointTrackerCount: {
+                            if (trackerManager) {
+                                let names = trackerManager.getPointTrackerNames();
+                                return names ? names.length : 0;
+                            }
+                            return 0;
+                        }
                     }
 
                     // Tabs panel for trackers
                     TrackerTabsPanel {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-                        valueTrackersModel: trackerModel
-                        pointTrackersModel: pointTrackerModel
+                        trackerManager: root.trackerManager
 
                         onValueTrackerClicked: (name, value) => {
                             sliderConfigPopup.trackerName = name;
@@ -101,14 +138,15 @@ Rectangle {
             }
 
             // Right side - Active Sliders
-            ActiveSlidersPanel {
+            SlidersPanel {
                 Layout.fillWidth: true
                 Layout.preferredHeight: root.height * 0.3
                 Layout.minimumHeight: 250
-                sliderModel: sliderModel
+                trackerManager: root.trackerManager
                 parser: root.parser
                 onSliderRemoved: (name, type) => {
-                    removeSlider(name, type);
+                    // Sliders are now managed by TrackerManager directly
+                    console.log(`Slider removed for ${name} (${type})`);
                 }
             }
         }
@@ -117,143 +155,23 @@ Rectangle {
     // Popup for slider configuration
     SliderConfigPopup {
         id: sliderConfigPopup
-
-        onSliderRequested: (name, type, minVal, maxVal, currentVal, currentPt, minPt, maxPt) => {
-            createSlider(name, type, minVal, maxVal, currentVal, currentPt, minPt, maxPt);
-        }
+        trackerManager: root.trackerManager
     }
 
     // JavaScript functions
-    function refreshData() {
-        if (!root.parser) {
-            console.log("Parser not available");
-            return;
-        }
-
-        // Clear existing models
-        trackerModel.clear();
-        pointTrackerModel.clear();
-
-        // Get value trackers
-        let trackerNames = root.parser.getTrackerNames();
-        for (let i = 0; i < trackerNames.length; i++) {
-            let name = trackerNames[i];
-            let value = root.parser.getTrackerValue(name);
-            trackerModel.append({
-                name: name,
-                value: value
-            });
-        }
-
-        // Get point trackers
-        let pointTrackerNames = root.parser.getPointTrackerNames();
-        for (let i = 0; i < pointTrackerNames.length; i++) {
-            let name = pointTrackerNames[i];
-            let point = root.parser.getPointTrackerValue(name);
-            pointTrackerModel.append({
-                name: name,
-                xval: point.x,
-                yval: point.y
-            });
-        }
-
-        console.log(`Loaded ${trackerNames.length} value trackers and ${pointTrackerNames.length} point trackers`);
-    }
-
-    function createSlider(name, type, minVal, maxVal, currentVal, currentPt, minPt, maxPt) {
-        console.log(`createSlider called: ${name}, ${type}, minVal: ${minVal}, maxVal: ${maxVal}`);
-
-        // Check if slider already exists
-        let key = name + "_" + type;
-        if (root.activeSliders[key]) {
-            console.log(`Slider for ${name} (${type}) already exists`);
-            return;
-        }
-
-        // Get current values from parser
-        let actualCurrentVal = currentVal;
-        let actualCurrentPt = currentPt || Qt.point(0, 0);
-        let actualMinPt = minPt || Qt.point(0, 0);
-        let actualMaxPt = maxPt || Qt.point(0, 0);
-
-        if (type === "val") {
-            actualCurrentVal = root.parser.getTrackerValue(name);
-        } else {
-            actualCurrentPt = root.parser.getPointTrackerValue(name);
-        }
-
-        // Add to slider model
-        let sliderData = {
-            name: name,
-            type: type,
-            minVal: minVal,
-            maxVal: maxVal,
-            currentVal: actualCurrentVal,
-            currentPt: actualCurrentPt,
-            minPt: type === "pval" ? actualMinPt : Qt.point(0, 0),
-            maxPt: type === "pval" ? actualMaxPt : Qt.point(0, 0)
-        };
-
-        sliderModel.append(sliderData);
-        root.activeSliders[key] = sliderData;
-
-        console.log(`Created slider for ${name} (${type}) with ranges: minPt=${actualMinPt.x},${actualMinPt.y} maxPt=${actualMaxPt.x},${actualMaxPt.y}`);
-        console.log(`SliderModel count is now: ${sliderModel.count}`);
-    }
-
-    function removeSlider(name, type) {
-        let key = name + "_" + type;
-        delete root.activeSliders[key];
-
-        // Remove from model
-        for (let i = 0; i < sliderModel.count; i++) {
-            let item = sliderModel.get(i);
-            if (item.name === name && item.type === type) {
-                sliderModel.remove(i);
-                break;
-            }
-        }
-
-        console.log(`Removed slider for ${name} (${type})`);
-    }
-
     function deleteTracker(name) {
-        if (!root.parser)
+        if (!root.trackerManager)
             return;
 
-        // Use direct delete method instead of command
-        let success = root.parser.deleteTracker(name);
-        if (success) {
-            console.log(`Deleted value tracker: ${name}`);
-            refreshData();
-            removeSlider(name, "val"); // Remove associated slider
-        } else {
-            console.log(`Failed to delete value tracker: ${name}`);
-        }
+        root.trackerManager.removeValueTracker(name);
+        console.log(`Deleted value tracker: ${name}`);
     }
 
     function deletePointTracker(name) {
-        if (!root.parser)
+        if (!root.trackerManager)
             return;
 
-        // Use direct delete method instead of command
-        let success = root.parser.deletePointTracker(name);
-        if (success) {
-            console.log(`Deleted point tracker: ${name}`);
-            refreshData();
-            removeSlider(name, "pval"); // Remove associated slider
-        } else {
-            console.log(`Failed to delete point tracker: ${name}`);
-        }
-    }
-
-    // Component initialization
-    Component.onCompleted: {
-        refreshData();
-    }
-
-    // Auto-refresh when scene changes
-    onSceneChanged: {
-        refreshData();
+        root.trackerManager.removePtValueTracker(name);
+        console.log(`Deleted point tracker: ${name}`);
     }
 }

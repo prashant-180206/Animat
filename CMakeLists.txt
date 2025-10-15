@@ -75,7 +75,7 @@ qt_add_qml_module(appAnimat
         QML/Components/ToolbarSections/AppearanceToolbarSection.qml
         QML/Components/ToolbarSections/TextToolbarSection.qml
         QML/Components/Elements/TrackerComponents/PointTrackersList.qml
-        QML/Components/Elements/TrackerComponents/ActiveSlidersPanel.qml
+        QML/Components/Elements/TrackerComponents/SlidersPanel.qml
         QML/Components/Elements/TrackerComponents/ValueTrackersList.qml
         QML/Components/Elements/TrackerComponents/TrackerDataHeader.qml
         QML/Components/Elements/TrackerComponents/TrackerTabsPanel.qml

@@ -100,6 +100,8 @@ ValueTracker *TrackerManager::createValueTracker(const QString &name, qreal init
     tracker->tracker()->setValue(initialValue);
     tracker->setParentItem(this);
     addValueTracker(name, tracker);
+    // qInfo()<<"CREATING TRACKER";
+    // qInfo()<<"Trackers : "<<getTrackerNames();
     return tracker->tracker();
 }
 
@@ -128,12 +130,48 @@ QStringList TrackerManager::getPointTrackerNames() const
     return m_ptvalueTrackers.keys();
 }
 
-QList<TrackerData*> TrackerManager::activeTrackers() const
+qreal TrackerManager::getTrackerMin(const QString &name) const
+{
+    TrackerData *data = m_valueTrackers.value(name, nullptr);
+    return data ? data->min() : 0.0;
+}
+
+qreal TrackerManager::getTrackerMax(const QString &name) const
+{
+    TrackerData *data = m_valueTrackers.value(name, nullptr);
+    return data ? data->max() : 0.0;
+}
+
+QPointF TrackerManager::getPointTrackerMin(const QString &name) const
+{
+    PtTrackerData *data = m_ptvalueTrackers.value(name, nullptr);
+    return data ? data->min() : QPointF(0, 0);
+}
+
+QPointF TrackerManager::getPointTrackerMax(const QString &name) const
+{
+    PtTrackerData *data = m_ptvalueTrackers.value(name, nullptr);
+    return data ? data->max() : QPointF(0, 0);
+}
+
+bool TrackerManager::hasSliderConfiguration(const QString &name) const
+{
+    TrackerData *data = m_valueTrackers.value(name, nullptr);
+    return data && (data->min() != data->max());
+}
+
+bool TrackerManager::hasPointSliderConfiguration(const QString &name) const
+{
+    PtTrackerData *data = m_ptvalueTrackers.value(name, nullptr);
+    return data && (data->min() != data->max());
+}
+
+QList<TrackerData *> TrackerManager::activeTrackers() const
 {
     return m_activeTrackers;
 }
 
-void TrackerManager::setActiveTrackers(const QList<TrackerData*> &newActiveTrackers)
+void TrackerManager::setActiveTrackers(const QList<TrackerData *> &newActiveTrackers)
 {
     if (m_activeTrackers == newActiveTrackers)
         return;
@@ -141,17 +179,37 @@ void TrackerManager::setActiveTrackers(const QList<TrackerData*> &newActiveTrack
     emit activeTrackersChanged();
 }
 
-QList<PtTrackerData*> TrackerManager::activePtTrackers() const
+QList<PtTrackerData *> TrackerManager::activePtTrackers() const
 {
     return m_activePtTrackers;
 }
 
-void TrackerManager::setActivePtTrackers(const QList<PtTrackerData*> &newActivePtTrackers)
+void TrackerManager::setActivePtTrackers(const QList<PtTrackerData *> &newActivePtTrackers)
 {
     if (m_activePtTrackers == newActivePtTrackers)
         return;
     m_activePtTrackers = newActivePtTrackers;
     emit activePtTrackersChanged();
+}
+
+void TrackerManager::addSlider(const QString &s, qreal maxval, qreal minval, qreal aprtime)
+{
+    if (!m_valueTrackers.contains(s))
+        return;
+    m_valueTrackers[s]->setAppeartime(aprtime);
+    m_valueTrackers[s]->setMin(minval);
+    m_valueTrackers[s]->setMax(maxval);
+    emit sliderConfigurationChanged(s);
+}
+
+void TrackerManager::addSlider(const QString &s, QPointF maxval, QPointF minval, qreal aprtime)
+{
+    if (!m_ptvalueTrackers.contains(s))
+        return;
+    m_ptvalueTrackers[s]->setAppeartime(aprtime);
+    m_ptvalueTrackers[s]->setMin(minval);
+    m_ptvalueTrackers[s]->setMax(maxval);
+    emit sliderConfigurationChanged(s);
 }
 
 void TrackerManager::clearAllTrackers()
@@ -172,50 +230,67 @@ void TrackerManager::changeActiveTrackers(qreal t)
 {
     // Safe removal from completed sets on reverse playback
     auto it = m_completedTrackers.begin();
-    while (it != m_completedTrackers.end()) {
-        if ((*it)->appeartime() > t) {
+    while (it != m_completedTrackers.end())
+    {
+        if ((*it)->appeartime() > t)
+        {
             it = m_completedTrackers.erase(it);
-        } else {
+        }
+        else
+        {
             ++it;
         }
     }
     auto itPt = m_completedPtTrackers.begin();
-    while (itPt != m_completedPtTrackers.end()) {
-        if ((*itPt)->appeartime() > t) {
+    while (itPt != m_completedPtTrackers.end())
+    {
+        if ((*itPt)->appeartime() > t)
+        {
             itPt = m_completedPtTrackers.erase(itPt);
-        } else {
+        }
+        else
+        {
             ++itPt;
         }
     }
 
     m_activeTrackers.clear();
-    for (auto item : std::as_const(m_valueTrackers)) {
-        if (item->appeartime() <= t && !m_completedTrackers.contains(item)) {
+    for (auto item : std::as_const(m_valueTrackers))
+    {
+        if (item->appeartime() <= t && !m_completedTrackers.contains(item))
+        {
             m_activeTrackers.append(item);
         }
     }
     m_activePtTrackers.clear();
-    for (auto item : std::as_const(m_ptvalueTrackers)) {
-        if (item->appeartime() <= t && !m_completedPtTrackers.contains(item)) {
+    for (auto item : std::as_const(m_ptvalueTrackers))
+    {
+        if (item->appeartime() <= t && !m_completedPtTrackers.contains(item))
+        {
             m_activePtTrackers.append(item);
         }
     }
 
     // Determine next appearance to pause player
     qreal nextAppearTime = std::numeric_limits<qreal>::max();
-    for(auto item : std::as_const(m_valueTrackers)) {
-        if (!m_completedTrackers.contains(item) && item->appeartime() < nextAppearTime) {
+    for (auto item : std::as_const(m_valueTrackers))
+    {
+        if (!m_completedTrackers.contains(item) && item->appeartime() < nextAppearTime)
+        {
             nextAppearTime = item->appeartime();
         }
     }
 
-    for(auto item : std::as_const(m_ptvalueTrackers)) {
-        if (!m_completedPtTrackers.contains(item) && item->appeartime() < nextAppearTime) {
+    for (auto item : std::as_const(m_ptvalueTrackers))
+    {
+        if (!m_completedPtTrackers.contains(item) && item->appeartime() < nextAppearTime)
+        {
             nextAppearTime = item->appeartime();
         }
     }
 
-    if (nextAppearTime != std::numeric_limits<qreal>::max() && t >= nextAppearTime) {
+    if (nextAppearTime != std::numeric_limits<qreal>::max() && t >= nextAppearTime)
+    {
         canvas->player()->pause();
     }
 
@@ -225,10 +300,12 @@ void TrackerManager::changeActiveTrackers(qreal t)
 
 void TrackerManager::onContinue()
 {
-    for (auto item : std::as_const(m_activeTrackers)) {
+    for (auto item : std::as_const(m_activeTrackers))
+    {
         m_completedTrackers.insert(item);
     }
-    for (auto item : std::as_const(m_activePtTrackers)) {
+    for (auto item : std::as_const(m_activePtTrackers))
+    {
         m_completedPtTrackers.insert(item);
     }
     m_activeTrackers.clear();
@@ -239,4 +316,3 @@ void TrackerManager::onContinue()
 
     canvas->player()->play();
 }
-

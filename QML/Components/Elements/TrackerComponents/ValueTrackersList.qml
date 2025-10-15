@@ -4,13 +4,39 @@ import QtQuick 2.15
 import QtQuick.Controls.Basic
 import QtQuick.Layouts 1.15
 import "../Input"
+import Animat 1.0
 
 // ValueTrackersList - Component for displaying value trackers
 Rectangle {
     id: root
 
     // Properties
-    property alias model: trackerListView.model
+    property var trackerManager: null
+    property var trackerNames: []
+
+    // Update tracker names when trackerManager changes
+    onTrackerManagerChanged: {
+        updateTrackerNames();
+    }
+
+    // Connect to TrackerManager signals
+    Connections {
+        target: root.trackerManager
+        function onTrackerAdded() {
+            updateTrackerNames();
+        }
+        function onTrackerRemoved() {
+            updateTrackerNames();
+        }
+    }
+
+    function updateTrackerNames() {
+        if (root.trackerManager) {
+            root.trackerNames = root.trackerManager.getTrackerNames();
+        } else {
+            root.trackerNames = [];
+        }
+    }
 
     // Signals
     signal trackerClicked(string name, real value)
@@ -33,6 +59,13 @@ Rectangle {
             font.bold: true
         }
 
+        // Debug information
+        Text {
+            text: `TrackerManager: ${root.trackerManager ? "OK" : "NULL"} | Names: ${root.trackerNames.length}`
+            color: "#ff6666"
+            font.pixelSize: 10
+        }
+
         ScrollView {
             Layout.fillWidth: true
             Layout.fillHeight: true
@@ -41,12 +74,21 @@ Rectangle {
             ListView {
                 id: trackerListView
                 spacing: 2
+                model: root.trackerNames
 
                 delegate: Rectangle {
                     id: delegateItem
                     required property int index
-                    required property string name
-                    required property real value
+                    required property string modelData
+
+                    property string name: modelData
+                    property real value: {
+                        if (root.trackerManager) {
+                            let tracker = root.trackerManager.getValueTracker(name);
+                            return tracker ? tracker.value : 0.0;
+                        }
+                        return 0.0;
+                    }
 
                     width: trackerListView.width
                     height: 40

@@ -11,15 +11,13 @@ RowLayout {
     property int trackerCount: 0
     property int pointTrackerCount: 0
 
-    // Signals
-    signal refreshRequested
-
     Layout.fillWidth: true
 
-    StyledButton {
-        text: "🔄 Refresh Data"
-        backgroundColor: "#4a9eff"
-        onClicked: root.refreshRequested()
+    Text {
+        text: "� Tracker Data Overview"
+        color: "#5ce1e6"
+        font.pixelSize: 14
+        font.bold: true
     }
 
     Item {
@@ -27,8 +25,8 @@ RowLayout {
     }
 
     Text {
-        text: `Trackers: ${root.trackerCount} | Point Trackers: ${root.pointTrackerCount}`
+        text: `Value Trackers: ${root.trackerCount} | Point Trackers: ${root.pointTrackerCount}`
         color: "#ccc"
-        font.pixelSize: 10
+        font.pixelSize: 11
     }
 }

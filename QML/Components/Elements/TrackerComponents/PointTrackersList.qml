@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick 2.15
 import QtQuick.Controls.Basic
 import QtQuick.Layouts 1.15
+import Animat 1.0
 import "../Input"
 
 // PointTrackersList - Component for displaying point trackers
@@ -10,7 +11,32 @@ Rectangle {
     id: root
 
     // Properties
-    property alias model: pointTrackerListView.model
+    property var trackerManager: null
+    property var pointTrackerNames: []
+
+    // Update tracker names when trackerManager changes
+    onTrackerManagerChanged: {
+        updatePointTrackerNames();
+    }
+
+    // Connect to TrackerManager signals
+    Connections {
+        target: root.trackerManager
+        function onTrackerAdded() {
+            updatePointTrackerNames();
+        }
+        function onTrackerRemoved() {
+            updatePointTrackerNames();
+        }
+    }
+
+    function updatePointTrackerNames() {
+        if (root.trackerManager) {
+            root.pointTrackerNames = root.trackerManager.getPointTrackerNames();
+        } else {
+            root.pointTrackerNames = [];
+        }
+    }
 
     // Signals
     signal trackerClicked(string name, real xval, real yval)
@@ -33,6 +59,13 @@ Rectangle {
             font.bold: true
         }
 
+        // Debug information
+        Text {
+            text: `TrackerManager: ${root.trackerManager ? "OK" : "NULL"} | Point Names: ${root.pointTrackerNames.length}`
+            color: "#ff6666"
+            font.pixelSize: 10
+        }
+
         ScrollView {
             Layout.fillWidth: true
             Layout.fillHeight: true
@@ -41,13 +74,23 @@ Rectangle {
             ListView {
                 id: pointTrackerListView
                 spacing: 2
+                model: root.pointTrackerNames
 
                 delegate: Rectangle {
                     id: delegateItem
                     required property int index
-                    required property string name
-                    required property real xval
-                    required property real yval
+                    required property string modelData
+
+                    property string name: modelData
+                    property point trackerPoint: {
+                        if (root.trackerManager) {
+                            let tracker = root.trackerManager.getPtValueTracker(name);
+                            return tracker ? tracker.value : Qt.point(0, 0);
+                        }
+                        return Qt.point(0, 0);
+                    }
+                    property real xval: trackerPoint.x
+                    property real yval: trackerPoint.y
 
                     width: pointTrackerListView.width
                     height: 40

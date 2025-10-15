@@ -12,8 +12,8 @@
 class Scene;
 class ValueTracker;
 
-Q_DECLARE_METATYPE(QList<TrackerData*>)
-Q_DECLARE_METATYPE(QList<PtTrackerData*>)
+Q_DECLARE_METATYPE(QList<TrackerData *>)
+Q_DECLARE_METATYPE(QList<PtTrackerData *>)
 
 class TrackerManager : public QQuickItem
 {
@@ -26,8 +26,8 @@ public:
     void addValueTracker(const QString &name, PtTrackerData *tracker);
     void removeValueTracker(const QString &name);
     void removePtValueTracker(const QString &name);
-    ValueTracker *getValueTracker(const QString &name) const;
-    PtValueTracker *getPtValueTracker(const QString &name) const;
+    Q_INVOKABLE ValueTracker *getValueTracker(const QString &name) const;
+    Q_INVOKABLE PtValueTracker *getPtValueTracker(const QString &name) const;
     bool hasValueTracker(const QString &name) const;
     bool hasPointTracker(const QString &name) const;
 
@@ -36,21 +36,34 @@ public:
     PtValueTracker *createValueTracker(const QString &name, QPointF initialValue = {0, 0});
 
     // Get all tracker names
-    QStringList getTrackerNames() const;
-    QStringList getPointTrackerNames() const;
+    Q_INVOKABLE QStringList getTrackerNames() const;
+    Q_INVOKABLE QStringList getPointTrackerNames() const;
+
+    // Get TrackerData properties
+    Q_INVOKABLE qreal getTrackerMin(const QString &name) const;
+    Q_INVOKABLE qreal getTrackerMax(const QString &name) const;
+    Q_INVOKABLE QPointF getPointTrackerMin(const QString &name) const;
+    Q_INVOKABLE QPointF getPointTrackerMax(const QString &name) const;
+    Q_INVOKABLE bool hasSliderConfiguration(const QString &name) const;
+    Q_INVOKABLE bool hasPointSliderConfiguration(const QString &name) const;
 
     // Scene access
     Scene *scene() const { return canvas; }
 
-    QList<TrackerData*> activeTrackers() const;
-    void setActiveTrackers(const QList<TrackerData*> &newActiveTrackers);
+    QList<TrackerData *> activeTrackers() const;
+    void setActiveTrackers(const QList<TrackerData *> &newActiveTrackers);
 
-    QList<PtTrackerData*> activePtTrackers() const;
-    void setActivePtTrackers(const QList<PtTrackerData*> &newActivePtTrackers);
+    QList<PtTrackerData *> activePtTrackers() const;
+    void setActivePtTrackers(const QList<PtTrackerData *> &newActivePtTrackers);
+
+    Q_INVOKABLE void addSlider(const QString &s, qreal maxval, qreal minval, qreal aprtime);
+
+    Q_INVOKABLE void addSlider(const QString &s, QPointF maxval, QPointF minval, qreal aprtime);
 
 signals:
     void trackerAdded(const QString &name);
     void trackerRemoved(const QString &name);
+    void sliderConfigurationChanged(const QString &name);
 
     void activeTrackersChanged();
     void activePtTrackersChanged();
@@ -65,14 +78,14 @@ private:
     QHash<QString, TrackerData *> m_valueTrackers;
     QHash<QString, PtTrackerData *> m_ptvalueTrackers;
 
-    QList<TrackerData*> m_activeTrackers;
-    QList<PtTrackerData*> m_activePtTrackers;
+    QList<TrackerData *> m_activeTrackers;
+    QList<PtTrackerData *> m_activePtTrackers;
 
     QSet<TrackerData *> m_completedTrackers;
-    QSet<PtTrackerData * > m_completedPtTrackers;
+    QSet<PtTrackerData *> m_completedPtTrackers;
 
-    Q_PROPERTY(QList<TrackerData*> activeTrackers READ activeTrackers WRITE setActiveTrackers NOTIFY activeTrackersChanged FINAL)
-    Q_PROPERTY(QList<PtTrackerData*> activePtTrackers READ activePtTrackers WRITE setActivePtTrackers NOTIFY activePtTrackersChanged FINAL)
+    Q_PROPERTY(QList<TrackerData *> activeTrackers READ activeTrackers WRITE setActiveTrackers NOTIFY activeTrackersChanged FINAL)
+    Q_PROPERTY(QList<PtTrackerData *> activePtTrackers READ activePtTrackers WRITE setActivePtTrackers NOTIFY activePtTrackersChanged FINAL)
 };
 
 #endif // TRACKERMANAGER_H
