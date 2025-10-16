@@ -172,10 +172,7 @@ void Scene::setFromJSON(const QJsonObject &o)
     {
         m_player->setFromJSON(data.playerData);
     }
-    // if (m_trackers && !data.trackerData.isEmpty())
-    // {
-    //     m_trackers->setFromJSON(data.trackerData);
-    // }
+
 }
 
 Scene::SceneData Scene::getData() const
@@ -262,7 +259,7 @@ QSGNode *Scene::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 
     QRectF rect = boundingRect();
     // Inset border by 0.5 pixels to avoid clipping
-    QRectF borderRect = rect.adjusted(0.5, 0.5, -0.5, -0.5);
+    QRectF borderRect = rect.adjusted(1, 1, -1, -1);
 
     // Draw background
     QSGSimpleRectNode *bgNode = new QSGSimpleRectNode(rect, getbg());

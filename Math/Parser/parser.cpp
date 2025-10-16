@@ -80,7 +80,7 @@ QStringList Parser::parseScriptToCommands(const QString &script) const
     // Split by semicolons and clean up each command
     QStringList rawCommands = script.split(';', Qt::SkipEmptyParts);
 
-    for (const QString &rawCommand : rawCommands)
+    for (const QString &rawCommand : std::as_const(rawCommands))
     {
         QString cleanCommand = rawCommand.trimmed();
 
@@ -108,7 +108,7 @@ QVariantMap Parser::getAllTrackerValues() const
 
     // Add value trackers
     QStringList valueTrackerNames = m_trackerManager->getTrackerNames();
-    for (const QString &name : valueTrackerNames)
+    for (const QString &name : std::as_const(valueTrackerNames))
     {
         ValueTracker *tracker = m_trackerManager->getValueTracker(name);
         if (tracker)
@@ -119,7 +119,7 @@ QVariantMap Parser::getAllTrackerValues() const
 
     // Add point trackers
     QStringList pointTrackerNames = getPointTrackerNames();
-    for (const QString &name : pointTrackerNames)
+    for (const QString &name : std::as_const(pointTrackerNames))
     {
         PtValueTracker *tracker = m_trackerManager->getPtValueTracker(name);
         if (tracker)
@@ -139,7 +139,7 @@ QVariantMap Parser::getValueTrackerMetadata() const
     QVariantMap metadata;
     QStringList trackerNames = m_trackerManager->getTrackerNames();
 
-    for (const QString &name : trackerNames)
+    for (const QString &name : std::as_const(trackerNames))
     {
         ValueTracker *tracker = m_trackerManager->getValueTracker(name);
         if (tracker)
@@ -161,7 +161,7 @@ QVariantMap Parser::getPointTrackerMetadata() const
     QVariantMap metadata;
     QStringList pointTrackerNames = getPointTrackerNames();
 
-    for (const QString &name : pointTrackerNames)
+    for (const QString &name : std::as_const(pointTrackerNames))
     {
         PtValueTracker *tracker = m_trackerManager->getPtValueTracker(name);
         if (tracker)
@@ -265,4 +265,9 @@ bool Parser::deletePointTracker(const QString &name)
         return true;
     }
     return false;
+}
+
+void Parser::setInitCommand(const QString &newInitCommand)
+{
+    m_initCommand += newInitCommand;
 }

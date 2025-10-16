@@ -145,7 +145,7 @@ qt_add_qml_module(appAnimat
         QML_FILES
         QML_FILES QML/Components/ToolbarSections/PolygonToolBar.qml
         QML_FILES QML/Components/Elements/Input/DarkCheckBox.qml
-        SOURCES Utils/scenevalinterface.h Utils/scenevalinterface.cpp
+        SOURCES
         QML_FILES
         SOURCES
         SOURCES

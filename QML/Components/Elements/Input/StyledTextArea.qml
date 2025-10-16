@@ -57,7 +57,7 @@ TextEdit {
             return;
         }
 
-        let keywords = ["val", "dval", "pval", "connect", "to", "from"];
+        let keywords = ["val", "dval", "pval","dpval", "connect", "to", "from"];
         let operators = ["=", "+", "-", "*", "/"];
         let delimiters = ["(", ")", "{", "}", "[", "]", ";", ","];
 
@@ -67,10 +67,10 @@ TextEdit {
 
         while ((match = regex.exec(input)) !== null) {
             tokens.push({
-                text: match[0],
-                start: match.index,
-                end: match.index + match[0].length
-            });
+                            text: match[0],
+                            start: match.index,
+                            end: match.index + match[0].length
+                        });
         }
 
         let newtext = "";
@@ -137,95 +137,100 @@ TextEdit {
 
     function generateSuggestions(word, context) {
         let allSuggestions = [
-            {
-                text: "val",
-                detail: "val name = value",
-                type: "keyword"
-            },
-            {
-                text: "pval",
-                detail: "pval name = (x, y)",
-                type: "keyword"
-            },
-            {
-                text: "dval",
-                detail: "dval name = expression",
-                type: "keyword"
-            },
-            {
-                text: "connect",
-                detail: "connect tracker to mobject",
-                type: "keyword"
-            },
-            {
-                text: "to",
-                detail: "connection keyword",
-                type: "keyword"
-            },
-            {
-                text: "from",
-                detail: "source keyword",
-                type: "keyword"
-            },
-            {
-                text: "height",
-                detail: "mobject property",
-                type: "keyword"
-            },
-            {
-                text: "width",
-                detail: "mobject property",
-                type: "keyword"
-            },
-            {
-                text: "radius",
-                detail: "circle property",
-                type: "keyword"
-            },
-            {
-                text: "thickness",
-                detail: "line property",
-                type: "keyword"
-            },
-            {
-                text: "tend",
-                detail: "function property",
-                type: "keyword"
-            },
-            , {
-                text: "position",
-                detail: "mobject property",
-                type: "keyword"
-            },
-            {
-                text: "trange",
-                detail: "curve property",
-                type: "keyword"
-            },
-            {
-                text: "lstart",
-                detail: "line property",
-                type: "keyword"
-            },
-            {
-                text: "lend",
-                detail: "line property",
-                type: "keyword"
-            },
-            ...scene.mobjectIds.map(id => {
-                return {
-                    text: id,
-                    detail: "mobject id",
-                    type: "mobject"
-                };
-            })];
+                {
+                    text: "val",
+                    detail: "val name = value",
+                    type: "keyword"
+                },
+                {
+                    text: "pval",
+                    detail: "pval name = (x, y)",
+                    type: "keyword"
+                },
+                {
+                    text: "dval",
+                    detail: "dval name = expression",
+                    type: "keyword"
+                },
+                {
+                    text: "dpval",
+                    detail: "dpval name = expression",
+                    type: "keyword"
+                },
+                {
+                    text: "connect",
+                    detail: "connect tracker to mobject",
+                    type: "keyword"
+                },
+                {
+                    text: "to",
+                    detail: "connection keyword",
+                    type: "keyword"
+                },
+                {
+                    text: "from",
+                    detail: "source keyword",
+                    type: "keyword"
+                },
+                {
+                    text: "height",
+                    detail: "mobject property",
+                    type: "keyword"
+                },
+                {
+                    text: "width",
+                    detail: "mobject property",
+                    type: "keyword"
+                },
+                {
+                    text: "radius",
+                    detail: "circle property",
+                    type: "keyword"
+                },
+                {
+                    text: "thickness",
+                    detail: "line property",
+                    type: "keyword"
+                },
+                {
+                    text: "tend",
+                    detail: "function property",
+                    type: "keyword"
+                },
+                , {
+                    text: "position",
+                    detail: "mobject property",
+                    type: "keyword"
+                },
+                {
+                    text: "trange",
+                    detail: "curve property",
+                    type: "keyword"
+                },
+                {
+                    text: "lstart",
+                    detail: "line property",
+                    type: "keyword"
+                },
+                {
+                    text: "lend",
+                    detail: "line property",
+                    type: "keyword"
+                },
+                ...scene.mobjectIds.map(id => {
+                                            return {
+                                                text: id,
+                                                detail: "mobject id",
+                                                type: "mobject"
+                                            };
+                                        })];
 
         if (context.includes("connect") && !context.includes(" to ")) {
             allSuggestions.push({
-                text: "to",
-                detail: "connect ... to ...",
-                type: "keyword"
-            });
+                                    text: "to",
+                                    detail: "connect ... to ...",
+                                    type: "keyword"
+                                });
         }
 
         return allSuggestions.filter(s => s.text.toLowerCase().startsWith(word.toLowerCase())).slice(0, 5);
@@ -246,43 +251,43 @@ TextEdit {
     }
 
     Keys.onPressed: event => {
-        const ignoredKeys = [Qt.Key_Shift, Qt.Key_Control, Qt.Key_Alt, Qt.Key_Meta, Qt.Key_Left, Qt.Key_Right, Qt.Key_Up, Qt.Key_Down, Qt.Key_Home, Qt.Key_End, Qt.Key_PageUp, Qt.Key_PageDown, Qt.Key_CapsLock];
+                        const ignoredKeys = [Qt.Key_Shift, Qt.Key_Control, Qt.Key_Alt, Qt.Key_Meta, Qt.Key_Left, Qt.Key_Right, Qt.Key_Up, Qt.Key_Down, Qt.Key_Home, Qt.Key_End, Qt.Key_PageUp, Qt.Key_PageDown, Qt.Key_CapsLock];
 
-        if (ignoredKeys.includes(event.key) || event.text === undefined || event.text === "") {
-            event.accepted = false;
-            return;
-        }
+                        if (ignoredKeys.includes(event.key) || event.text === undefined || event.text === "") {
+                            event.accepted = false;
+                            return;
+                        }
 
-        let pos = control.cursorPosition;
+                        let pos = control.cursorPosition;
 
-        // IntelliSense
-        if (intellisenseActive) {
-            if (event.key === Qt.Key_Tab || event.key === Qt.Key_Return) {
-                if (suggestions.length > 0) {
-                    acceptSuggestion(suggestions[0]);
-                    event.accepted = true;
-                    return;
-                }
-            }
-            if (event.key === Qt.Key_Escape) {
-                intellisenseActive = false;
-                event.accepted = true;
-                return;
-            }
-        }
-        if (event.key === Qt.Key_ParenLeft || event.key === Qt.Key_BraceLeft || event.key === Qt.Key_BracketLeft) {
-            control.cursorPosition += 1;
-            if (event.key === Qt.Key_ParenLeft)
-                control.insert(control.cursorPosition, ")");
-            else if (event.key === Qt.Key_BraceLeft)
-                control.insert(control.cursorPosition, "}");
-            else if (event.key === Qt.Key_BracketLeft)
-                control.insert(control.cursorPosition, "]");
-            control.cursorPosition -= 1;
-        }
+                        // IntelliSense
+                        if (intellisenseActive) {
+                            if (event.key === Qt.Key_Tab || event.key === Qt.Key_Return) {
+                                if (suggestions.length > 0) {
+                                    acceptSuggestion(suggestions[0]);
+                                    event.accepted = true;
+                                    return;
+                                }
+                            }
+                            if (event.key === Qt.Key_Escape) {
+                                intellisenseActive = false;
+                                event.accepted = true;
+                                return;
+                            }
+                        }
+                        if (event.key === Qt.Key_ParenLeft || event.key === Qt.Key_BraceLeft || event.key === Qt.Key_BracketLeft) {
+                            control.cursorPosition += 1;
+                            if (event.key === Qt.Key_ParenLeft)
+                            control.insert(control.cursorPosition, ")");
+                            else if (event.key === Qt.Key_BraceLeft)
+                            control.insert(control.cursorPosition, "}");
+                            else if (event.key === Qt.Key_BracketLeft)
+                            control.insert(control.cursorPosition, "]");
+                            control.cursorPosition -= 1;
+                        }
 
-        event.accepted = false;
-    }
+                        event.accepted = false;
+                    }
 
     // --------------------------------
     // Background

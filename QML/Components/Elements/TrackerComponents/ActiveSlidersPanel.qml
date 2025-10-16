@@ -28,15 +28,12 @@ Rectangle {
     Connections {
         target: root.trackerManager
         function onActiveTrackersChanged() {
-            console.log(`ActiveSlidersPanel: Active value trackers changed: ${root.trackerManager ? root.trackerManager.activeTrackers.length : 0}`);
             root.updateCounter++;
         }
         function onActivePtTrackersChanged() {
-            console.log(`ActiveSlidersPanel: Active point trackers changed: ${root.trackerManager ? root.trackerManager.activePtTrackers.length : 0}`);
             root.updateCounter++;
         }
         function onSliderConfigurationChanged(name) {
-            console.log(`ActiveSlidersPanel: Slider configuration changed for: ${name}`);
             root.updateCounter++;
         }
     }

@@ -8,7 +8,7 @@ Rectangle {
     id: root
 
     property Scene scene: null
-    property var parser: scene ? scene.getParser() : null
+    property Parser parser: scene ? scene.getParser() : null
 
     color: "#1f1f1f"
     radius: 4
@@ -208,6 +208,7 @@ Rectangle {
                 // Execute as tracker script using parser
                 let success = root.parser.executeScript(expression);
                 if (success) {
+                    root.parser.setInitCommand(expression)
                     addLog("🎯", `Executed: ${expression}`, "#44ff44");
                 } else {
                     addLog("❌", `Parser failed: ${expression}`, "#ff4444");

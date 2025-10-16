@@ -89,65 +89,67 @@ Window {
                     scale: 0.7
                     clip: true
                     showBorders: true
-                }
 
-                // ActiveSlidersPanel at top-left corner
-                ActiveSlidersPanel {
-                    id: activeSlidersPanel
-                    anchors.top: parent.top
-                    anchors.left: parent.left
-                    anchors.margins: 10
-                    width: 300
-                    height: Math.min(400, parent.height * 0.6)
-                    z: 20
-                    trackerManager: canvas ? canvas.getParser().trackerManager() : null
-                    parser: canvas ? canvas.getParser() : null
-                    scene: canvas
-                    
-                    onSliderRemoved: (name, type) => {
-                        console.log(`Main: Slider removed for ${name} (${type})`);
-                    }
-                }
+                    ActiveSlidersPanel {
+                        id: activeSlidersPanel
+                        anchors.top: parent.top
+                        anchors.left: parent.left
+                        anchors.margins: 10
+                        width: 300
+                        height: Math.min(400, parent.height * 0.6)
+                        z: 20
+                        trackerManager: canvas ? canvas.getParser().trackerManager() : null
+                        parser: canvas ? canvas.getParser() : null
+                        scene: canvas
 
-                // Continue button - only visible when ActiveSlidersPanel has content
-                Button {
-                    id: continueButton
-                    text: "▶ Continue"
-                    anchors.bottom: parent.bottom
-                    anchors.right: parent.right
-                    anchors.margins: 15
-                    width: 100
-                    height: 35
-                    z: 20
-                    
-                    // Only show when there are active trackers
-                    visible: activeSlidersPanel.trackerManager && 
-                             ((activeSlidersPanel.trackerManager.activeTrackers ? activeSlidersPanel.trackerManager.activeTrackers.length : 0) > 0 || 
-                              (activeSlidersPanel.trackerManager.activePtTrackers ? activeSlidersPanel.trackerManager.activePtTrackers.length : 0) > 0)
-                    
-                    background: Rectangle {
-                        color: continueButton.pressed ? "#ff6644" : (continueButton.hovered ? "#ff8844" : "#ff7744")
-                        border.color: "#ffaa88"
-                        border.width: 1
-                        radius: 6
+                        onSliderRemoved: (name, type) => {
+                                             console.log(`Main: Slider removed for ${name} (${type})`);
+                                         }
                     }
-                    
-                    contentItem: Text {
-                        text: continueButton.text
-                        color: "white"
-                        font.pixelSize: 12
-                        font.bold: true
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                    }
-                    
-                    onClicked: {
-                        if (activeSlidersPanel.trackerManager) {
-                            console.log("Main: Calling Continue() on TrackerManager");
-                            activeSlidersPanel.trackerManager.Continue();
+
+                    // Continue button - only visible when ActiveSlidersPanel has content
+                    Button {
+                        id: continueButton
+                        text: "▶ Continue"
+                        anchors.bottom: parent.bottom
+                        anchors.right: parent.right
+                        anchors.margins: 15
+                        width: 100
+                        height: 35
+                        z: 20
+
+                        // Only show when there are active trackers
+                        visible: activeSlidersPanel.trackerManager &&
+                                 ((activeSlidersPanel.trackerManager.activeTrackers ? activeSlidersPanel.trackerManager.activeTrackers.length : 0) > 0 ||
+                                  (activeSlidersPanel.trackerManager.activePtTrackers ? activeSlidersPanel.trackerManager.activePtTrackers.length : 0) > 0)
+
+                        background: Rectangle {
+                            color: continueButton.pressed ? "#ff6644" : (continueButton.hovered ? "#ff8844" : "#ff7744")
+                            border.color: "#ffaa88"
+                            border.width: 1
+                            radius: 6
+                        }
+
+                        contentItem: Text {
+                            text: continueButton.text
+                            color: "white"
+                            font.pixelSize: 12
+                            font.bold: true
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                        }
+
+                        onClicked: {
+                            if (activeSlidersPanel.trackerManager) {
+                                console.log("Main: Calling Continue() on TrackerManager");
+                                activeSlidersPanel.trackerManager.Continue();
+                            }
                         }
                     }
                 }
+
+                // ActiveSlidersPanel at top-left corner
+
             }
             // PlaybackInput positioned below the scene
             PlaybackInput {

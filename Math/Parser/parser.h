@@ -45,6 +45,8 @@ public:
     Q_INVOKABLE bool deleteTracker(const QString &name);
     Q_INVOKABLE bool deletePointTracker(const QString &name);
 
+    Q_INVOKABLE  void setInitCommand(const QString &newInitCommand);
+
 signals:
     void commandExecuted(const QString &commandName, const QString &input);
     void commandFailed(const QString &input, const QString &error);
@@ -56,6 +58,8 @@ private:
     Scene *m_scene;
     TrackerManager *m_trackerManager;
     CommandFactory m_commandFactory;
+
+    QString m_initCommand ="";
 
     // Helper methods
     QStringList parseScriptToCommands(const QString &script) const;
