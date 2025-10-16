@@ -17,7 +17,6 @@ Rectangle {
 
     property Parser parser: null
 
-    // Remove explicit width to avoid conflicts
     height: trackerType === "pval" ? 120 : 80
     color: "#2c2c2c"
     border.color: "#444"
@@ -280,7 +279,6 @@ Rectangle {
     function updatePtTracker() {
         if (!parser)
             return;
-
         parser.setPointTrackerValue(trackerName, currentPoint);
     }
 

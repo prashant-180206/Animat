@@ -10,8 +10,8 @@ Rectangle {
     id: root
 
     // Properties
-    property var trackerManager: null
-    property var parser: null
+    property TrackerManager trackerManager: null
+    property Parser parser: null
     property Scene scene: null
 
 
@@ -41,34 +41,58 @@ Rectangle {
     // Styling
     color: "#2c2c2c"
     border.color: "#ff8844"
-    border.width: 1
+    border.width: 2
     radius: 4
+    width: 300
+    
+    // Dynamic height based on number of trackers
+    height: {
+        if (!root.trackerManager) return 0;
+        
+        let activeValueTrackers = root.trackerManager.activeTrackers ? root.trackerManager.activeTrackers.length : 0;
+        let activePointTrackers = root.trackerManager.activePtTrackers ? root.trackerManager.activePtTrackers.length : 0;
+        let totalTrackers = activeValueTrackers + activePointTrackers;
+        
+        if (totalTrackers === 0) return 0;
+        
+        // Base height for header (80px) + dynamic height per tracker (60px each) + padding
+        let calculatedHeight = 80 + (totalTrackers * 60) + 20;
+        return Math.min(calculatedHeight, parent.height * 0.8); // Max 80% of parent height
+    }
+    
+    // Invisible when no trackers are active
+    visible: root.trackerManager && 
+             ((root.trackerManager.activeTrackers ? root.trackerManager.activeTrackers.length : 0) > 0 || 
+              (root.trackerManager.activePtTrackers ? root.trackerManager.activePtTrackers.length : 0) > 0)
 
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: 8
         spacing: 8
 
+        // Header
         Text {
-            text: "🎯 Active Sliders (Time-Based)"
+            text: "🎯 Active Sliders"
             color: "#ff8844"
             font.pixelSize: 14
             font.bold: true
             Layout.alignment: Qt.AlignHCenter
         }
 
+        // Debug info
         Text {
             text: {
                 if (!root.trackerManager) return "TrackerManager: NULL";
                 let activeValueTrackers = root.trackerManager.activeTrackers ? root.trackerManager.activeTrackers.length : 0;
                 let activePointTrackers = root.trackerManager.activePtTrackers ? root.trackerManager.activePtTrackers.length : 0;
-                return `Active Now: ${activeValueTrackers} Value | ${activePointTrackers} Point`;
+                return `Active: ${activeValueTrackers} Value | ${activePointTrackers} Point`;
             }
-            color: "#ff6666"
+            color: "#ffffff"
             font.pixelSize: 10
             Layout.alignment: Qt.AlignHCenter
         }
 
+        // Content area with ScrollView
         ScrollView {
             Layout.fillWidth: true
             Layout.fillHeight: true
@@ -85,6 +109,7 @@ Rectangle {
                         required property int index
 
                         Layout.fillWidth: true
+                        Layout.preferredHeight: 50 // Fixed height per slider for consistent calculations
                         trackerName: {
                             if (root.trackerManager) {
                                 let trackerNames = root.trackerManager.getTrackerNames();
@@ -133,6 +158,7 @@ Rectangle {
                         required property int index
 
                         Layout.fillWidth: true
+                        Layout.preferredHeight: 50 // Fixed height per slider for consistent calculations
                         trackerName: {
                             if (root.trackerManager) {
                                 let trackerNames = root.trackerManager.getPointTrackerNames();
@@ -142,7 +168,7 @@ Rectangle {
                                     }
                                 }
                             }
-                            return `Active Point Tracker ${index}`;
+                            return `${index}`;
                         }
                         trackerType: "pval"
                         minPoint: {
@@ -173,41 +199,7 @@ Rectangle {
                         }
                     }
                 }
-
-                Text {
-                    visible: (!root.trackerManager) || 
-                             ((root.trackerManager.activeTrackers ? root.trackerManager.activeTrackers.length : 0) === 0 && 
-                              (root.trackerManager.activePtTrackers ? root.trackerManager.activePtTrackers.length : 0) === 0)
-                    Layout.alignment: Qt.AlignHCenter
-                    text: root.trackerManager ? "No trackers active at current time" : "TrackerManager not connected"
-                    color: "#888"
-                    font.pixelSize: 12
-                    font.italic: true
-                }
-
-                Text {
-                    visible: root.trackerManager && 
-                             ((root.trackerManager.activeTrackers ? root.trackerManager.activeTrackers.length : 0) > 0 || 
-                              (root.trackerManager.activePtTrackers ? root.trackerManager.activePtTrackers.length : 0) > 0)
-                    Layout.alignment: Qt.AlignHCenter
-                    text: "⏱️ Showing sliders for trackers active at current timeline position"
-                    color: "#999"
-                    font.pixelSize: 10
-                    font.italic: true
-                    Layout.topMargin: 10
-                }
             }
-        }
-    }
-    
-    Timer {
-        interval: 1000
-        running: root.trackerManager !== null && 
-                 ((root.trackerManager.activeTrackers ? root.trackerManager.activeTrackers.length : 0) > 0 || 
-                  (root.trackerManager.activePtTrackers ? root.trackerManager.activePtTrackers.length : 0) > 0)
-        repeat: true
-        onTriggered: {
-            root.updateCounter++;
         }
     }
 }

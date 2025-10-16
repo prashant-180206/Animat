@@ -11,9 +11,16 @@ Rectangle {
     property int updateCallCount: 0
 
     property bool barvisible: false
+    
+    // Companion panel properties
+    property bool companionPanelVisible: false
+    property string companionPanelType: ""
+
+    // Signals for companion panel changes
+    signal companionPanelChanged(string panelType, bool visible)
 
     color: Constants.darkGrayA
-    width: barvisible ? 430 : 80
+    width: barvisible ? 350 : 80
 
     RowLayout {
         anchors.fill: parent
@@ -45,19 +52,9 @@ Rectangle {
                             type: "animations"
                         },
                         {
-                            emoji: "▶️",
-                            name: "Active",
-                            type: "active"
-                        },
-                        {
                             emoji: "🧮",
                             name: "Values",
                             type: "values"
-                        },
-                        {
-                            emoji: "📊",
-                            name: "Trackers",
-                            type: "trackers"
                         }
                     ]
 
@@ -98,10 +95,31 @@ Rectangle {
                             onClicked: {
                                 if (tabItem.active) {
                                     barvisible = !barvisible;
+                                    // Hide companion panel when sidebar is collapsed
+                                    if (!barvisible) {
+                                        root.companionPanelVisible = false;
+                                        root.companionPanelChanged("", false);
+                                    }
                                 } else {
                                     barvisible = true;
                                 }
                                 stackLayout.currentIndex = tabItem.index;
+                                
+                                // Manage companion panels based on selected tab
+                                if (barvisible) {
+                                    if (tabItem.modelData.type === "animations") {
+                                        root.companionPanelType = "activeAnimations";
+                                        root.companionPanelVisible = true;
+                                        root.companionPanelChanged("activeAnimations", true);
+                                    } else if (tabItem.modelData.type === "values") {
+                                        root.companionPanelType = "trackerData";
+                                        root.companionPanelVisible = true;
+                                        root.companionPanelChanged("trackerData", true);
+                                    } else {
+                                        root.companionPanelVisible = false;
+                                        root.companionPanelChanged("", false);
+                                    }
+                                }
                             }
                         }
                     }
@@ -161,23 +179,8 @@ Rectangle {
                     Layout.preferredHeight: scr.height - 20
                 }
 
-                // Active animations tab (from ControlPanel)
-                ActiveAnimationsList {
-                    manager: canvas.animator()
-                    scene: canvas
-                    Layout.preferredWidth: root.width - 80
-                    Layout.preferredHeight: scr.height - 20
-                }
-
-                // Values tab (from ControlPanel)
+                // Values tab (from ControlPanel) - combines ValueManagement and TrackerDataDisplay
                 ValueManagement {
-                    scene: canvas
-                    Layout.preferredWidth: root.width - 80
-                    Layout.preferredHeight: scr.height - 20
-                }
-
-                // Tracker Data tab
-                TrackerDataDisplay {
                     scene: canvas
                     Layout.preferredWidth: root.width - 80
                     Layout.preferredHeight: scr.height - 20

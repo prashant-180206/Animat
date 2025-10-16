@@ -11,7 +11,7 @@ class PtTrackerData : public QQuickItem
 public:
     PtTrackerData();;
 
-    PtValueTracker *tracker() const
+    Q_INVOKABLE  PtValueTracker *tracker() const
     {
         return m_tracker;
     }

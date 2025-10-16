@@ -38,6 +38,8 @@ Rectangle {
                 if (!player)
                     return;
                 player.playing ? player.pause() : player.play();
+                canvas.getParser().trackerManager().Continue();
+
             }
         }
 

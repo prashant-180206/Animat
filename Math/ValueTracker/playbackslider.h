@@ -38,6 +38,7 @@ public:
         if (value() >= maxDur)
             setValue(0);
         m_updateTimer->start();
+
         emit playingChanged();
     }
 

@@ -192,15 +192,6 @@ Scene::SceneData Scene::getData() const
     {
         data.playerData = m_player->getData().toJson().object();
     }
-    // if (m_parser)
-    // {
-    //     // Note: Parser getData() method needs to be implemented
-    //     data.parserData = QJsonObject(); // Placeholder
-    // }
-    // if (m_trackers)
-    // {
-    //     data.trackerData = m_trackers->getData().toJson().object();
-    // }
 
     // Get all mobjects data
     QJsonArray mobjectsArray;

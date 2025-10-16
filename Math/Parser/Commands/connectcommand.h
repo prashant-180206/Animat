@@ -31,6 +31,8 @@ public:
             {
                 auto func = FuncMap::ConnectFunc[propertyName];
                 func(m, t->value());
+                m->disconnect();
+                m->getProperties()->disconnect();
                 QObject::connect(t, &ValueTracker::valueChanged, m, [m, func](qreal newval)
                                  { func(m, newval); });
             }
@@ -41,6 +43,8 @@ public:
                 qInfo()<<"CALLED FOR "<<propertyName;
                 auto func = FuncMap::PtConnectFunc[propertyName];
                 func(m, pt->value());
+                m->disconnect();
+                m->getProperties()->disconnect();
                 QObject::connect(pt, &PtValueTracker::valueChanged, m, [m, func](QPointF newval)
                                  { func(m, newval); });
             }

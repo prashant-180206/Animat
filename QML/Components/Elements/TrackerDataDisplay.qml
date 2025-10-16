@@ -19,21 +19,15 @@ Rectangle {
     Connections {
         target: root.trackerManager
         function onActiveTrackersChanged() {
-            if (root.trackerManager) {
+            // Reduced logging to prevent spam
+            if (root.trackerManager && root.trackerManager.activeTrackers.length > 0) {
                 console.log(`Active Value Trackers changed: ${root.trackerManager.activeTrackers.length} trackers`);
-                for (let i = 0; i < root.trackerManager.activeTrackers.length; i++) {
-                    let tracker = root.trackerManager.activeTrackers[i];
-                    console.log(`  - Value Tracker ${i}: min=${tracker.min}, max=${tracker.max}, appearTime=${tracker.appeartime}`);
-                }
             }
         }
         function onActivePtTrackersChanged() {
-            if (root.trackerManager) {
+            // Reduced logging to prevent spam
+            if (root.trackerManager && root.trackerManager.activePtTrackers.length > 0) {
                 console.log(`Active Point Trackers changed: ${root.trackerManager.activePtTrackers.length} trackers`);
-                for (let i = 0; i < root.trackerManager.activePtTrackers.length; i++) {
-                    let tracker = root.trackerManager.activePtTrackers[i];
-                    console.log(`  - Point Tracker ${i}: min=(${tracker.min.x},${tracker.min.y}), max=(${tracker.max.x},${tracker.max.y}), appearTime=${tracker.appeartime}`);
-                }
             }
         }
         function onTrackerAdded(name) {

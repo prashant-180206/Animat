@@ -70,23 +70,23 @@ Rectangle {
     Connections {
         target: root.trackerManager
         function onTrackerAdded(name) {
-            console.log(`ActiveSlidersPanel: Tracker added: ${name}`);
+            // console.log(`ActiveSlidersPanel: Tracker added: ${name}`);
             updateSliderLists();
         }
         function onTrackerRemoved(name) {
-            console.log(`ActiveSlidersPanel: Tracker removed: ${name}`);
+            // console.log(`ActiveSlidersPanel: Tracker removed: ${name}`);
             updateSliderLists();
         }
         function onSliderConfigurationChanged(name) {
-            console.log(`ActiveSlidersPanel: Slider configuration changed for: ${name}`);
+            // console.log(`ActiveSlidersPanel: Slider configuration changed for: ${name}`);
             if (root.trackerManager) {
                 if (root.trackerManager.hasSliderConfiguration(name)) {
-                    console.log(`  - Value tracker ${name}: min=${root.trackerManager.getTrackerMin(name)}, max=${root.trackerManager.getTrackerMax(name)}`);
+                    // console.log(`  - Value tracker ${name}: min=${root.trackerManager.getTrackerMin(name)}, max=${root.trackerManager.getTrackerMax(name)}`);
                 }
                 if (root.trackerManager.hasPointSliderConfiguration(name)) {
                     let minPt = root.trackerManager.getPointTrackerMin(name);
                     let maxPt = root.trackerManager.getPointTrackerMax(name);
-                    console.log(`  - Point tracker ${name}: min=(${minPt.x},${minPt.y}), max=(${maxPt.x},${maxPt.y})`);
+                    // console.log(`  - Point tracker ${name}: min=(${minPt.x},${minPt.y}), max=(${maxPt.x},${maxPt.y})`);
                 }
             }
             updateSliderLists();
