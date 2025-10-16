@@ -309,6 +309,7 @@ Window {
         canvas.scale = Qt.binding(function() {
             return globeroot.companionPanelVisible ? 0.6 : 0.7;
         });
+
         canvas.anchors.centerIn = undefined;
         canvas.anchors.verticalCenterOffset = 0;
         canvas.anchors.horizontalCenter = sceneParentContainer.horizontalCenter;

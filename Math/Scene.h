@@ -68,7 +68,6 @@ public:
         QJsonObject animatorData;
         QJsonObject playerData;
         QJsonObject parserData;
-        QJsonObject trackerData;
         QJsonArray mobjectsData;
 
         QJsonDocument toJson() const;

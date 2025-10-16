@@ -27,8 +27,6 @@ Rectangle {
     }
 
     function updateSliderLists() {
-        console.log("ActiveSlidersPanel: Updating slider lists");
-        
         if (!root.trackerManager) {
             root.valueTrackersWithSliders = [];
             root.pointTrackersWithSliders = [];
@@ -54,8 +52,6 @@ Rectangle {
             }
         }
         root.pointTrackersWithSliders = filteredPointNames;
-
-        console.log(`Found ${filteredValueNames.length} value sliders and ${filteredPointNames.length} point sliders`);
     }
 
     // Signals
@@ -214,8 +210,8 @@ Rectangle {
 
                 // Empty state
                 Text {
-                    visible: (!root.trackerManager) || 
-                             (root.valueTrackersWithSliders.length === 0 && 
+                    visible: (!root.trackerManager) ||
+                             (root.valueTrackersWithSliders.length === 0 &&
                               root.pointTrackersWithSliders.length === 0)
                     Layout.alignment: Qt.AlignHCenter
                     text: root.trackerManager ? "No sliders configured (create sliders by clicking trackers above)" : "TrackerManager not connected"

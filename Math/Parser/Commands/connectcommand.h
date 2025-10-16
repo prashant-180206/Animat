@@ -34,8 +34,10 @@ public:
                 m->disconnect();
                 m->getProperties()->disconnect();
                 QObject::connect(t, &ValueTracker::valueChanged, m, [m, func](qreal newval)
-                                 { func(m, newval); });
+                                 { func(m, newval);
+                                 });
             }
+            emit tm->trackerAdded("");
 
             auto pt = tm->getPtValueTracker(sourceTrackerName);
             if (m && pt && FuncMap::PtConnectFunc.contains(propertyName))

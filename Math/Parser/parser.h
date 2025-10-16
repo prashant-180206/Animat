@@ -7,6 +7,9 @@
 #include <QJsonObject>
 #include "../ValueTracker/trackermanager.h"
 #include "CommandFactory.h"
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
 
 class Scene;
 
@@ -45,7 +48,53 @@ public:
     Q_INVOKABLE bool deleteTracker(const QString &name);
     Q_INVOKABLE bool deletePointTracker(const QString &name);
 
-    Q_INVOKABLE  void setInitCommand(const QString &newInitCommand);
+    Q_INVOKABLE void setInitCommand(const QString &newInitCommand);
+
+    struct ParserData
+    {
+        QString instructions;
+        TrackerManager::TrackerManagerData trackerData;
+
+        QJsonDocument toJson() const
+        {
+            QJsonObject obj;
+            obj["instructions"] = instructions;
+            obj["trackerData"] = trackerData.toJson().object();
+            return QJsonDocument(obj);
+        }
+
+        static ParserData fromJSON(const QJsonObject &o)
+        {
+            ParserData data;
+            if (o.contains("instructions") && o["instructions"].isString())
+                data.instructions = o["instructions"].toString();
+            if (o.contains("trackerData") && o["trackerData"].isObject())
+                data.trackerData = TrackerManager::TrackerManagerData::fromJSON(o["trackerData"].toObject());
+            return data;
+        }
+    };
+
+    ParserData getData() const
+    {
+        ParserData data;
+        data.instructions = m_initCommand;
+        data.trackerData = m_trackerManager->getData();
+        return data;
+    };
+    void setFromJSON(const QJsonObject &obj)
+    {
+        ParserData data = ParserData::fromJSON(obj);
+        m_trackerManager->clearAllTrackers();
+        m_initCommand = data.instructions;
+        if (!m_initCommand.isEmpty())
+            executeScript(m_initCommand);
+
+        auto doc = obj["trackerData"].toObject();
+
+        if (doc.isEmpty())
+            return;
+        m_trackerManager->setFromJSON(doc);
+    };
 
 signals:
     void commandExecuted(const QString &commandName, const QString &input);
@@ -59,7 +108,7 @@ private:
     TrackerManager *m_trackerManager;
     CommandFactory m_commandFactory;
 
-    QString m_initCommand ="";
+    QString m_initCommand = "";
 
     // Helper methods
     QStringList parseScriptToCommands(const QString &script) const;

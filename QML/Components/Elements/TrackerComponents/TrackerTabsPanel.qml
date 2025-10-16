@@ -9,6 +9,7 @@ ColumnLayout {
 
     // Properties
     property var trackerManager: null
+    Layout.fillWidth: true
 
     // Signals
     signal valueTrackerClicked(string name, real value)

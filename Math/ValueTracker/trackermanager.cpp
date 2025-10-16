@@ -38,6 +38,7 @@ void TrackerManager::addValueTracker(const QString &name, PtTrackerData *tracker
 
 void TrackerManager::removeValueTracker(const QString &name)
 {
+    qInfo()<<"REMOVING";
     if (m_valueTrackers.contains(name))
     {
         TrackerData *tracker = m_valueTrackers.take(name);
@@ -214,6 +215,7 @@ void TrackerManager::addSlider(const QString &s, QPointF maxval, QPointF minval,
 
 void TrackerManager::clearAllTrackers()
 {
+    qInfo()<<"CLEARING ALL TRACKERS";
     QStringList names = m_valueTrackers.keys();
     for (const QString &name : std::as_const(names))
     {

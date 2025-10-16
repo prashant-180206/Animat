@@ -8,7 +8,7 @@
 #include "ValueTracker/trackermanager.h"
 #include "Parser/parser.h"
 
-Scene::Scene():m_parser(new Parser(this,this))
+Scene::Scene() : m_parser(new Parser(this, this))
 {
     total_mobj = 0;
     setWidth(DEF_CANVAS_WIDTH);
@@ -35,8 +35,7 @@ Scene::Scene():m_parser(new Parser(this,this))
 
     // Connect the PlaybackSlider to the AnimationManager for dynamic duration
     m_player->setAnimationManager(m_animator);
-    connect(m_player, &ValueTracker::valueChanged,m_parser->trackerManager(), &TrackerManager::changeActiveTrackers);
-
+    connect(m_player, &ValueTracker::valueChanged, m_parser->trackerManager(), &TrackerManager::changeActiveTrackers);
 }
 
 Scene::~Scene()
@@ -134,7 +133,7 @@ void Scene::setShowBorders(bool show)
 
 void Scene::setFromJSON(const QJsonObject &o)
 {
-    qInfo() << "SCENE DATA SCENE CALLED ";
+    // qInfo() << "SCENE DATA SCENE CALLED ";
     SceneData data = SceneData::fromJSON(o);
 
     // Set basic scene properties
@@ -157,7 +156,7 @@ void Scene::setFromJSON(const QJsonObject &o)
             QString type = mobjectData["properties"].toObject()["base"].toObject()["type"].toString();
 
             this->add_mobject(type, id);
-            qInfo() << "ADDING MOBJECTS";
+            // qInfo() << "ADDING MOBJECTS";
             getMobject(id)->setfromJSON(mobjectData);
         }
     }
@@ -172,7 +171,10 @@ void Scene::setFromJSON(const QJsonObject &o)
     {
         m_player->setFromJSON(data.playerData);
     }
-
+    if (m_parser && !data.parserData.isEmpty())
+    {
+        m_parser->setFromJSON(data.parserData);
+    }
 }
 
 Scene::SceneData Scene::getData() const
@@ -193,6 +195,7 @@ Scene::SceneData Scene::getData() const
         data.playerData = m_player->getData().toJson().object();
     }
 
+
     // Get all mobjects data
     QJsonArray mobjectsArray;
     for (auto m : m_objects)
@@ -202,6 +205,12 @@ Scene::SceneData Scene::getData() const
     }
 
     data.mobjectsData = mobjectsArray;
+
+
+    if (m_parser)
+    {
+        data.parserData = m_parser->getData().toJson().object();
+    }
 
     return data;
 }
@@ -295,7 +304,6 @@ QJsonDocument Scene::SceneData::toJson() const
     o["animator"] = animatorData;
     o["player"] = playerData;
     o["parser"] = parserData;
-    o["tracker"] = trackerData;
     o["mobjects"] = mobjectsData;
     return QJsonDocument(o);
 }
@@ -311,7 +319,6 @@ Scene::SceneData Scene::SceneData::fromJSON(const QJsonObject &o)
     d.animatorData = o["animator"].toObject();
     d.playerData = o["player"].toObject();
     d.parserData = o["parser"].toObject();
-    d.trackerData = o["tracker"].toObject();
     d.mobjectsData = o["mobjects"].toArray();
     return d;
 }

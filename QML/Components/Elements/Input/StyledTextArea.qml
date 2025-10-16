@@ -15,7 +15,7 @@ TextEdit {
     property int wordStartPos: 0
     property Scene scene
 
-    width: 280
+    width: 200
     height: 120
     anchors.margins: 20
     textFormat: TextEdit.RichText
@@ -23,7 +23,7 @@ TextEdit {
     selectByMouse: true
     color: textColor
     font.family: "Consolas"
-    font.pixelSize: 14
+    font.pixelSize: 12
     text: "val foo = (bar);"
 
     // --------------------------------
