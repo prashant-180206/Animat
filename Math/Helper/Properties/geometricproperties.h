@@ -7,7 +7,7 @@
 #include <qjsonobject.h>
 #include <qqmlintegration.h>
 #include <QPointer>
-#include "planeproperties.h"
+#include "Geometric/planeproperties.h"
 
 class GeometricProperties : public QObject
 {

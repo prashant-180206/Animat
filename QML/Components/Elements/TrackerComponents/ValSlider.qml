@@ -213,50 +213,19 @@ Rectangle {
                     Layout.preferredWidth: 35
                 }
 
-                Slider {
+                MSlider {
                     id: ySlider
-                    from: minPoint.y
-                    to: maxPoint.y
-                    value: currentPoint.y
+                    minValue:  minPoint.y
+                    maxValue:  maxPoint.y
+                    currentValue: currentPoint.y
                     Layout.fillWidth: true
-
-                    background: Rectangle {
-                        x: ySlider.leftPadding
-                        y: ySlider.topPadding + ySlider.availableHeight / 2 - height / 2
-                        implicitWidth: 200
-                        implicitHeight: 3
-                        width: ySlider.availableWidth
-                        height: implicitHeight
-                        radius: 1.5
-                        color: "#444"
-
-                        Rectangle {
-                            width: ySlider.visualPosition * parent.width
-                            height: parent.height
-                            color: "#4ecdc4"
-                            radius: 1.5
-                        }
-                    }
-
-                    handle: Rectangle {
-                        x: ySlider.leftPadding + ySlider.visualPosition * (ySlider.availableWidth - width)
-                        y: ySlider.topPadding + ySlider.availableHeight / 2 - height / 2
-                        implicitWidth: 12
-                        implicitHeight: 12
-                        radius: 6
-                        color: ySlider.pressed ? "#6ee7dd" : "#4ecdc4"
-                        border.color: "#fff"
-                        border.width: 1
-                    }
-
-                    onValueChanged: {
-                        if (Math.abs(value - currentPoint.y) > 0.001) {
-                            currentPoint = Qt.point(currentPoint.x, value);
+                    onValueUpdated: (val)=> {
+                        if (Math.abs(val - currentPoint.y) > 0.001) {
+                            currentPoint = Qt.point(currentPoint.x, val);
                             updatePtTracker();
                         }
                     }
                 }
-
                 Text {
                     text: maxPoint.y.toFixed(1)
                     color: "#888"
@@ -273,7 +242,6 @@ Rectangle {
     function updateTracker() {
         if (!parser)
             return;
-
         parser.setTrackerValue(trackerName, currentValue);
     }
     function updatePtTracker() {

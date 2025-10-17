@@ -140,25 +140,18 @@ Rectangle {
                             color: index % 2 === 0 ? "#1a1a1a" : "#222"
                             radius: 2
 
-                            RowLayout {
+                            ColumnLayout {
                                 anchors.fill: parent
                                 anchors.margins: 4
                                 spacing: 8
 
                                 Text {
-                                    text: model.timestamp
+                                    text: model.timestamp + " "+model.icon
                                     color: "#666"
                                     font.pixelSize: 9
                                     font.family: "Consolas, Monaco, monospace"
                                     Layout.preferredWidth: 60
                                 }
-
-                                Text {
-                                    text: model.icon
-                                    font.pixelSize: 12
-                                    Layout.preferredWidth: 20
-                                }
-
                                 Text {
                                     id: logText
                                     text: model.message

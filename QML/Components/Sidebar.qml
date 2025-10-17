@@ -139,7 +139,7 @@ Rectangle {
             StackLayout {
                 id: stackLayout
                 anchors.fill: parent
-                anchors.margins: 20
+                anchors.margins: 6
                 currentIndex: 0
 
                 // Objects tab content (from Menubar)

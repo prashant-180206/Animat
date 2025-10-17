@@ -11,7 +11,7 @@ Rectangle {
     visible: scene && scene.SelectedMobject
 
     color: Qt.transparent
-    anchors.margins: 10
+    anchors.topMargin:  10
 
     ColumnLayout {
         spacing: 10
@@ -25,7 +25,7 @@ Rectangle {
             border.color: "#333333"
             border.width: 1
             Layout.preferredHeight: tabBar.implicitHeight + 10
-            Layout.preferredWidth: tabBar.implicitWidth + 10
+            Layout.preferredWidth: tabBar.implicitWidth + 50
 
             Rectangle {
                 anchors.centerIn: parent

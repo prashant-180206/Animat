@@ -1,5 +1,5 @@
 #include "geometricproperties.h"
-#include "planeproperties.h"
+#include "Geometric/planeproperties.h"
 
 GeometricProperties::GeometricProperties(QObject *parent)
     : QObject(parent)

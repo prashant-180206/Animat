@@ -115,15 +115,15 @@ Window {
                         }
 
                         // Continue button - only visible when ActiveSlidersPanel has content
-                        MButton {
+                        StyledButton {
                             id: continueButton
-                            textval: "▶ Continue"
+                            text: "▶ Continue"
                             anchors.bottom: parent.bottom
                             anchors.right: parent.right
                             anchors.margins: 15
                             width: 100
                             height: 35
-                            z: 20
+                            z: 101
 
                             // Only show when there are active trackers
                             visible: activeSlidersPanel.trackerManager &&
@@ -132,12 +132,12 @@ Window {
                                       (activeSlidersPanel.trackerManager.activePtTrackers ?
                                            activeSlidersPanel.trackerManager.activePtTrackers.length : 0) > 0)
 
-                            callfunc: ()=> {
-                                          if (activeSlidersPanel.trackerManager) {
-                                              console.log("Main: Calling Continue() on TrackerManager");
-                                              activeSlidersPanel.trackerManager.Continue();
-                                          }
-                                      }
+                            onClicked:  {
+                                if (activeSlidersPanel.trackerManager) {
+                                    console.log("Main: Calling Continue() on TrackerManager");
+                                    activeSlidersPanel.trackerManager.Continue();
+                                }
+                            }
                         }
 
                         MouseArea{

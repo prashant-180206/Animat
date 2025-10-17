@@ -44,7 +44,9 @@ RowLayout {
         Layout.fillWidth: true
         label: "Size:"
         pt: root.mprop && root.mprop.base ? root.mprop.base.size : Qt.point(0, 0)
-        visible: root.mprop && root.mprop.base && root.mprop.base.type !== "Line" && root.mprop.base.type !== "Curve" && root.mprop.base.type !== "Circle" &&root.mprop.geometric&& root.mprop.geometric.plane
+        visible: root.mprop && root.mprop.base && root.mprop.base.type !== "Line" &&
+                 root.mprop.base.type !== "Curve" && root.mprop.base.type !== "Circle"
+
         func: function () {
             if (root.mprop && root.mprop.base)
                 root.mprop.base.size = pt2;

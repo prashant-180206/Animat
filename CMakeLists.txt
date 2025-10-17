@@ -113,7 +113,7 @@ qt_add_qml_module(appAnimat
         Math/Helper/Properties/polygonproperties.h Math/Helper/Properties/polygonproperties.cpp
         Math/Helper/Properties/textproperties.h Math/Helper/Properties/textproperties.cpp
         Math/Helper/Properties/geometricproperties.h Math/Helper/Properties/geometricproperties.cpp
-        Math/Helper/Properties/planeproperties.h Math/Helper/Properties/planeproperties.cpp
+        Math/Helper/Properties/Geometric/planeproperties.h Math/Helper/Properties/Geometric/planeproperties.cpp
         Math/Mobjects/Complex/plane.h Math/Mobjects/Complex/plane.cpp
         Math/Animations/animation.h Math/Animations/animation.cpp
         Math/Animations/animationmanager.h Math/Animations/animationmanager.cpp
@@ -169,6 +169,7 @@ target_include_directories(appAnimat
     PRIVATE ${CMAKE_SOURCE_DIR}/Math
     PRIVATE ${CMAKE_SOURCE_DIR}/Math/Helper
     PRIVATE ${CMAKE_SOURCE_DIR}/Math/Helper/Properties
+    PRIVATE ${CMAKE_SOURCE_DIR}/Math/Helper/Properties/Geometric
     PRIVATE ${CMAKE_SOURCE_DIR}/Math/Mobjects/Base
     PRIVATE ${CMAKE_SOURCE_DIR}/Math/Mobjects/Basic
     PRIVATE ${CMAKE_SOURCE_DIR}/Math/Mobjects/Complex
