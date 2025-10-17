@@ -78,7 +78,7 @@ qt_add_qml_module(appAnimat
         QML/Components/Elements/TrackerComponents/SlidersPanel.qml
         QML/Components/Elements/TrackerComponents/ActiveSlidersPanel.qml
         QML/Components/Elements/TrackerComponents/ValueTrackersList.qml
-        QML/Components/Elements/TrackerComponents/TrackerDataHeader.qml
+
         QML/Components/Elements/TrackerComponents/TrackerTabsPanel.qml
         # QML\Components\Elements\TrackerComponents\ValSlider.qml
     SOURCES

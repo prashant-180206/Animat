@@ -31,13 +31,13 @@ void Plane::setupProperties()
     properties->geometric()->plane()->setLineColor(QColor(68, 68, 68));     // Dark gray grid lines
     properties->geometric()->plane()->setLabelColor(QColor(204, 204, 204)); // Light gray labels
     properties->geometric()->plane()->setStep(1.0);                         // 1 unit grid step
-    properties->geometric()->plane()->setWidth(10.0);                       // Default width
-    properties->geometric()->plane()->setHeight(10.0);                      // Default height
+    properties->geometric()->plane()->setWidth(20.0);                       // Default width
+    properties->geometric()->plane()->setHeight(12.0);                      // Default height
     properties->geometric()->plane()->setShowGrid(true);                    // Show grid by default
     properties->geometric()->plane()->setShowAxes(true);                    // Show axes by default
     properties->geometric()->plane()->setShowLabels(true);                  // Show labels by default
     properties->geometric()->plane()->setAxisThickness(2.0);                // Thicker axis lines
-    properties->geometric()->plane()->setGridThickness(1.0);                // Thinner grid lines
+    properties->geometric()->plane()->setGridThickness(2.0);                // Thinner grid lines
     properties->geometric()->plane()->setLabelFontSize(12);                 // 12pt font size
 
     // Connect to property changes
@@ -185,7 +185,7 @@ void Plane::createLabels()
             continue; // Skip origin
 
         SimpleText *label = new SimpleText(getcanvas(), this);
-        label->setText(QString::number(x));
+        label->setText(QString::number(x*-1));
         label->setFontSize(properties->geometric()->plane()->labelFontSize());
         label->setColor(properties->geometric()->plane()->labelColor());
         label->setPosition(QPointF(x * getcanvas()->scalefactor(), -20)); // Position below x-axis

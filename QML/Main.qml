@@ -149,6 +149,7 @@ Window {
                             width: parent.width - 80
                             height: 40
                             hoverEnabled: true
+                            z:99
                             PlaybackInput {
                                 id: playbackControls
                                 player: canvas.player()

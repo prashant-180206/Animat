@@ -111,21 +111,21 @@ Rectangle {
         }
 
         // Debug info
-        Text {
-            text: {
-                if (!root.trackerManager) return "TrackerManager: NULL";
+        // Text {
+        //     text: {
+        //         if (!root.trackerManager) return "TrackerManager: NULL";
                 
-                let allTrackers = root.trackerManager.getTrackerNames().length;
-                let allPointTrackers = root.trackerManager.getPointTrackerNames().length;
-                let configuredSliders = root.valueTrackersWithSliders.length;
-                let configuredPointSliders = root.pointTrackersWithSliders.length;
+        //         let allTrackers = root.trackerManager.getTrackerNames().length;
+        //         let allPointTrackers = root.trackerManager.getPointTrackerNames().length;
+        //         let configuredSliders = root.valueTrackersWithSliders.length;
+        //         let configuredPointSliders = root.pointTrackersWithSliders.length;
                 
-                return `Trackers: ${allTrackers} (${configuredSliders} with sliders) | Point Trackers: ${allPointTrackers} (${configuredPointSliders} with sliders)`;
-            }
-            color: "#ff6666"
-            font.pixelSize: 10
-            Layout.alignment: Qt.AlignHCenter
-        }
+        //         return `Trackers: ${allTrackers} (${configuredSliders} with sliders) | Point Trackers: ${allPointTrackers} (${configuredPointSliders} with sliders)`;
+        //     }
+        //     color: "#ff6666"
+        //     font.pixelSize: 10
+        //     Layout.alignment: Qt.AlignHCenter
+        // }
 
         ScrollView {
             Layout.fillWidth: true
@@ -133,7 +133,7 @@ Rectangle {
             clip: true
 
             ColumnLayout {
-                width: parent.width
+                width: root.width-20
                 spacing: 8
 
                 // Value trackers sliders - only show trackers with slider configuration (min != max)
@@ -214,7 +214,7 @@ Rectangle {
                              (root.valueTrackersWithSliders.length === 0 &&
                               root.pointTrackersWithSliders.length === 0)
                     Layout.alignment: Qt.AlignHCenter
-                    text: root.trackerManager ? "No sliders configured (create sliders by clicking trackers above)" : "TrackerManager not connected"
+                    text: root.trackerManager ? "No sliders configured" : "TrackerManager not connected"
                     color: "#888"
                     font.pixelSize: 12
                     font.italic: true

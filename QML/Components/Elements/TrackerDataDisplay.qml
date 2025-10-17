@@ -43,7 +43,7 @@ Rectangle {
     }
 
     ColumnLayout {
-        anchors.fill: parent
+        width: parent.width
         anchors.margins: 10
         spacing: 10
 
@@ -66,7 +66,7 @@ Rectangle {
 
         // Main content - split into left (data) and right (sliders)
         ColumnLayout {
-            Layout.fillWidth: true
+            Layout.preferredWidth: root.width
             Layout.fillHeight: true
             Layout.minimumHeight: 200
             spacing: 10
@@ -82,27 +82,9 @@ Rectangle {
                     anchors.fill: parent
                     spacing: 10
 
-                    // Header with count display
-                    TrackerDataHeader {
-                        trackerCount: {
-                            if (trackerManager) {
-                                let names = trackerManager.getTrackerNames();
-                                return names ? names.length : 0;
-                            }
-                            return 0;
-                        }
-                        pointTrackerCount: {
-                            if (trackerManager) {
-                                let names = trackerManager.getPointTrackerNames();
-                                return names ? names.length : 0;
-                            }
-                            return 0;
-                        }
-                    }
-
                     // Tabs panel for trackers
                     TrackerTabsPanel {
-                        Layout.fillWidth: true
+                        Layout.preferredWidth: root.width
                         Layout.fillHeight: true
                         trackerManager: root.trackerManager
 
@@ -133,7 +115,7 @@ Rectangle {
 
             // Right side - Active Sliders
             SlidersPanel {
-                Layout.fillWidth: true
+                Layout.preferredWidth: root.width
                 Layout.preferredHeight: root.height * 0.3
                 Layout.minimumHeight: 250
                 trackerManager: root.trackerManager

@@ -86,14 +86,15 @@ Rectangle {
                         Layout.fillWidth: true
                     } // Spacer
 
-                    StyledButton {
-                        text: "📋 Clear Logs"
-                        backgroundColor: "#d4651a"
-                        isDestructive: true
-                        onClicked: {
-                            logModel.clear();
-                            addLog("📋", "Logs cleared", "#5ce1e6");
-                        }
+                }
+
+                StyledButton {
+                    text: "📋 Clear Logs"
+                    backgroundColor: "#d4651a"
+                    isDestructive: true
+                    onClicked: {
+                        logModel.clear();
+                        addLog("📋", "Logs cleared", "#5ce1e6");
                     }
                 }
             }

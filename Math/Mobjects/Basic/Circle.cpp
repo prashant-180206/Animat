@@ -39,7 +39,7 @@ void Circle::updatePoints()
         double y = properties->circle()->radius() *  qSin(angle);
         points.append(QPointF(x, y));
     }
-    setPoints(points);      // <--- REMOVE the subtraction!
+    setPoints(points);
     buildPolygon();
 }
 
