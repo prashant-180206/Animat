@@ -91,6 +91,7 @@ qt_add_qml_module(appAnimat
         Math/ValueTracker/ptvaluetracker.h Math/ValueTracker/ptvaluetracker.cpp
         Math/ValueTracker/playbackslider.h Math/ValueTracker/playbackslider.cpp
         Math/Mobjects/Basic/line.h Math/Mobjects/Basic/line.cpp
+        Math/Mobjects/Basic/Vector.h Math/Mobjects/Basic/Vector.cpp
         Math/Mobjects/Base/Mobject.h Math/Mobjects/Base/Mobject.cpp
         Math/Mobjects/Groups/Group.h Math/Mobjects/Groups/Group.cpp
         Math/Mobjects/Groups/VGroup.h Math/Mobjects/Groups/VGroup.cpp
@@ -101,9 +102,11 @@ qt_add_qml_module(appAnimat
         Math/Mobjects/Basic/Circle.h Math/Mobjects/Basic/Circle.cpp
         Math/Mobjects/MText/MText.h Math/Mobjects/MText/MText.cpp
         Math/Mobjects/Simple/SimpleLine.h Math/Mobjects/Simple/SimpleLine.cpp
+        Math/Mobjects/Simple/SimpleVector.h Math/Mobjects/Simple/SimpleVector.cpp
         Math/Mobjects/Simple/SimpleDot.h Math/Mobjects/Simple/SimpleDot.cpp
         Math/Mobjects/Simple/SimpleText.h Math/Mobjects/Simple/SimpleText.cpp
         Math/Mobjects/Basic/Dot.h Math/Mobjects/Basic/Dot.cpp
+        Math/Mobjects/Geometric/Angle.h Math/Mobjects/Geometric/Angle.cpp
         Math/Mobjects/Base/ClickableMobject.h Math/Mobjects/Base/ClickableMobject.cpp
         Math/Helper/mproperties.h Math/Helper/mproperties.cpp
         Math/Helper/Properties/baseproperties.h Math/Helper/Properties/baseproperties.cpp
@@ -114,6 +117,7 @@ qt_add_qml_module(appAnimat
         Math/Helper/Properties/textproperties.h Math/Helper/Properties/textproperties.cpp
         Math/Helper/Properties/geometricproperties.h Math/Helper/Properties/geometricproperties.cpp
         Math/Helper/Properties/Geometric/planeproperties.h Math/Helper/Properties/Geometric/planeproperties.cpp
+        Math/Helper/Properties/Geometric/angleproperties.h Math/Helper/Properties/Geometric/angleproperties.cpp
         Math/Mobjects/Complex/plane.h Math/Mobjects/Complex/plane.cpp
         Math/Animations/animation.h Math/Animations/animation.cpp
         Math/Animations/animationmanager.h Math/Animations/animationmanager.cpp
@@ -142,6 +146,7 @@ qt_add_qml_module(appAnimat
         SOURCES Math/Parser/Commands/connectcommand.h Math/Parser/Commands/connectcommand.cpp
         QML_FILES QML/Components/Elements/Input/MSlider.qml
         QML_FILES QML/Components/ToolbarSections/SpecialSection.qml
+        QML_FILES QML/Components/ToolbarSections/GeometricToolbarSection.qml
         QML_FILES
         QML_FILES QML/Components/ToolbarSections/PolygonToolBar.qml
         QML_FILES QML/Components/Elements/Input/DarkCheckBox.qml
@@ -173,6 +178,7 @@ target_include_directories(appAnimat
     PRIVATE ${CMAKE_SOURCE_DIR}/Math/Mobjects/Base
     PRIVATE ${CMAKE_SOURCE_DIR}/Math/Mobjects/Basic
     PRIVATE ${CMAKE_SOURCE_DIR}/Math/Mobjects/Complex
+    PRIVATE ${CMAKE_SOURCE_DIR}/Math/Mobjects/Geometric
     PRIVATE ${CMAKE_SOURCE_DIR}/Math/Mobjects/Groups
     PRIVATE ${CMAKE_SOURCE_DIR}/Math/Mobjects/Simple
     PRIVATE ${CMAKE_SOURCE_DIR}/Math/Mobjects/MText

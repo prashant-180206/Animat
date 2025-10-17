@@ -118,5 +118,30 @@ Rectangle {
                 }
             }
         }
+
+        // ====== GEOMETRIC SECTION ======
+        Rectangle {
+            Layout.alignment: Qt.AlignHCenter
+            Layout.preferredHeight: geometricsection.implicitHeight + 10
+            Layout.preferredWidth: geometricsection.implicitWidth + 10
+            color: "#252525"
+            radius: 6
+            border.color: "#333333"
+            border.width: 1
+            Layout.margins: 4
+            visible: geometricsection.visible
+
+            Rectangle {
+                width: geometricsection.implicitWidth
+                height: geometricsection.implicitHeight
+                color: parent.color
+                anchors.centerIn: parent
+                GeometricToolbarSection {
+                    id: geometricsection
+                    mprop: scene && scene.SelectedMobject ? root.scene.SelectedMobject.getProperties() : null
+                    anchors.centerIn: parent
+                }
+            }
+        }
     }
 }

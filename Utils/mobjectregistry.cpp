@@ -7,12 +7,14 @@ MobjectRegistry::MobjectRegistry(QObject *parent)
     m_items = {
         {"Circle", "qrc:assets/icons/circle.svg"},
         {"Line", "qrc:assets/icons/matrix.svg"},
+        {"Vector", "qrc:assets/icons/matrix.svg"},
         {"Text", "qrc:assets/icons/text.svg"},
         {"Curve", "qrc:assets/icons/matrix.svg"},
         {"Rectangle", "qrc:assets/icons/rect.svg"},
         {"Polygon", "qrc:assets/icons/polygon.svg"},
         {"Dot", "qrc:assets/icons/circle.svg"},
         {"Plane", "qrc:assets/icons/circle.svg"},
+        {"Angle", "qrc:assets/icons/polygon.svg"},
     };
 }
 

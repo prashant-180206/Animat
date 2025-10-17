@@ -21,6 +21,12 @@ ClickableMobject::ClickableMobject(Scene *canvas, QQuickItem *parent)
 
     connect(properties->base(), &BaseProperties::opacityChanged, this, [this](qreal op)
             {
+                if(op <0.1){
+                    this->setZ(-1);
+                }
+                else {
+                    this->setZ(properties->base()->zindex());
+                }
                 this->setOpacity(op);
                 update(); });
 

@@ -14,12 +14,9 @@ public:
     void apply() override;
 
 protected:
-    // Called when animation starts to capture original z-index
-    void onStart() override;
 
 private:
     ClickableMobject *m_mobj;
-    qreal m_originalZIndex; // Store the original z-index to restore later
 };
 
 #endif // DESTROYANIMATION_H

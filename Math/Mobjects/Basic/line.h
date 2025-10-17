@@ -26,11 +26,13 @@ protected:
 
     void mousePressEvent(QMouseEvent *event) override;
 
+protected:
+    QPointF m_shift;
+
 private:
     QPointF start_pos;
     QPointF m_p1;
     QPointF m_p2;
-    QPointF m_shift;
 signals:
     void ThicknessChanged();
 };
