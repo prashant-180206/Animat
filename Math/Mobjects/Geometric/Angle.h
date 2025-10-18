@@ -3,7 +3,6 @@
 
 #include "Math/Mobjects/Groups/group.h"
 #include "Math/Mobjects/Simple/SimpleVector.h"
-#include "Math/Helper/Properties/Geometric/angleproperties.h"
 #include <QSGGeometryNode>
 #include <QSGGeometry>
 #include <QSGFlatColorMaterial>

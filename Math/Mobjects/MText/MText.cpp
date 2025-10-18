@@ -11,65 +11,60 @@
 MText::MText(Scene *canvas, QQuickItem *parent)
     : ClickableMobject(canvas, parent)
 {
+    qInfo()<<"CONSTRUCTOR CALLED";
     setAcceptedMouseButtons(Qt::LeftButton);
-    setAcceptHoverEvents(true);
-    setFlag(ItemIsFocusScope, true);
-    setFocus(false);
 
-    setRichText("Type Here");
-    updateSizeToFitText();
+    setFocus(false);
 
     properties->setText(new TextProperties(this));
 
+    properties->text()->setFontSize(32);
+    properties->text()->setTextValue("Type Here");
+    properties->text()->setFontFamily("Arial");
+    properties->text()->setFontWeight(600);
+    properties->text()->setBold(false);
+    properties->text()->setItalic(false);
+    properties->base()->setType("Text");
+    properties->base()->setName("Text");
+    properties->base()->setColor(Qt::yellow);
+
     connect(properties->text(), &TextProperties::fontFamilyChanged, this, [this]()
             {
-        m_font.setFamily(properties->text()->fontFamily());
-        updateSizeToFitText();
-        update(); });
+
+                updateSizeToFitText();
+                update(); });
 
     connect(properties->text(), &TextProperties::fontSizeChanged, this, [this]()
             {
-        m_font.setPointSize(properties->text()->fontSize());
-        updateSizeToFitText();
-        update(); });
+
+                updateSizeToFitText();
+                update(); });
 
     connect(properties->text(), &TextProperties::boldChanged, this, [this]()
             {
-        m_font.setBold(properties->text()->bold());
-        updateSizeToFitText();
-        update(); });
+
+                updateSizeToFitText();
+                update(); });
 
     connect(properties->text(), &TextProperties::italicChanged, this, [this]()
             {   
-        m_font.setItalic(properties->text()->italic());
-        updateSizeToFitText();
-        update(); });
+
+                updateSizeToFitText();
+                update(); });
 
     connect(properties->text(), &TextProperties::fontWeightChanged, this, [this]()
             {
-        m_font.setWeight(QFont::Weight(properties->text()->fontWeight()));
-        updateSizeToFitText();
-        update(); });
+
+                updateSizeToFitText();
+                update(); });
 
     connect(properties->base(), &BaseProperties::colorChanged, this, [this]()
             {
-        m_color = properties->base()->color();
-        update(); });
 
-    properties->text()->setFontSize(32);
-}
+                update(); });
 
-QString MText::richText() const { return m_richText; }
+    updateSizeToFitText();
 
-void MText::setRichText(const QString &txt)
-{
-    if (txt != m_richText)
-    {
-        m_richText = txt;
-        emit richTextChanged();
-        updateSizeToFitText();
-        update();
-    }
 }
 
 void MText::mousePressEvent(QMouseEvent *event)
@@ -107,11 +102,13 @@ void MText::keyPressEvent(QKeyEvent *event)
             updateSizeToFitText(); // ← fixes width on Enter
             break;
         case Qt::Key_Backspace:
-            m_richText.chop(1);
+            properties->text()->textValue().chop(1);
             break;
         default:
-            if (!event->text().isEmpty())
-                m_richText += event->text();
+            if (!event->text().isEmpty()){
+                properties->text()->setTextValue(properties->text()->textValue()+event->text());
+            }
+
         }
     }
     updateSizeToFitText();
@@ -127,8 +124,8 @@ void MText::focusOutEvent(QFocusEvent *event)
 void MText::updateSizeToFitText()
 {
     QTextDocument doc;
-    doc.setDefaultFont(m_font);
-    doc.setHtml(m_richText);
+    doc.setDefaultFont(properties->text()->fontFamily());
+    doc.setHtml(properties->text()->textValue());
     doc.setTextWidth(-1); // Let it size freely
 
     if (m_editing)
@@ -183,14 +180,14 @@ QSGNode *MText::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
     // Draw the text
     // Draw the text
     QTextDocument doc;
-    doc.setDefaultFont(m_font);
-    doc.setHtml(m_richText);
+    doc.setDefaultFont(properties->text()->fontFamily());
+    doc.setHtml(properties->text()->textValue());
 
     // Force all text to m_color from properties, unless <span style="color:..."> is present
     QTextCursor cursor(&doc);
     cursor.select(QTextCursor::Document);
     QTextCharFormat fmt;
-    fmt.setForeground(m_color);
+    fmt.setForeground(properties->base()->color());
     cursor.mergeCharFormat(fmt);
 
     doc.setTextWidth(width() - 10);

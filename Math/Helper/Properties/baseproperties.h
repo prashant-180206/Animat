@@ -118,7 +118,6 @@ public slots:
     void setColor(const QColor &color);
     void setOpacity(qreal op);
     void setType(const QString &q);
-    ;
     void setScale(qreal scale);
     void setRotation(qreal rotation);
     void setZindex(qreal zindex);

@@ -19,7 +19,8 @@ Polygon::Polygon(Scene *canvas, QQuickItem *parent)
     buildPolygon();
 
     properties->polygon()->setBorderColor(Qt::yellow);
-    properties->base()->setName("Polygon");
+    properties->base()->setName("MPolygon");
+    properties->base()->setType("MPolygon");
     properties->polygon()->setThickness(4);
     properties->base()->setColor(Qt::blue);
     shift = getcanvas()->p2c(properties->base()->pos());

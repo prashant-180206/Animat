@@ -133,7 +133,7 @@ void Scene::setShowBorders(bool show)
 
 void Scene::setFromJSON(const QJsonObject &o)
 {
-    // qInfo() << "SCENE DATA SCENE CALLED ";
+    qInfo() << "SCENE DATA SCENE CALLED ";
     SceneData data = SceneData::fromJSON(o);
 
     // Set basic scene properties
@@ -143,6 +143,9 @@ void Scene::setFromJSON(const QJsonObject &o)
     setShowBorders(data.showBorders);
 
     // Clear existing mobjects
+
+        qInfo() << "CLEARMING MOBJ";
+
     qDeleteAll(m_objects);
     m_objects.clear();
 
@@ -155,8 +158,11 @@ void Scene::setFromJSON(const QJsonObject &o)
             QString id = mobjectData["id"].toString();
             QString type = mobjectData["properties"].toObject()["base"].toObject()["type"].toString();
 
+                    qInfo() << "No data"<<type;
+
+
             this->add_mobject(type, id);
-            // qInfo() << "ADDING MOBJECTS";
+            qInfo() << "ADDING MOBJECTS";
             getMobject(id)->setfromJSON(mobjectData);
         }
     }

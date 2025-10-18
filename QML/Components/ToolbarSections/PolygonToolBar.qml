@@ -21,25 +21,17 @@ RowLayout {
         RowLayout {
             anchors.fill: parent
             Text {
-                text: "Points:"
+                text: "Points: " +(canvas && canvas.SelectedMobject &&
+                                  mprop && mprop.polygon &&
+                                  typeof canvas.SelectedMobject.pointCount === "function")
+                                 ? canvas.SelectedMobject.pointCount()
+                                 : ""
                 color: "#fff"
                 font.pixelSize: 13
                 font.bold: true
                 Layout.preferredWidth: 60
+                anchors.centerIn: parent
             }
-            Text {
-                anchors.margins: 20
-                text: (canvas && canvas.SelectedMobject &&
-                       mprop && mprop.polygon &&
-                       typeof canvas.SelectedMobject.pointCount === "function")
-                      ? canvas.SelectedMobject.pointCount()
-                      : ""
-                color: "#80ff80"
-                font.pixelSize: 13
-                font.bold: true
-                Layout.preferredWidth: 30
-            }
-
         }
     }
 
@@ -67,7 +59,7 @@ RowLayout {
 
         MenuItem {
             text: "Add Point"
-            enabled: actionsMenu.isPolygon==undefined && canvas.SelectedMobject.addPoint
+            // enabled: actionsMenu.isPolygon==undefined && canvas.SelectedMobject.addPoint
             onTriggered: {
                 if (actionsMenu.isPolygon && canvas.SelectedMobject.addPoint)
                     canvas.SelectedMobject.addPoint(5, 1)
@@ -76,10 +68,10 @@ RowLayout {
 
         MenuItem {
             text: "Remove Last"
-            enabled: actionsMenu.isPolygon==undefined &&
-                     canvas.SelectedMobject.pointCount &&
-                     canvas.SelectedMobject.removePoint &&
-                     canvas.SelectedMobject.pointCount() > 3
+            // enabled: actionsMenu.isPolygon==undefined &&
+            //          canvas.SelectedMobject.pointCount &&
+            //          canvas.SelectedMobject.removePoint &&
+            //          canvas.SelectedMobject.pointCount() > 3
 
             onTriggered: {
                 if (actionsMenu.isPolygon &&
@@ -95,10 +87,10 @@ RowLayout {
 
         MenuItem {
             text: "Clear All"
-            enabled: actionsMenu.isPolygon==undefined&&
-                     canvas.SelectedMobject.clearPoints &&
-                     canvas.SelectedMobject.pointCount &&
-                     canvas.SelectedMobject.pointCount() > 0
+            // enabled: actionsMenu.isPolygon==undefined&&
+            //          canvas.SelectedMobject.clearPoints &&
+            //          canvas.SelectedMobject.pointCount &&
+            //          canvas.SelectedMobject.pointCount() > 0
 
             onTriggered: {
                 if (actionsMenu.isPolygon==undefined &&
@@ -212,7 +204,6 @@ RowLayout {
                     }
                 }
             }
-
         }
     }
 }

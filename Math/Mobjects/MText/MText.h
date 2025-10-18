@@ -6,16 +6,9 @@
 
 class MText : public ClickableMobject {
     Q_OBJECT
-    Q_PROPERTY(QString richText READ richText WRITE setRichText NOTIFY richTextChanged)
 
 public:
     explicit MText(Scene *canvas, QQuickItem *parent = nullptr);
-
-    QString richText() const;
-    void setRichText(const QString &text);
-
-signals:
-    void richTextChanged();
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;
@@ -28,10 +21,8 @@ protected:
 
 private:
     void updateSizeToFitText();
-private:
-    qreal m_committedWidth = 0;
-    QString m_richText;
+
     bool m_editing = false;
-    QFont m_font;
-    QColor m_color = Qt::white;
+    qreal m_committedWidth = 80;
+
 };

@@ -26,7 +26,7 @@ void MobjectMap::init(Scene *canvas)
     { return new Curve(canvas, canvas); };
     map["Rectangle"] = [canvas]()
     { return new MRectangle(canvas, canvas); };
-    map["Polygon"] = [canvas]()
+    map["MPolygon"] = [canvas]()
     { return new MPolygon(canvas, canvas); };
     map["Circle"] = [canvas]()
     { return new Circle(canvas, canvas); };

@@ -217,8 +217,9 @@ RowLayout {
                   }
         }
     }
+
     PolygonToolBar {
-        visible: mprop && mprop.polygon && !mprop.circle && ! mprop.base.name==="Rectangle"
+        visible: mprop && mprop.polygon && !mprop.circle && mprop.base.name!=="Rectangle"
         Layout.fillWidth: true
         canvas:scene
         mprop: root.mprop

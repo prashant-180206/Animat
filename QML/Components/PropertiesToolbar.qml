@@ -119,6 +119,54 @@ Rectangle {
             }
         }
 
+        Rectangle {
+            Layout.alignment: Qt.AlignHCenter
+            Layout.preferredHeight: polygonsection.implicitHeight + 10
+            Layout.preferredWidth: polygonsection.implicitWidth + 10
+            color: "#252525"
+            radius: 6
+            border.color: "#333333"
+            border.width: 1
+            Layout.margins: 4
+            visible: polygonsection.visible
+
+            Rectangle {
+                width: polygonsection.implicitWidth
+                height: polygonsection.implicitHeight
+                color: parent.color
+                anchors.centerIn: parent
+                PolygonToolBar {
+                    id: polygonsection
+                    mprop: scene && scene.SelectedMobject ? root.scene.SelectedMobject.getProperties() : null
+                    anchors.centerIn: parent // This is allowed here since SpecialSection is not in a layout
+                    canvas: root.scene
+                }
+            }
+        }
+
+        // Rectangle {
+        //     Layout.alignment: Qt.AlignHCenter
+        //     Layout.preferredHeight: textsection.implicitHeight + 10
+        //     Layout.preferredWidth: textsection.implicitWidth + 10
+        //     color: "#252525"
+        //     radius: 6
+        //     border.color: "#333333"
+        //     border.width: 1
+        //     Layout.margins: 4
+
+        //     Rectangle {
+        //         width: textsection.implicitWidth
+        //         height: textsection.implicitHeight
+        //         color: parent.color
+        //         anchors.centerIn: parent
+        //         TextToolbarSection {
+        //             id: textsection
+        //             selectedObject:  scene && scene.SelectedMobject ? root.scene.SelectedMobject.getProperties() : null
+        //             anchors.centerIn: parent // This is allowed here since SpecialSection is not in a layout
+        //         }
+        //     }
+        // }
+
         // ====== GEOMETRIC SECTION ======
         Rectangle {
             Layout.alignment: Qt.AlignHCenter

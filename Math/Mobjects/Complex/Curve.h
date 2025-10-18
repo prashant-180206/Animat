@@ -28,7 +28,6 @@ protected:
     bool contains(const QPointF &point) const override;
     QRectF boundingRect() const override;
 
-    // Curve::CurveFunc curveFunction() const;
 private:
     QPointF shift ;
     void buildCurveSegments();

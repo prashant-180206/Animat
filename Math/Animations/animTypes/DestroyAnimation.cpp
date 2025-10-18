@@ -2,11 +2,9 @@
 #include "Math/Mobjects/Base/ClickableMobject.h"
 
 DestroyAnimation::DestroyAnimation(ClickableMobject *mobj, qreal duration, QEasingCurve::Type easingType)
-    : Animation(duration, easingType), m_mobj(mobj), m_originalZIndex(0)
+    : Animation(duration, easingType), m_mobj(mobj)
 {
 }
-
-
 
 void DestroyAnimation::apply()
 {
