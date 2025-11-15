@@ -51,8 +51,30 @@ public:
     Q_INVOKABLE void reset()
     {
         m_updateTimer->stop();
-        setValue(0);
-        emit playingChanged();
+
+        const int durationMs = 500;
+        const int intervalMs = 16; // ~60 FPS
+        const int steps = durationMs / intervalMs;
+        int currentStep = 0;
+
+        int startValue = value();
+        QTimer* animTimer = new QTimer(this);
+
+        connect(animTimer, &QTimer::timeout, this, [=, this]() mutable {
+            currentStep++;
+            float progress = static_cast<float>(currentStep) / steps;
+            int newValue = static_cast<int>(startValue * (1.0f - progress));
+            setValue(newValue);
+
+            if (currentStep >= steps) {
+                animTimer->stop();
+                animTimer->deleteLater();
+                setValue(0); // Ensure final value is exactly 0
+                emit playingChanged();
+            }
+        });
+
+        animTimer->start(intervalMs);
     }
 
     struct PlayerData

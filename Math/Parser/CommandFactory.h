@@ -77,6 +77,7 @@ public:
     }
 
 private:
+
     QMap<CommandType, QRegularExpression> m_regexMap;
 
     void initializeRegexMap()

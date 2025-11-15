@@ -21,10 +21,12 @@ void AnimationManager::add()
     // Ensure the packet has this manager as parent before adding to list
     m_packetToAdd->setParent(this);
     m_packetToAdd->setStartTime(progressTime);
-    progressTime += m_packetToAdd->duration();
 
-    // Insert in sorted order by start time
+    // Insert in sorted order by start time (no longer at the end automatically)
     insertSorted(m_packetToAdd);
+
+    // Update progress time to be after this packet
+    progressTime = m_packetToAdd->startTime() + m_packetToAdd->duration();
 
     setActivePacket(m_packetToAdd);
 
@@ -213,7 +215,17 @@ void AnimationManager::removePacket(AnimPacket *packet)
     AnimPacketNode *node = findNode(packet);
     if (node)
     {
+        qreal deletedStartTime = packet->startTime();
+        qreal deletedDuration = packet->duration();
+
         removeNode(node);
+
+        // Update progress times for animations that come after the deleted one
+        updateProgressTimesAfterDeletion(deletedStartTime, deletedDuration);
+
+        // Adjust overall progress time
+        progressTime -= deletedDuration;
+
         emit packetsChanged();
     }
 }
@@ -229,7 +241,7 @@ void AnimationManager::setFromJSON(const QJsonObject &o, Scene *c)
     for (const QJsonObject &packetObj : std::as_const(d.packetJsons))
     {
         AnimPacket *packet = new AnimPacket(this);
-        packet->setFromJSON(packetObj,c);
+        packet->setFromJSON(packetObj, c);
 
         qInfo() << packetObj << &packetObj << "PACKET";
         targetPacket = packet;
@@ -261,27 +273,6 @@ AnimationManager::AnimManagerData AnimationManager::getData() const
     }
     return d;
 }
-
-
-
-
-// AnimationManager::AnimManagerData AnimationManager::getData() const
-// {
-//     AnimManagerData d;
-//     d.size = m_size;
-//     d.progressTime = progressTime;
-//     d.activePacketName = m_activePacket ? m_activePacket->name() : "";
-//     AnimPacketNode *node = m_head;
-//     while (node)
-//     {
-//         if (node->packet)
-//         {
-//             d.packetJsons.append(node->packet->getData().toJSON());
-//         }
-//         node = node->next;
-//     }
-//     return d;
-// }
 
 void AnimationManager::insertSorted(AnimPacket *packet)
 {
@@ -429,38 +420,75 @@ void AnimationManager::setActiveNode(AnimPacketNode *node)
     setActivePacket(packet);
 }
 
-// QJsonDocument AnimationManager::AnimManagerData::toJson() const
-// {
-//     QJsonObject o;
-//     o["size"] = size;
-//     o["progressTime"] = progressTime;
-//     o["activePacketName"] = activePacketName;
-//     QJsonArray packetArray;
-//     for (const QJsonObject &packetObj : packetJsons)
-//     {
-//         packetArray.append(packetObj);
-//     }
-//     o["packets"] = packetArray;
-//     return QJsonDocument(o);
-// }
+bool AnimationManager::moveUp(AnimPacket *packet)
+{
+    AnimPacketNode *node = findNode(packet);
+    if (!node || !node->prev)
+        return false; // Can't move up if it's already first or not found
 
-// AnimationManager::AnimManagerData AnimationManager::AnimManagerData::fromJSON(const QJsonObject &o)
-// {
-//     AnimManagerData d;
-//     d.size = o["size"].toInt();
-//     d.progressTime = o["progressTime"].toDouble();
-//     d.activePacketName = o["activePacketName"].toString();
-//     if (o.contains("packets") && o["packets"].isArray())
-//     {
-//         QJsonArray arr = o["packets"].toArray();
-//         for (const QJsonValue &val : arr)
-//         {
-//             if (val.isObject())
-//                 d.packetJsons.append(val.toObject());
-//         }
-//     }
-//     return d;
-// }
+    swapNodes(node->prev, node);
+    emit packetsChanged();
+    return true;
+}
+
+bool AnimationManager::moveDown(AnimPacket *packet)
+{
+    AnimPacketNode *node = findNode(packet);
+    if (!node || !node->next)
+        return false; // Can't move down if it's already last or not found
+
+    swapNodes(node, node->next);
+    emit packetsChanged();
+    return true;
+}
+
+bool AnimationManager::swapPackets(AnimPacket *packet1, AnimPacket *packet2)
+{
+    if (!packet1 || !packet2 || packet1 == packet2)
+        return false;
+
+    AnimPacketNode *node1 = findNode(packet1);
+    AnimPacketNode *node2 = findNode(packet2);
+
+    if (!node1 || !node2)
+        return false;
+
+    swapNodes(node1, node2);
+    emit packetsChanged();
+    return true;
+}
+
+void AnimationManager::swapNodes(AnimPacketNode *node1, AnimPacketNode *node2)
+{
+    if (!node1 || !node2 || node1 == node2)
+        return;
+
+    // Swap the packets, not the nodes themselves
+    AnimPacket *tempPacket = node1->packet;
+    node1->packet = node2->packet;
+    node2->packet = tempPacket;
+
+    // Update active node reference if needed
+    if (m_activeNode == node1)
+        setActivePacket(node1->packet);
+    else if (m_activeNode == node2)
+        setActivePacket(node2->packet);
+}
+
+void AnimationManager::updateProgressTimesAfterDeletion(qreal deletedStartTime, qreal deletedDuration)
+{
+    AnimPacketNode *node = m_head;
+    while (node)
+    {
+        if (node->packet && node->packet->startTime() > deletedStartTime)
+        {
+            // Adjust start time for animations that come after the deleted one
+            qreal currentStartTime = node->packet->startTime();
+            node->packet->setStartTime(currentStartTime - deletedDuration);
+        }
+        node = node->next;
+    }
+}
 
 QJsonDocument AnimationManager::AnimManagerData::toJson() const
 {

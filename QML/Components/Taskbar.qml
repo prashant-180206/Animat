@@ -12,7 +12,7 @@ Rectangle {
     height: 40
 
     // Property to receive scene from parent
-    property var scene: null
+    property Scene scene: null
 
     // Property to receive main window reference
     property var mainWindow: null
@@ -60,6 +60,7 @@ Rectangle {
                     filePath = filePath.substring(7); // Remove "file://"
                 }
                 console.log("Converted file path:", filePath);
+                root.scene.player().reset()
                 fileHandler.saveScene(root.scene, filePath);
             } else {
                 console.log("No scene available for saving");

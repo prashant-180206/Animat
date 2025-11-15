@@ -18,7 +18,7 @@ MText::MText(Scene *canvas, QQuickItem *parent)
 
     properties->setText(new TextProperties(this));
 
-    properties->text()->setFontSize(32);
+    properties->text()->setFontSize(24);
     properties->text()->setTextValue("Type Here");
     properties->text()->setFontFamily("Arial");
     properties->text()->setFontWeight(600);
@@ -102,7 +102,8 @@ void MText::keyPressEvent(QKeyEvent *event)
             updateSizeToFitText(); // ← fixes width on Enter
             break;
         case Qt::Key_Backspace:
-            properties->text()->textValue().chop(1);
+            if(properties->text()->textValue().length()==0) return ;
+            properties->text()->setTextValue(properties->text()->textValue().chopped(1));
             break;
         default:
             if (!event->text().isEmpty()){

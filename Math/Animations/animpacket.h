@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QVector>
+#include "ClickableMobject.h"
 #include "animation.h"
 #include <QJsonArray>
 

@@ -1,3 +1,4 @@
+pragma ComponentBehavior: Bound
 import QtQuick 2.15
 import QtQuick.Controls.Basic
 import QtQuick.Layouts
@@ -66,11 +67,13 @@ Item {
                         border.width: 1
 
                         property bool isHovered: false
+                        required property int index
+                        required property var modelData
 
                         states: [
                             State {
                                 name: "hovered"
-                                when: isHovered
+                                when: animationItem.isHovered
                                 PropertyChanges {
                                     animationItem.color: root.listItemHoverColor
                                 }
@@ -89,8 +92,8 @@ Item {
                         MouseArea {
                             anchors.fill: parent
                             hoverEnabled: true
-                            onEntered: animationItem.isHovered = true
-                            onExited: animationItem.isHovered = false
+                            onEntered: parent.isHovered = true
+                            onExited: parent.isHovered = false
                         }
 
                         RowLayout {
@@ -104,14 +107,14 @@ Item {
                                 spacing: 4
 
                                 Text {
-                                    text: modelData && modelData.name ? modelData.name : "Animation #" + (index + 1)
+                                    text: animationItem.modelData && animationItem.modelData.name ? animationItem.modelData.name : "Animation #" + (animationItem.index + 1)
                                     color: root.textColor
                                     font.pixelSize: 12
                                     font.bold: true
                                 }
 
                                 Text {
-                                    text: modelData && modelData.description ? modelData.description : "No description"
+                                    text: animationItem.modelData && animationItem.modelData.description ? animationItem.modelData.description : "No description"
                                     color: root.secondaryTextColor
                                     font.pixelSize: 10
                                     font.italic: true
@@ -121,13 +124,13 @@ Item {
                                     spacing: 10
 
                                     Text {
-                                        text: "Type: " + (modelData && modelData.animationType ? modelData.animationType : "N/A")
+                                        text: "Type: " + (animationItem.modelData && animationItem.modelData.animationType ? animationItem.modelData.animationType : "N/A")
                                         color: root.secondaryTextColor
                                         font.pixelSize: 9
                                     }
 
                                     Text {
-                                        text: "Count: " + (modelData && modelData.animationCount !== undefined ? modelData.animationCount : "0")
+                                        text: "Count: " + (animationItem.modelData && animationItem.modelData.animationCount !== undefined ? animationItem.modelData.animationCount : "0")
                                         color: root.secondaryTextColor
                                         font.pixelSize: 9
                                     }
@@ -137,72 +140,186 @@ Item {
                                     spacing: 10
 
                                     Text {
-                                        text: "Start: " + (modelData && modelData.startTime !== undefined ? modelData.startTime.toFixed(2) + "s" : "N/A")
+                                        text: "Start: " + (animationItem.modelData && animationItem.modelData.startTime !== undefined ? animationItem.modelData.startTime.toFixed(2) + "s" : "N/A")
                                         color: root.secondaryTextColor
                                         font.pixelSize: 9
                                     }
 
                                     Text {
-                                        text: "Duration: " + (modelData && modelData.duration !== undefined ? modelData.duration.toFixed(2) + "s" : "N/A")
+                                        text: "Duration: " + (animationItem.modelData && animationItem.modelData.duration !== undefined ? animationItem.modelData.duration.toFixed(2) + "s" : "N/A")
                                         color: root.secondaryTextColor
                                         font.pixelSize: 9
                                     }
                                 }
 
                                 Text {
-                                    text: "Status: " + (root.manager && root.manager.activePacket === modelData ? "Playing" : "Queued")
-                                    color: root.manager && root.manager.activePacket === modelData ? "#4CAF50" : root.secondaryTextColor
+                                    text: "Status: " + (root.manager && root.manager.activePacket === animationItem.modelData ? "Playing" : "Queued")
+                                    color: root.manager && root.manager.activePacket === animationItem.modelData ? "#4CAF50" : root.secondaryTextColor
                                     font.pixelSize: 9
                                 }
                             }
 
-                            // Delete button
-                            Rectangle {
-                                id: deleteButton
-                                Layout.preferredWidth: 40
-                                Layout.preferredHeight: 40
-                                color: root.deleteButtonColor
-                                radius: 4
-                                border.color: "#555555"
-                                border.width: 1
+                            // Control buttons column
+                            ColumnLayout {
+                                Layout.preferredWidth: 50
+                                spacing: 4
 
-                                property bool deleteHovered: false
+                                // Move Up button
+                                Rectangle {
+                                    id: moveUpButton
+                                    Layout.preferredWidth: 40
+                                    Layout.preferredHeight: 25
+                                    color: animationItem.index === 0 ? "#666666" : "#4CAF50"
+                                    radius: 3
+                                    border.color: "#555555"
+                                    border.width: 1
+                                    enabled: animationItem.index > 0
 
-                                states: [
-                                    State {
-                                        name: "deleteHovered"
-                                        when: deleteButton.deleteHovered
-                                        PropertyChanges {
-                                            deleteButton.color: root.deleteButtonHoverColor
+                                    property bool moveUpHovered: false
+
+                                    states: [
+                                        State {
+                                            name: "moveUpHovered"
+                                            when: moveUpButton.moveUpHovered && moveUpButton.enabled
+                                            PropertyChanges {
+                                                moveUpButton.color: "#66BB6A"
+                                            }
+                                        }
+                                    ]
+
+                                    transitions: [
+                                        Transition {
+                                            ColorAnimation {
+                                                duration: 150
+                                                easing.type: Easing.InOutQuad
+                                            }
+                                        }
+                                    ]
+
+                                    Text {
+                                        anchors.centerIn: parent
+                                        text: "↑"
+                                        color: "#ffffff"
+                                        font.pixelSize: 12
+                                        font.bold: true
+                                    }
+
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                        enabled: parent.enabled
+                                        onEntered: moveUpButton.moveUpHovered = true
+                                        onExited: moveUpButton.moveUpHovered = false
+                                        onClicked: {
+                                            if (root.manager && animationItem.modelData) {
+                                                root.manager.moveUp(animationItem.modelData);
+                                            }
                                         }
                                     }
-                                ]
-
-                                transitions: [
-                                    Transition {
-                                        ColorAnimation {
-                                            duration: 150
-                                            easing.type: Easing.InOutQuad
-                                        }
-                                    }
-                                ]
-
-                                Text {
-                                    anchors.centerIn: parent
-                                    text: "×"
-                                    color: "#ffffff"
-                                    font.pixelSize: 18
-                                    font.bold: true
                                 }
 
-                                MouseArea {
-                                    anchors.fill: parent
-                                    hoverEnabled: true
-                                    onEntered: deleteButton.deleteHovered = true
-                                    onExited: deleteButton.deleteHovered = false
-                                    onClicked: {
-                                        if (root.manager && modelData) {
-                                            root.manager.removePacket(modelData);
+                                // Move Down button
+                                Rectangle {
+                                    id: moveDownButton
+                                    Layout.preferredWidth: 40
+                                    Layout.preferredHeight: 25
+                                    color: (root.manager && animationItem.index === (root.manager.packets ? root.manager.packets.length - 1 : 0)) ? "#666666" : "#FF9800"
+                                    radius: 3
+                                    border.color: "#555555"
+                                    border.width: 1
+                                    enabled: root.manager && animationItem.index < (root.manager.packets ? root.manager.packets.length - 1 : 0)
+
+                                    property bool moveDownHovered: false
+
+                                    states: [
+                                        State {
+                                            name: "moveDownHovered"
+                                            when: moveDownButton.moveDownHovered && moveDownButton.enabled
+                                            PropertyChanges {
+                                                moveDownButton.color: "#FFB74D"
+                                            }
+                                        }
+                                    ]
+
+                                    transitions: [
+                                        Transition {
+                                            ColorAnimation {
+                                                duration: 150
+                                                easing.type: Easing.InOutQuad
+                                            }
+                                        }
+                                    ]
+
+                                    Text {
+                                        anchors.centerIn: parent
+                                        text: "↓"
+                                        color: "#ffffff"
+                                        font.pixelSize: 12
+                                        font.bold: true
+                                    }
+
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                        enabled: parent.enabled
+                                        onEntered: moveDownButton.moveDownHovered = true
+                                        onExited: moveDownButton.moveDownHovered = false
+                                        onClicked: {
+                                            if (root.manager && animationItem.modelData) {
+                                                root.manager.moveDown(animationItem.modelData);
+                                            }
+                                        }
+                                    }
+                                }
+
+                                // Delete button
+                                Rectangle {
+                                    id: deleteButton
+                                    Layout.preferredWidth: 40
+                                    Layout.preferredHeight: 25
+                                    color: root.deleteButtonColor
+                                    radius: 3
+                                    border.color: "#555555"
+                                    border.width: 1
+
+                                    property bool deleteHovered: false
+
+                                    states: [
+                                        State {
+                                            name: "deleteHovered"
+                                            when: deleteButton.deleteHovered
+                                            PropertyChanges {
+                                                deleteButton.color: root.deleteButtonHoverColor
+                                            }
+                                        }
+                                    ]
+
+                                    transitions: [
+                                        Transition {
+                                            ColorAnimation {
+                                                duration: 150
+                                                easing.type: Easing.InOutQuad
+                                            }
+                                        }
+                                    ]
+
+                                    Text {
+                                        anchors.centerIn: parent
+                                        text: "×"
+                                        color: "#ffffff"
+                                        font.pixelSize: 14
+                                        font.bold: true
+                                    }
+
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                        onEntered: deleteButton.deleteHovered = true
+                                        onExited: deleteButton.deleteHovered = false
+                                        onClicked: {
+                                            if (root.manager && animationItem.modelData) {
+                                                root.manager.removePacket(animationItem.modelData);
+                                            }
                                         }
                                     }
                                 }

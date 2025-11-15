@@ -77,7 +77,6 @@ public:
     };
 
     SceneData getData() const;
-    ;
 
     void setFromJSON(const QJsonObject &o);
 

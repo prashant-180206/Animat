@@ -84,8 +84,9 @@ public:
     void setFromJSON(const QJsonObject &obj)
     {
         ParserData data = ParserData::fromJSON(obj);
-        m_trackerManager->clearAllTrackers();
+
         m_initCommand = data.instructions;
+        m_trackerManager->clearAllTrackers();
         if (!m_initCommand.isEmpty())
             executeScript(m_initCommand);
 
@@ -93,6 +94,8 @@ public:
 
         if (doc.isEmpty())
             return;
+
+
         m_trackerManager->setFromJSON(doc);
     };
 

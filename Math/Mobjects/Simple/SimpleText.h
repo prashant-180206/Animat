@@ -10,7 +10,6 @@
 
 class Scene;
 
-// SimpleText: A lightweight text mobject for labels without clicking functionality
 class SimpleText : public Mobject
 {
     Q_OBJECT

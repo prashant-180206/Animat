@@ -16,12 +16,13 @@ struct AnimPacketNode
 
     ~AnimPacketNode()
     {
-        // Note: We don't delete the packet here as it should be managed by Qt's parent-child system
-        // The packet will be deleted by AnimationManager when appropriate
+
         packet = nullptr; // Just clear the pointer for safety
         next = prev = nullptr;
     }
 };
+
+class Scene;
 
 class AnimationManager : public QObject
 {
@@ -37,7 +38,6 @@ public:
 
     // Add the packetToAdd to list and reset it to new instance
     Q_INVOKABLE void add();
-
     // Navigation methods for better animation control
     Q_INVOKABLE bool playNext();
 
@@ -70,6 +70,11 @@ public:
 
     Q_INVOKABLE void removePacket(AnimPacket *packet);
 
+    // Move operations for reordering animations
+    Q_INVOKABLE bool moveUp(AnimPacket *packet);
+    Q_INVOKABLE bool moveDown(AnimPacket *packet);
+    Q_INVOKABLE bool swapPackets(AnimPacket *packet1, AnimPacket *packet2);
+
     struct AnimManagerData
     {
         int size = 0;
@@ -83,7 +88,7 @@ public:
 
     AnimManagerData getData() const;
 
-    void setFromJSON(const QJsonObject &o, Scene * c);
+    void setFromJSON(const QJsonObject &o, Scene *c);
 
 signals:
     void activePacketChanged();
@@ -104,18 +109,14 @@ private:
 
     // Linked list operations
     void insertSorted(AnimPacket *packet);
-
     void removeNode(AnimPacketNode *node);
-
     AnimPacketNode *findNode(AnimPacket *packet);
-
     AnimPacketNode *getNodeAt(int index);
-
     void clearList();
-
     void setActivePacket(AnimPacket *packet);
-
     void setActiveNode(AnimPacketNode *node);
+    void swapNodes(AnimPacketNode *node1, AnimPacketNode *node2);
+    void updateProgressTimesAfterDeletion(qreal deletedStartTime, qreal deletedDuration);
 };
 
 #endif // ANIMATIONMANAGER_H

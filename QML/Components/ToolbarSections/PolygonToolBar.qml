@@ -7,7 +7,7 @@ import Animat 1.0
 RowLayout {
     id: root
     property MProperties mprop: null
-    property var canvas: null
+    property Scene canvas: null
     spacing: 10
     visible: mprop && mprop.base && mprop.base.type === "MPolygon" && mprop.polygon
     height: 32
@@ -18,21 +18,16 @@ RowLayout {
         border.color: "#333"
         height: 32
         width: 115
-        RowLayout {
-            anchors.fill: parent
+
             Text {
-                text: "Points: " +(canvas && canvas.SelectedMobject &&
-                                  mprop && mprop.polygon &&
-                                  typeof canvas.SelectedMobject.pointCount === "function")
-                                 ? canvas.SelectedMobject.pointCount()
-                                 : ""
+                text: "Points: "
                 color: "#fff"
                 font.pixelSize: 13
                 font.bold: true
                 Layout.preferredWidth: 60
                 anchors.centerIn: parent
             }
-        }
+
     }
 
     // Actions: Add/Remove/Clear menu
